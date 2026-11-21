@@ -1,0 +1,431 @@
+records:
+  - record_key: ORDER-APPROVAL-BR-0001
+    kind: business-rule
+    capability_key: order-approval
+    requirement: >
+      The system SHALL automatically approve a newly received purchase order when its locale is US and its total price is strictly below 500, or its locale is Japan and its total price is strictly below 50000; every other order SHALL remain PENDING.
+    plain_text: >
+      A new US order under 500, or a Japanese order under 50,000, is approved without a person. All other orders wait for an administrator.
+    technical_note: >
+      PurchaseOrderMDB.canIApprove compares getTotalPrice() with bare literals per Locale. Currency unit is not stated in code.
+    interface: false
+    confidence: high
+    confidence_basis: >
+      Code literals plus the runbook and user guide state the same limits (US 500, JP 50000). Limits are bare literals with no config.
+    risk_class: financial
+    basis: Locale-specific limits hard-coded; documents agree.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/PurchaseOrderMDB.java
+        line_start: 183
+        line_end: 190
+        excerpt: |
+          private boolean canIApprove(PurchaseOrder purchaseOrder) {
+            Locale locale = purchaseOrder.getLocale();
+            if (locale.equals(Locale.US)) {
+              if (purchaseOrder.getTotalPrice() < 500) return true;
+            } else if (locale.equals(Locale.JAPAN))  {
+              if (purchaseOrder.getTotalPrice() < 50000) return true;
+            }
+            return false;
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        anchor: p1
+        excerpt: "total under limit (US 500, JP 50000)  --> APPROVED automatically"
+    stack_metadata:
+      framework: EJB 2.x MDB
+      ejb.bean: PurchaseOrderMDB
+      ejb.transaction: Container
+  - record_key: ORDER-APPROVAL-BR-0002
+    kind: business-rule
+    capability_key: order-approval
+    requirement: >
+      GIVEN an order whose locale is neither US nor Japan (for example Chinese), WHEN it is received, THEN the system SHALL leave it PENDING regardless of total, because no automatic limit exists for that locale.
+    plain_text: >
+      Orders from locales other than the US and Japan never approve automatically.
+    technical_note: >
+      canIApprove falls through to return false for any other locale; no limit defined for zh_CN although the store serves it.
+    confidence: medium
+    confidence_basis: One clear place (fall-through); no document speaks to other locales.
+    risk_class: financial
+    basis: Implicit consequence of the if/else chain.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/PurchaseOrderMDB.java
+        line_start: 183
+        line_end: 191
+        excerpt: |
+          } else if (locale.equals(Locale.JAPAN))  {
+            if (purchaseOrder.getTotalPrice() < 50000) return true;
+          }
+          return false;
+    stack_metadata:
+      ejb.bean: PurchaseOrderMDB
+  - record_key: CHECKOUT-ORDER-PLACEMENT-WF-0001
+    kind: workflow
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL, on receiving a purchase order message from the storefront, persist the purchase order and register it with the process manager with status PENDING before evaluating automatic approval.
+    plain_text: >
+      Every order received from the storefront is saved and starts out as pending.
+    technical_note: >
+      PurchaseOrderMDB.doWork parses the XML (optional schema validation by env-entry), poHome.create, processManager.createManager(orderId, PENDING). Any failure rethrown as EJBException (message redelivery under container transaction).
+    interface: true
+    confidence: high
+    confidence_basis: Code plus runbook flow diagram and user guide.
+    risk_class: operational
+    basis: Order intake from OrderQueue.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/PurchaseOrderMDB.java
+        line_start: 152
+        line_end: 157
+        excerpt: |
+          PurchaseOrder purchaseOrder = PurchaseOrder.fromXML(xmlMessage, entityCatalogURL, validateXmlPurchaseOrder);
+          poHome.create(purchaseOrder);
+          //update process manager to start workflow for this purchase order
+          processManager.createManager(purchaseOrder.getOrderId(), OrderStatusNames.PENDING);
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        anchor: p1
+        excerpt: "Storefront --OrderQueue--> OPC PurchaseOrderMDB"
+    stack_metadata:
+      ejb.bean: PurchaseOrderMDB
+      jms.queue: jms/opc/OrderQueue
+  - record_key: ORDER-APPROVAL-WF-0001
+    kind: workflow
+    capability_key: order-approval
+    requirement: >
+      The system SHALL, for an automatically approved order, emit an order-approval message for that order with status APPROVED to the same approval path used for manual approvals, and SHALL emit nothing when the order is not auto-approved.
+    plain_text: >
+      An order approved automatically follows the same path as one approved by an administrator.
+    technical_note: >
+      PurchaseOrderMDB builds ChangedOrder(APPROVED) in an OrderApproval XML and PurchaseOrderTD forwards it (queue helper). Null result means wait for admin.
+    interface: true
+    confidence: medium
+    confidence_basis: Seen in MDB; PurchaseOrderTD target queue not read in detail.
+    risk_class: operational
+    basis: Auto-approval is modelled as a synthetic approval message.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/PurchaseOrderMDB.java
+        line_start: 158
+        line_end: 164
+        excerpt: |
+          if(canIApprove(purchaseOrder)) {
+            ChangedOrder co = new ChangedOrder(purchaseOrder.getOrderId(), OrderStatusNames.APPROVED);
+            OrderApproval oa = new OrderApproval();
+            oa.addOrder(co);
+            ret = oa.toXML();
+          }
+    stack_metadata:
+      ejb.bean: PurchaseOrderMDB
+      framework: JMS
+  - record_key: ORDER-APPROVAL-BR-0003
+    kind: business-rule
+    capability_key: order-approval
+    requirement: >
+      GIVEN an order-approval message containing an order whose current status is not PENDING, WHEN it is processed, THEN the system SHALL ignore that order: no status change, no supplier order, no notification.
+    plain_text: >
+      An order that was already approved, denied or completed cannot be changed again by a later approval or denial.
+    technical_note: >
+      OrderApprovalMDB.doWork checks processManager.getStatus and continues past non-PENDING orders, so they are also left out of the mail list.
+    interface: false
+    confidence: high
+    confidence_basis: Code with explanatory comment; user guide status table is consistent.
+    risk_class: financial
+    basis: Idempotence guard on the state machine.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/OrderApprovalMDB.java
+        line_start: 201
+        line_end: 207
+        excerpt: |
+          // only PENDING orders can be updated
+          //if order alreay APPROVED or DENIED or COMPLETED, then order
+          //already processed so dont process again
+          String curStatus = processManager.getStatus(co.getOrderId());
+          if(!curStatus.equals(OrderStatusNames.PENDING)) {
+            continue;
+          }
+    stack_metadata:
+      ejb.bean: OrderApprovalMDB
+  - record_key: ORDER-APPROVAL-BR-0004
+    kind: business-rule
+    capability_key: order-approval
+    requirement: >
+      The system SHALL update the status of each PENDING order in an approval message to the status given (APPROVED or DENIED), and SHALL include each such order in the status-change notification list.
+    plain_text: >
+      An administrator's approve or deny decision on a pending order sets the order to that status and the customer is told.
+    technical_note: >
+      processManager.updateStatus(orderId, co.getOrderStatus()); co added to oaMailList; list sent via OrderApprovalTD to the mail queue.
+    interface: false
+    confidence: high
+    confidence_basis: Code and user guide section 3.3.
+    risk_class: financial
+    basis: Core state transition PENDING to APPROVED/DENIED.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/OrderApprovalMDB.java
+        line_start: 208
+        line_end: 218
+        excerpt: |
+          oaMailList.addOrder(co);
+
+          //update process manager
+          //for this purchase order workflow
+          processManager.updateStatus(co.getOrderId(), co.getOrderStatus());
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1
+        excerpt: "3.3 Approving or denying orders"
+    stack_metadata:
+      ejb.bean: OrderApprovalMDB
+  - record_key: SUPPLIER-FULFILLMENT-WF-0001
+    kind: workflow
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL, for each order newly set to APPROVED, build a supplier purchase order (order id, date, shipping name/address/email/telephone, and each line with category, product, item, line number, quantity, unit price) and send it to the supplier purchase-order queue; DENIED orders SHALL NOT be sent.
+    plain_text: >
+      When an order is approved, a purchase order with the shipping details and every line is sent to the supplier. Denied orders are not sent.
+    technical_note: >
+      OrderApprovalMDB.getXmlPO uses TPASupplierOrderXDE; OrderApprovalTD sends each to SUPPLIER_PURCHASE_ORDER_QUEUE then sends the mail list. Order of sends: all supplier POs first, then mail message.
+    interface: true
+    confidence: high
+    confidence_basis: Code in two classes and runbook flow.
+    risk_class: operational
+    basis: Hand-off to supplier on approval.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/OrderApprovalMDB.java
+        line_start: 220
+        line_end: 226
+        excerpt: |
+          if(co.getOrderStatus().equals(OrderStatusNames.APPROVED)) {
+            po = poHome.findByPrimaryKey(co.getOrderId());
+            String xmlPO = getXmlPO(po, supplierOrderXDE);
+            supplierPoList.add(xmlPO);
+          }
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/transitions/OrderApprovalTD.java
+        line_start: 78
+        line_end: 90
+        excerpt: |
+          supplierQueueHelper.sendMessage(xmlPO);
+          //send the list of valid order approval/deny to customer relations
+          sendMail(xmlMailOrderApprovals);
+    stack_metadata:
+      ejb.bean: OrderApprovalMDB
+      jms.queue: SUPPLIER_PURCHASE_ORDER_QUEUE
+  - record_key: SUPPLIER-FULFILLMENT-WF-0002
+    kind: workflow
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL, on receiving a supplier invoice, mark the order COMPLETED when every line of the order has been invoiced, and otherwise mark it SHIPPED_PART; only a COMPLETED outcome SHALL trigger the completed-order notification step.
+    plain_text: >
+      When the supplier invoices shipped goods, the order is completed once all lines have shipped; until then it is partly shipped.
+    technical_note: >
+      InvoiceMDB.doWork: PurchaseOrderHelper.processInvoice(po, lineItemIds) returns orderDone; updateStatus COMPLETED or SHIPPED_PART; InvoiceTD sends to completed-order mail queue only when COMPLETED. Invoice arrives via InvoiceTopic. SHIPPED_PART is not in the user guide status table.
+    interface: true
+    confidence: high
+    confidence_basis: Code plus runbook and user guide COMPLETED definition.
+    risk_class: operational
+    basis: Fulfilment join condition.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/InvoiceMDB.java
+        line_start: 161
+        line_end: 172
+        excerpt: |
+          boolean orderDone = poHelper.processInvoice(po, invoiceXDE.getLineItemIds());
+          if(orderDone) {
+            processManager.updateStatus(invoiceXDE.getOrderId(), OrderStatusNames.COMPLETED);
+            completedOrder = invoiceXDE.getOrderId();
+          } else {
+            processManager.updateStatus(invoiceXDE.getOrderId(), OrderStatusNames.SHIPPED_PART);
+          }
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1
+        excerpt: "COMPLETEDAll lines shipped and invoiced"
+    stack_metadata:
+      ejb.bean: InvoiceMDB
+      jms.queue: jms/opc/InvoiceTopic
+  - record_key: ORDER-ADMINISTRATION-REQ-0001
+    kind: requirement
+    capability_key: order-administration
+    requirement: >
+      The system SHALL provide an admin facade that lists orders having a given status, returning for each the order id, user id, order date formatted month/day/year without zero padding, order value and the status.
+    plain_text: >
+      Administrators can list orders by status and see id, customer, date, value and status for each.
+    technical_note: >
+      OPCAdminFacadeEJB.getOrdersByStatus iterates process-manager entries then loads each PurchaseOrder. Date built from deprecated Date getters, always M/D/YYYY regardless of locale. FinderException becomes OPCAdminFacadeException.
+    interface: false
+    confidence: medium
+    confidence_basis: One clear place; user guide describes the panels at a high level.
+    risk_class: operational
+    basis: Admin read model.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/admin/ejb/OPCAdminFacadeEJB.java
+        line_start: 139
+        line_end: 148
+        excerpt: |
+          Collection orders = mgr.getOrdersByStatus(status);
+          ...
+          String podate = (gotDate.getMonth()+1) + "/" +
+              gotDate.getDate() + "/" + (gotDate.getYear()+1900);
+    stack_metadata:
+      ejb.bean: OPCAdminFacadeEJB
+      ejb.transaction: Container
+  - record_key: ORDER-ADMINISTRATION-REQ-0002
+    kind: requirement
+    capability_key: order-administration
+    requirement: >
+      The system SHALL compute sales chart data for orders placed between a start and end date, as either revenue (quantity times unit price) or quantity, summed per category, or per item when a category is specified (only lines of that category).
+    plain_text: >
+      Administrators can chart revenue or units sold for a date range, by category, or by item within one category.
+    technical_note: >
+      getChartInfo: any request other than "REVENUE" is treated as quantity. Revenue accumulated as Float (single precision). Uses findPOBetweenDates on the purchase order time stamps.
+    confidence: medium
+    confidence_basis: One method, clear logic; no test or doc.
+    risk_class: financial
+    basis: Sales reporting aggregation.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/admin/ejb/OPCAdminFacadeEJB.java
+        line_start: 183
+        line_end: 206
+        excerpt: |
+          pohome.findPOBetweenDates(start.getTime(), end.getTime());
+          ...
+          if(request.equals("REVENUE")) {
+              if(categ == null) {
+                  id = loc.getCategoryId();
+    stack_metadata:
+      ejb.bean: OPCAdminFacadeEJB
+  - record_key: CUSTOMER-NOTIFICATIONS-BR-0001
+    kind: business-rule
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL send order-status (approval/denial), shipment (invoice) and completed-order e-mails only when the corresponding configuration switch is enabled, and SHALL send none of them by default.
+    plain_text: >
+      Customer e-mails about order status, shipment and completion are off unless an administrator turns them on.
+    technical_note: >
+      Env-entries param/SendApprovalMail (MailOrderApprovalMDB), param/SendConfirmationMail (MailInvoiceMDB), param/SendCompletedOrderMail (MailCompletedOrderMDB), read via getBoolean; value is redacted in the extract so the default is taken from the admin guide ("disabled by default"). Admin guide maps SendConfirmationMail to InvoiceMDB, the mail bean is MailInvoiceMDB.
+    interface: true
+    confidence: medium
+    confidence_basis: Switch visible in code; default value redacted in the source, stated in a document.
+    risk_class: operational
+    basis: Each mail MDB checks its flag before work.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/MailOrderApprovalMDB.java
+        line_start: 127
+        line_end: 130
+        excerpt: |
+          if (sendConfirmationMail) {
+            result = doWork(recdText);
+            doTransition(result);
+          }
+      - path: legacy-source/app/src/apps/opc/src/ejb-jar.xml
+        line_start: 505
+        line_end: 505
+        excerpt: "<env-entry-name>param/SendApprovalMail</env-entry-name>"
+      - path: legacy-analysis/sources/pdf/petstore-admin-guide/extracted.md
+        anchor: p1
+        excerpt: "Notifications about order status are disabled by default."
+    stack_metadata:
+      ejb.bean: MailOrderApprovalMDB, MailInvoiceMDB, MailCompletedOrderMDB
+  - record_key: CUSTOMER-NOTIFICATIONS-REQ-0001
+    kind: requirement
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL address each status e-mail to the e-mail on the purchase order, with subject "Java Pet Store Order Status: <orderId>" for approval/denial, "Java Pet Store Order Shipped: <orderId>" for shipment and "Java Pet Store Order COMPLETED: <orderId>" for completion, and SHALL render the body from a stylesheet chosen for the purchase order's locale.
+    plain_text: >
+      Each notice goes to the customer's order e-mail with a fixed subject line carrying the order number and text in the customer's language.
+    technical_note: >
+      MailContentXDE applies OrderApproval/PartialInvoice/CompletedOrder XSL (en_US, ja_JP, zh_CN variants) with locale from LocaleUtil.getLocaleFromString(po.getPoLocale()). Subjects are English-only literals.
+    interface: true
+    confidence: high
+    confidence_basis: Three beans, constants and stylesheets present.
+    risk_class: presentational
+    basis: Mail composition.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/MailOrderApprovalMDB.java
+        line_start: 170
+        line_end: 175
+        excerpt: |
+          String subject = MAIL_SUBJECT +  co.getOrderId();
+          po = poHome.findByPrimaryKey(co.getOrderId());
+          String emailAddress = po.getPoEmailId();
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/MailInvoiceMDB.java
+        line_start: 79
+        line_end: 79
+        excerpt: 'private static final String MAIL_SUBJECT = "Java Pet Store Order Shipped: ";'
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/MailCompletedOrderMDB.java
+        line_start: 81
+        line_end: 81
+        excerpt: 'private static final String MAIL_SUBJECT = "Java Pet Store Order COMPLETED: ";'
+    stack_metadata:
+      ejb.bean: MailContentXDE
+  - record_key: LOCALIZATION-BR-0001
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      The system SHALL interpret a stored order locale string "language_country" as that locale, "default" as the server default locale, and a null or underscore-less value as no locale.
+    plain_text: >
+      The language of customer e-mails follows the locale recorded on the order.
+    technical_note: >
+      LocaleUtil.getLocaleFromString. Variant parsing is dead (variantIndex is never assigned), and a three-part string loses its country.
+    confidence: medium
+    confidence_basis: One place; the variant branch is unreachable as read.
+    risk_class: presentational
+    basis: Locale parsing helper.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/LocaleUtil.java
+        line_start: 48
+        line_end: 53
+        excerpt: |
+          if (localeString == null) return null;
+          if (localeString.toLowerCase().equals("default")) return Locale.getDefault();
+          int languageIndex = localeString.indexOf('_');
+          if (languageIndex  == -1) return null;
+    stack_metadata:
+      ejb.bean: LocaleUtil
+suspected_defects:
+  - capability_key: localization
+    record_keys: [LOCALIZATION-BR-0001]
+    severity: low
+    category: unreachable-branch
+    title: Locale variant is never parsed
+    description: >
+      variantIndex is initialised to -1 and never reassigned, so the variant branch cannot run; countryIndex is reassigned instead, and for a language_country_variant string country stays null.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/customerrelations/ejb/LocaleUtil.java
+        line_start: 62
+        line_end: 68
+  - capability_key: order-approval
+    record_keys: [ORDER-APPROVAL-BR-0002]
+    severity: medium
+    category: other
+    title: No automatic approval limit for Chinese locale
+    description: >
+      The store serves zh_CN content, but only US and Japan have a limit, so all Chinese orders need manual approval.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/ejb/PurchaseOrderMDB.java
+        line_start: 183
+        line_end: 191
+  - capability_key: order-administration
+    record_keys: [ORDER-ADMINISTRATION-REQ-0002]
+    severity: low
+    category: inconsistent-rounding
+    title: Revenue summed in single-precision Float
+    description: >
+      Revenue is accumulated in java Float, so large totals lose precision; no rounding rule is applied.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/com/sun/j2ee/blueprints/opc/admin/ejb/OPCAdminFacadeEJB.java
+        line_start: 196
+        line_end: 204
+  - capability_key: customer-notifications
+    record_keys: [CUSTOMER-NOTIFICATIONS-BR-0001]
+    severity: low
+    category: contradicts-document
+    title: Admin guide names a different bean for the confirmation mail switch
+    description: >
+      Admin guide lists SendConfirmationMail under "InvoiceMDB"; in ejb-jar.xml the entry belongs to MailInvoiceMDB, while InvoiceMDB has no such entry.
+    traces:
+      - path: legacy-source/app/src/apps/opc/src/ejb-jar.xml
+        line_start: 408
+        line_end: 416
+      - path: legacy-analysis/sources/pdf/petstore-admin-guide/extracted.md
+        anchor: p1
+findings:
+  - kind: ambiguity
+    path: legacy-source/app/src/apps/opc/src/ejb-jar.xml
+    description: >
+      Default values of the SendApproval/SendConfirmation/SendCompletedOrder mail switches and XML validation flags are redacted in the extract; defaults rely on the admin guide statement only.
