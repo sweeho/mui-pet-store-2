@@ -1,0 +1,469 @@
+records:
+  - record_key: CAT-ENT-0001
+    kind: entity
+    capability_key: catalog-browsing
+    requirement: "The system SHALL store catalog data as categories, products within a category, and items within a product, each identified by a unique code of up to 10 characters, with localized details keyed by (code, locale)."
+    confidence: high
+    confidence_basis: "Primary and foreign keys declared across five tables plus details tables; constraint-enforced by the database."
+    risk_class: operational
+    basis: "Tables category, product, item and *_details; FKs fk_product_1, fk_item_1, fk_*_details_1."
+    plain_text: "Products and items are organised under categories, and each has a descriptive record per language."
+    technical_note: "Tables category, product, item and *_details; FKs fk_product_1, fk_item_1, fk_*_details_1."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: category
+        line_start: 13
+        line_end: 15
+        excerpt: |
+          CREATE TABLE category (
+            catid varchar2(10) not null,
+            constraint pk_category primary key (catid));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: category_details
+        line_start: 19
+        line_end: 26
+        excerpt: |
+          CREATE TABLE category_details (
+            catid varchar2(10) not null,
+            name varchar2(80) not null,
+            image varchar2(255),
+            descn varchar2(255),
+            locale varchar2(10) not null,
+            constraint pk_category_details primary key (catid, locale),
+            constraint fk_category_details_1 foreign key (catid) references category (catid));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: product
+        line_start: 30
+        line_end: 34
+        excerpt: |
+          CREATE TABLE product (
+            productid varchar2(10) not null,
+            catid varchar2(10) not null,
+            constraint pk_product primary key (productid),
+            constraint fk_product_1 foreign key (catid) references category (catid));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: product_details
+        line_start: 38
+        line_end: 45
+        excerpt: |
+          CREATE TABLE product_details (
+            productid varchar2(10) not null,
+            locale varchar2(10) not null,
+            name varchar2(80) not null,
+            image varchar2(255),
+            descn varchar2(255),
+            constraint pk_product_details primary key (productid, locale),
+            constraint fk_product_details_1 foreign key (productid) references product (productid));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: item
+        line_start: 49
+        line_end: 53
+        excerpt: |
+          CREATE TABLE item (
+            itemid varchar2(10) not null,
+            productid varchar2(10) not null,
+            constraint pk_item primary key (itemid),
+            constraint fk_item_1 foreign key (productid) references product (productid));
+    stack_metadata:
+      db.object: "category,category_details,product,product_details,item"
+      db.kind: table
+  - record_key: LOC-REQ-0002
+    kind: requirement
+    capability_key: localization
+    requirement: "The system SHALL require a name and locale for each category and product detail record, while image and description are optional."
+    confidence: medium
+    confidence_basis: "NOT NULL on name/locale and nullable image/descn, one place."
+    risk_class: presentational
+    basis: "category_details and product_details NOT NULL constraints; composite PK (id, locale)."
+    plain_text: "Every category and product must have a name in each language it is offered; picture and description are optional."
+    technical_note: "category_details and product_details NOT NULL constraints; composite PK (id, locale)."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: category_details
+        line_start: 19
+        line_end: 26
+        excerpt: |
+          CREATE TABLE category_details (
+            catid varchar2(10) not null,
+            name varchar2(80) not null,
+            image varchar2(255),
+            descn varchar2(255),
+            locale varchar2(10) not null,
+            constraint pk_category_details primary key (catid, locale),
+            constraint fk_category_details_1 foreign key (catid) references category (catid));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: product_details
+        line_start: 38
+        line_end: 45
+        excerpt: |
+          CREATE TABLE product_details (
+            productid varchar2(10) not null,
+            locale varchar2(10) not null,
+            name varchar2(80) not null,
+            image varchar2(255),
+            descn varchar2(255),
+            constraint pk_product_details primary key (productid, locale),
+            constraint fk_product_details_1 foreign key (productid) references product (productid));
+    stack_metadata:
+      db.object: "category_details,product_details"
+      db.kind: table
+  - record_key: CAT-REQ-0003
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: "The system SHALL require each item detail record to have a locale, list price, unit cost, image and description, and permit up to five optional attributes of 80 characters each, with prices held to two decimal places."
+    confidence: medium
+    confidence_basis: "NOT NULL and decimal(10,2) in one DDL."
+    risk_class: financial
+    basis: "item_details: listprice/unitcost decimal(10,2) not null; attr1-attr5 nullable."
+    plain_text: "Each item must have a price, cost, picture and description per language, and may have up to five extra attributes."
+    technical_note: "item_details: listprice/unitcost decimal(10,2) not null; attr1-attr5 nullable."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: item_details
+        line_start: 57
+        line_end: 70
+        excerpt: |
+          CREATE TABLE item_details (
+            itemid varchar2(10) not null,
+            listprice decimal(10,2) not null,
+            unitcost decimal(10,2) not null,
+            locale varchar2(10) not null,
+            image varchar2(255) not null,
+            descn varchar2(255) not null,
+            attr1 varchar2(80),
+            attr2 varchar2(80),
+            attr3 varchar2(80),
+            attr4 varchar2(80),
+            attr5 varchar2(80),
+            constraint pk_item_details primary key (itemid, locale),
+            constraint fk_item_details_1 foreign key (itemid) references item (itemid));
+    stack_metadata:
+      db.object: "item_details"
+      db.kind: table
+  - record_key: ACC-ENT-0004
+    kind: entity
+    capability_key: customer-accounts
+    requirement: "The system SHALL store a customer account as linked to exactly one contact record and one credit card record, with a status, and a customer as linked to one sign-on user, one account and one profile."
+    confidence: high
+    confidence_basis: "Several mandatory FKs and NOT NULLs enforce linkage."
+    risk_class: operational
+    basis: "Tables account, contact_info, credit_card, customer; fk_account_1/2, fk_customer_1..3 (signon_user, profile defined elsewhere)."
+    plain_text: "A customer account always has contact details, a payment card and a status, and belongs to a signed-on user with a profile."
+    technical_note: "Tables account, contact_info, credit_card, customer; fk_account_1/2, fk_customer_1..3 (signon_user, profile defined elsewhere)."
+    interface: true
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: address
+        line_start: 81
+        line_end: 89
+        excerpt: |
+          CREATE TABLE address (
+            address_id varchar2(40) not null,
+            street_name1 varchar2(80) not null,
+            street_name2 varchar2(80),
+            city varchar2(80) not null,
+            state varchar2(40) not null,
+            zip_code varchar2(20) not null,
+            country varchar2(40) not null,
+            constraint pk_address primary key (address_id));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: contact_info
+        line_start: 93
+        line_end: 101
+        excerpt: |
+          CREATE TABLE contact_info (
+            contact_id varchar2(40) not null,
+            family_name varchar2(80) not null,
+            given_name varchar2(80) not null,
+            telephone varchar2(40) not null,
+            email varchar2(120) not null,
+            address_id varchar2(40) not null,
+            constraint pk_contact_info primary key (contact_id),
+            constraint fk_contact_info_1 foreign key (address_id) references address (address_id));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: credit_card
+        line_start: 105
+        line_end: 110
+        excerpt: |
+          CREATE TABLE credit_card (
+            card_id varchar2(40) not null,
+            card_number varchar2(40) not null,
+            card_type varchar2(40) not null,
+            expiry_date varchar2(10) not null,
+            constraint pk_credit_card primary key (card_id));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: account
+        line_start: 114
+        line_end: 121
+        excerpt: |
+          CREATE TABLE account (
+            account_id varchar2(40) not null,
+            status varchar2(20) not null,
+            contact_id varchar2(40) not null,
+            card_id varchar2(40) not null,
+            constraint pk_account primary key (account_id),
+            constraint fk_account_1 foreign key (contact_id) references contact_info (contact_id),
+            constraint fk_account_2 foreign key (card_id) references credit_card (card_id));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: customer
+        line_start: 135
+        line_end: 142
+        excerpt: |
+          CREATE TABLE customer (
+            user_id varchar2(50) not null,
+            account_id varchar2(40) not null,
+            profile_id varchar2(40) not null,
+            constraint pk_customer primary key (user_id),
+            constraint fk_customer_1 foreign key (user_id) references signon_user (username),
+            constraint fk_customer_2 foreign key (account_id) references account (account_id),
+            constraint fk_customer_3 foreign key (profile_id) references profile (profile_id));
+    stack_metadata:
+      db.object: "address,contact_info,credit_card,account,customer"
+      db.kind: table
+  - record_key: CHK-REQ-0005
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: "The system SHALL require street name 1, city, state, zip code and country for an address, and family name, given name, telephone and e-mail for contact information; street name 2 is optional."
+    confidence: medium
+    confidence_basis: "NOT NULL constraints only, no format CHECK."
+    risk_class: regulated
+    basis: "address and contact_info NOT NULL columns; personal data."
+    plain_text: "An address and contact details must be complete, except for a second street line."
+    technical_note: "address and contact_info NOT NULL columns; personal data."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: address
+        line_start: 81
+        line_end: 89
+        excerpt: |
+          CREATE TABLE address (
+            address_id varchar2(40) not null,
+            street_name1 varchar2(80) not null,
+            street_name2 varchar2(80),
+            city varchar2(80) not null,
+            state varchar2(40) not null,
+            zip_code varchar2(20) not null,
+            country varchar2(40) not null,
+            constraint pk_address primary key (address_id));
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: contact_info
+        line_start: 93
+        line_end: 101
+        excerpt: |
+          CREATE TABLE contact_info (
+            contact_id varchar2(40) not null,
+            family_name varchar2(80) not null,
+            given_name varchar2(80) not null,
+            telephone varchar2(40) not null,
+            email varchar2(120) not null,
+            address_id varchar2(40) not null,
+            constraint pk_contact_info primary key (contact_id),
+            constraint fk_contact_info_1 foreign key (address_id) references address (address_id));
+    stack_metadata:
+      db.object: "address,contact_info"
+      db.kind: table
+  - record_key: CHK-REQ-0006
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: "The system SHALL require card number, card type and expiry date for every credit card record, with no database-level format or expiry validation."
+    confidence: medium
+    confidence_basis: "NOT NULL only."
+    risk_class: regulated
+    basis: "credit_card columns NOT NULL; expiry_date is varchar2(10) text; number stored as plain text."
+    plain_text: "A payment card must have a number, type and expiry date."
+    technical_note: "credit_card columns NOT NULL; expiry_date is varchar2(10) text; number stored as plain text."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: credit_card
+        line_start: 105
+        line_end: 110
+        excerpt: |
+          CREATE TABLE credit_card (
+            card_id varchar2(40) not null,
+            card_number varchar2(40) not null,
+            card_type varchar2(40) not null,
+            expiry_date varchar2(10) not null,
+            constraint pk_credit_card primary key (card_id));
+    stack_metadata:
+      db.object: "credit_card"
+      db.kind: table
+  - record_key: CHK-ENT-0007
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: "The system SHALL record each purchase order line with a line number, category, product, item, quantity, unit price and quantity shipped, uniquely identified by order and line number and belonging to an existing purchase order."
+    confidence: high
+    confidence_basis: "PK, FK and NOT NULLs."
+    risk_class: financial
+    basis: "po_line_item PK(po_id,line_number); FK to purchase_order only; category/product/item ids are not FKs."
+    plain_text: "An order consists of numbered lines, each with item, quantity, price and quantity shipped."
+    technical_note: "po_line_item PK(po_id,line_number); FK to purchase_order only; category/product/item ids are not FKs."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: po_line_item
+        line_start: 161
+        line_end: 171
+        excerpt: |
+          CREATE TABLE po_line_item (
+            po_id varchar2(40) not null,
+            line_number varchar2(10) not null,
+            category_id varchar2(10) not null,
+            product_id varchar2(10) not null,
+            item_id varchar2(10) not null,
+            quantity integer not null,
+            unit_price number(12,2) not null,
+            quantity_shipped integer not null,
+            constraint pk_po_line_item primary key (po_id, line_number),
+            constraint fk_po_line_item_1 foreign key (po_id) references purchase_order (po_id));
+    stack_metadata:
+      db.object: "po_line_item"
+      db.kind: table
+  - record_key: APP-ENT-0008
+    kind: entity
+    capability_key: order-approval
+    requirement: "The system SHALL keep for each order a single approval-state record with a mandatory status."
+    confidence: medium
+    confidence_basis: "PK and NOT NULL status; values not constrained."
+    risk_class: operational
+    basis: "order_manager (order_id PK, status not null); no CHECK on values."
+    plain_text: "Each order has one current approval status."
+    technical_note: "order_manager (order_id PK, status not null); no CHECK on values."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: order_manager
+        line_start: 175
+        line_end: 178
+        excerpt: |
+          CREATE TABLE order_manager (
+            order_id varchar2(40) not null,
+            status varchar2(20) not null,
+            constraint pk_order_manager primary key (order_id));
+    stack_metadata:
+      db.object: "order_manager"
+      db.kind: table
+  - record_key: SUP-ENT-0009
+    kind: entity
+    capability_key: supplier-fulfillment
+    requirement: "The system SHALL hold one mandatory stock quantity per item, with no database rule preventing a negative quantity."
+    confidence: medium
+    confidence_basis: "PK and NOT NULL, no CHECK."
+    risk_class: operational
+    basis: "inventory table; no FK to item."
+    plain_text: "Stock on hand is tracked as one number per item."
+    technical_note: "inventory table; no FK to item."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: inventory
+        line_start: 206
+        line_end: 209
+        excerpt: |
+          CREATE TABLE inventory (
+            item_id varchar2(10) not null,
+            quantity integer not null,
+            constraint pk_inventory primary key (item_id));
+    stack_metadata:
+      db.object: "inventory"
+      db.kind: table
+  - record_key: CHK-ENT-0010
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: "The system SHALL maintain named integer counters, one per unique name, for generating identifiers."
+    confidence: low
+    confidence_basis: "Purpose inferred from table shape; no usage seen here."
+    risk_class: operational
+    basis: "counter(name PK, counter int)."
+    plain_text: "The system keeps numbered counters used to produce new identifiers."
+    technical_note: "counter(name PK, counter int)."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: counter
+        line_start: 213
+        line_end: 216
+        excerpt: |
+          CREATE TABLE counter (
+            name varchar2(40) not null,
+            counter integer not null,
+            constraint pk_counter primary key (name));
+    stack_metadata:
+      db.object: "counter"
+      db.kind: table
+  - record_key: BAT-REQ-0011
+    kind: requirement
+    capability_key: batch-operations
+    requirement: "The system SHALL provide lookups indexed by product category, item product, purchase order user and date, and order approval status."
+    confidence: low
+    confidence_basis: "Indexes imply query patterns; actual use not seen."
+    risk_class: operational
+    basis: "ix_product_catid, ix_item_productid, ix_po_user, ix_po_date, ix_order_manager_status."
+    plain_text: "Searches by order status, order date, customer, and catalog parents are kept fast."
+    technical_note: "ix_product_catid, ix_item_productid, ix_po_user, ix_po_date, ix_order_manager_status."
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: ix_product_catid
+        line_start: 219
+        line_end: 219
+        excerpt: |
+          CREATE INDEX ix_product_catid ON product (catid);
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: ix_item_productid
+        line_start: 220
+        line_end: 220
+        excerpt: |
+          CREATE INDEX ix_item_productid ON item (productid);
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: ix_po_user
+        line_start: 221
+        line_end: 221
+        excerpt: |
+          CREATE INDEX ix_po_user ON purchase_order (po_user_id);
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: ix_po_date
+        line_start: 222
+        line_end: 222
+        excerpt: |
+          CREATE INDEX ix_po_date ON purchase_order (po_date);
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: ix_order_manager_status
+        line_start: 223
+        line_end: 223
+        excerpt: |
+          CREATE INDEX ix_order_manager_status ON order_manager (status);
+    stack_metadata:
+      db.object: "ix_*"
+      db.kind: table
+findings: []
+suspected_defects: []
