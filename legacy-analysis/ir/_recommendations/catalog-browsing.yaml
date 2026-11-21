@@ -1,0 +1,95 @@
+recommendations:
+  - record_key: CATALOG-REQ-0001
+    recommendation: edit
+    confidence: medium
+    reason: >
+      The direct web-tier database access is a legacy architecture choice, not a requirement.
+    edited_requirement: The system SHALL read catalog data from the catalog database.
+  - record_key: CATB-REQ-0001
+    recommendation: edit
+    confidence: medium
+    reason: >
+      Duplicates the paging rule (two per page) recorded in catalog-browsing-REQ-0003 and CATBRW-REQ-0001; merge into one requirement.
+    edited_requirement: The system SHALL page catalog lists two items per page by default.
+  - record_key: CATBRW-REQ-0001
+    recommendation: edit
+    confidence: medium
+    reason: >
+      Same value as the default page size in approved SWHM3-R-0008; it is a configuration property, so fold into it.
+    edited_requirement: The catalog page size SHALL be configurable and default to 2.
+  - record_key: CATALOG-BR-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      DDL has no price/cost check and sample data confirms it; confirm what the code does. Whether it is right is the Business Owner's call in the defect register.
+  - record_key: catalog-browsing-REQ-0006
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: BATCH-RULE-0010
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Operational batch behaviour taken from the script and the runbook; both agree. Confirm it is still in scope for the rebuild.
+  - record_key: CAT-BR-0007
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Describes the legacy front-controller and flow-handler mechanism, an implementation detail of the old framework, not catalog behaviour.
+  - record_key: CAT-WF-0006
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Legacy request-dispatch mechanics; the rebuild is not on this stack, so keep it as a design note only.
+  - record_key: CATALOG-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      The DDL keys and foreign keys show it; consistent with approved SWHM3-R-0007.
+  - record_key: CATBR-BR-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: CATBR-BR-0009
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: CATBR-REQ-0011
+    recommendation: accept
+    confidence: high
+    reason: >
+      Schema and DAO SQL agree on per-locale detail tables.
+  - record_key: LOC-BR-0010
+    recommendation: reject
+    confidence: low
+    reason: >
+      A view-layer cache tag, not a catalog rule; keep only if page caching is an agreed non-functional need.
+  - record_key: catalog-browsing-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: catalog-browsing-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: catalog-browsing-REQ-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: catalog-browsing-REQ-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Pass A and pass B agree and the DAO code and SQL confirm it; the user guide corroborates browsing behaviour.
+  - record_key: catalog-browsing-REQ-0007
+    recommendation: edit
+    confidence: medium
+    reason: >
+      The XML statement file is legacy implementation; the behaviour worth keeping is the system-error reporting.
+    edited_requirement: The system SHALL report any catalog data-access failure as a system error to the caller.
