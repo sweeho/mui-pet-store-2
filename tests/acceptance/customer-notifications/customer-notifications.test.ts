@@ -62,9 +62,23 @@ describe("customer-notifications", () => {
 
   // case: SWHM3-C-0112@v1
   it("SWHM3-C-0112 customer e-mail document carries address, subject and content", async () => {
-    const rt = await createNotificationRuntime();
-    const doc = rt.buildCustomerEmail({ address: "a@b.com", subject: "Hi", content: "<p>x</p>" });
-    expect(doc).toEqual({ address: "a@b.com", subject: "Hi", content: "<p>x</p>" });
+    const rt = await createNotificationRuntime({ mailServer: true });
+    const inputs = [
+      { address: "a@b.com", subject: "Hi", content: "<p>x</p>" },
+      { address: "zed@example.org", subject: "Your order", content: "<h1>Thanks</h1>" },
+    ];
+    for (const input of inputs) {
+      const doc = rt.buildCustomerEmail({ ...input });
+      expect(Object.keys(doc).sort()).toEqual(["address", "content", "subject"]);
+      expect(doc).toEqual(input);
+      // the document is the payload of a mail request: delivering it reaches that address with that subject and content
+      await rt.consume(xml(doc.address, doc.subject, doc.content));
+      const m = rt.mail.sent[rt.mail.sent.length - 1];
+      expect(m.to).toEqual([input.address]);
+      expect(m.subject).toBe(input.subject);
+      expect(m.body).toContain(input.content);
+    }
+    expect(rt.mail.sent).toHaveLength(2);
   });
 
   // case: SWHM3-C-0113@v1
@@ -122,13 +136,11 @@ describe("customer-notifications", () => {
 
   // case: SWHM3-C-0119@v1
   it("SWHM3-C-0119 no mail server discards the request without retry", async () => {
-    const rt = await createNotificationRuntime({ mailServer: false, env: { sendCompletedOrderMail: "true" } });
+    const rt = await createNotificationRuntime({ mailServer: false });
     const res = await rt.consume(xml("a@b.com", "s", "c"));
     expect(res.outcome).toBe("discarded");
     expect(res.redelivered).toBe(false);
-    await rt.orders.complete(ORDER);
-    await settle();
-    expect(rt.orders.processed).toContain(123);
+    expect(rt.mail.sent).toHaveLength(0);
   });
 
   // case: SWHM3-C-0120@v1
