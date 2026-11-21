@@ -1,0 +1,132 @@
+{
+  "key": "SWHM3-MCK-8",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-error-state-mobile.html",
+  "url": "http://localhost:3202/localization",
+  "width": 390,
+  "at": "2026-11-21T15:21:37.663Z",
+  "pixelDifference": 0.1161,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Catalog",
+      "mockup": "div at 16,72"
+    },
+    {
+      "kind": "missing",
+      "text": "Home",
+      "mockup": "a at 16,73"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "h1 at 16,97"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse pets by category.",
+      "mockup": "p at 16,129"
+    },
+    {
+      "kind": "missing",
+      "text": "Couldn’t load",
+      "mockup": "span at 144,279"
+    },
+    {
+      "kind": "missing",
+      "text": "We couldn’t load the catalog",
+      "mockup": "h2 at 72,309"
+    },
+    {
+      "kind": "style",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "prop": "position",
+      "mockup": "37,339",
+      "built": "41,308"
+    },
+    {
+      "kind": "style",
+      "text": "Try again",
+      "prop": "position",
+      "mockup": "37,399",
+      "built": "41,369"
+    },
+    {
+      "kind": "style",
+      "text": "Go to home",
+      "prop": "position",
+      "mockup": "37,451",
+      "built": "41,421"
+    },
+    {
+      "kind": "missing",
+      "text": "Reference req_7f3a9c21",
+      "mockup": "p at 122,515"
+    },
+    {
+      "kind": "missing",
+      "text": "req_7f3a9c21",
+      "mockup": "span at 184,516"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,803",
+      "built": "16,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,803"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 306,803"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "a at 293,837"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "h1 at 16,81"
+    },
+    {
+      "kind": "extra",
+      "text": "The languages the store supports.",
+      "built": "p at 16,119"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load the languages",
+      "built": "h2 at 58,281"
+    }
+  ]
+}
