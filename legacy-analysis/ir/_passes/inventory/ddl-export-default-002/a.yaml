@@ -1,0 +1,190 @@
+records:
+  - record_key: CUSTOMER-ACCOUNTS-ENTITY-0001
+    kind: entity
+    capability_key: customer-accounts
+    requirement: The system SHALL store one sign-on credential per username, with a mandatory username (max 50 chars) as unique key and a mandatory password (max 50 chars).
+    confidence: medium
+    confidence_basis: One clear place (table constraints); no code or tests were read in this unit. Password stored as plain varchar, no hash seen here.
+    risk_class: regulated
+    basis: Table signon_user has NOT NULL username and password and primary key on username.
+    plain_text: Each customer has a unique user name and a password, both required.
+    technical_note: Table signon_user, PK pk_signon_user (username). Password column is varchar2(50), which suggests it may be stored unhashed.
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: signon_user
+        line_start: 74
+        line_end: 77
+        excerpt: |
+          CREATE TABLE signon_user (
+            username varchar2(50) not null,
+            password varchar2(50) not null,
+            constraint pk_signon_user primary key (username));
+    stack_metadata:
+      db.object: signon_user
+      db.kind: table
+  - record_key: CUSTOMER-ACCOUNTS-ENTITY-0002
+    kind: entity
+    capability_key: customer-accounts
+    requirement: The system SHALL store one profile per profile identifier, with mandatory preferred language, mandatory my-list preference flag and mandatory banner preference flag, and an optional favorite category.
+    confidence: medium
+    confidence_basis: One clear place (table constraints); the meaning of the 0/1 flags is inferred from number(1).
+    risk_class: presentational
+    basis: Table profile NOT NULL columns and PK on profile_id; favorite_category nullable.
+    plain_text: Each customer has a profile with a preferred language, whether to show their list and banner, and optionally a favorite category.
+    technical_note: Table profile, PK pk_profile (profile_id). preferred_language varchar2(10), favorite_category varchar2(10) nullable, my_list_preference and banner_preference number(1).
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: profile
+        line_start: 125
+        line_end: 131
+        excerpt: |
+          CREATE TABLE profile (
+            profile_id varchar2(40) not null,
+            preferred_language varchar2(10) not null,
+            favorite_category varchar2(10),
+            my_list_preference number(1) not null,
+            banner_preference number(1) not null,
+            constraint pk_profile primary key (profile_id));
+    stack_metadata:
+      db.object: profile
+      db.kind: table
+  - record_key: CHECKOUT-ORDER-PLACEMENT-ENTITY-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: The system SHALL record each purchase order with a unique identifier, user, e-mail, date, locale and value, and SHALL require every order to reference an existing contact and an existing credit card.
+    confidence: medium
+    confidence_basis: One clear place (NOT NULL and foreign keys); the usage in code was not read.
+    risk_class: financial
+    basis: purchase_order has all columns NOT NULL, PK po_id, FKs to contact_info and credit_card.
+    plain_text: Every order records who placed it, when, in which locale, for what amount, and must have contact details and payment card on file.
+    technical_note: Table purchase_order; po_date number(19) (epoch millis likely); po_value number(12,2); FKs fk_purchase_order_1 (contact_info) and fk_purchase_order_2 (credit_card). No FK on po_user_id.
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: purchase_order
+        line_start: 146
+        line_end: 157
+        excerpt: |
+          CREATE TABLE purchase_order (
+            po_id varchar2(40) not null,
+            po_user_id varchar2(50) not null,
+            po_email_id varchar2(120) not null,
+            po_date number(19) not null,
+            po_locale varchar2(10) not null,
+            po_value number(12,2) not null,
+            contact_id varchar2(40) not null,
+            card_id varchar2(40) not null,
+            constraint pk_purchase_order primary key (po_id),
+            constraint fk_purchase_order_1 foreign key (contact_id) references contact_info (contact_id),
+            constraint fk_purchase_order_2 foreign key (card_id) references credit_card (card_id));
+    stack_metadata:
+      db.object: purchase_order
+      db.kind: table
+      db.reads: contact_info, credit_card
+  - record_key: SUPPLIER-FULFILLMENT-ENTITY-0001
+    kind: entity
+    capability_key: supplier-fulfillment
+    requirement: The system SHALL record each supplier order with a unique identifier, date, status and a reference to an existing contact.
+    confidence: medium
+    confidence_basis: One clear place; allowed status values are not constrained here.
+    risk_class: operational
+    basis: supplier_order NOT NULL columns, PK po_id, FK to contact_info; po_status has no CHECK.
+    plain_text: Each order sent to a supplier has a date, a status and the supplier's contact details.
+    technical_note: Table supplier_order, po_status varchar2(20) free text, FK fk_supplier_order_1.
+    interface: true
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: supplier_order
+        line_start: 182
+        line_end: 188
+        excerpt: |
+          CREATE TABLE supplier_order (
+            po_id varchar2(40) not null,
+            po_date number(19) not null,
+            po_status varchar2(20) not null,
+            contact_id varchar2(40) not null,
+            constraint pk_supplier_order primary key (po_id),
+            constraint fk_supplier_order_1 foreign key (contact_id) references contact_info (contact_id));
+    stack_metadata:
+      db.object: supplier_order
+      db.kind: table
+      db.reads: contact_info
+  - record_key: SUPPLIER-FULFILLMENT-ENTITY-0002
+    kind: entity
+    capability_key: supplier-fulfillment
+    requirement: The system SHALL record supplier order lines uniquely per supplier order and line number, each with category, product, item, quantity, unit price and quantity shipped, and SHALL require each line to belong to an existing supplier order.
+    confidence: medium
+    confidence_basis: One clear place; no CHECK on quantities, so shipped-not-exceeding-ordered is not enforced here.
+    risk_class: operational
+    basis: Composite PK (po_id, line_number), FK to supplier_order, all columns NOT NULL.
+    plain_text: A supplier order consists of numbered lines saying which item and how many were ordered, at what price, and how many have shipped.
+    technical_note: Table supplier_line_item; unit_price number(12,2); quantity and quantity_shipped integer.
+    interface: true
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: supplier_line_item
+        line_start: 192
+        line_end: 202
+        excerpt: |
+          CREATE TABLE supplier_line_item (
+            po_id varchar2(40) not null,
+            line_number varchar2(10) not null,
+            category_id varchar2(10) not null,
+            product_id varchar2(10) not null,
+            item_id varchar2(10) not null,
+            quantity integer not null,
+            unit_price number(12,2) not null,
+            quantity_shipped integer not null,
+            constraint pk_supplier_line_item primary key (po_id, line_number),
+            constraint fk_supplier_line_item_1 foreign key (po_id) references supplier_order (po_id));
+    stack_metadata:
+      db.object: supplier_line_item
+      db.kind: table
+      db.reads: supplier_order
+  - record_key: ORDER-APPROVAL-BUSINESS-RULE-0001
+    kind: business-rule
+    capability_key: order-approval
+    requirement: The system SHALL expose the status of each purchase order by joining the order with its order-manager status, listing order id, user, date, value and status, and only orders that have a matching order-manager record SHALL appear.
+    confidence: medium
+    confidence_basis: One clear place (view); order_manager table definition and consumers not read in this unit.
+    risk_class: operational
+    basis: View uses inner JOIN on m.order_id = p.po_id, so orders without a status record are omitted.
+    plain_text: Order status reports show each order's user, date, value and current status; orders without a status record do not appear.
+    technical_note: View v_order_status over purchase_order and order_manager, inner join.
+    interface: false
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: v_order_status
+        line_start: 226
+        line_end: 228
+        excerpt: |
+          CREATE VIEW v_order_status AS
+            SELECT p.po_id, p.po_user_id, p.po_date, p.po_value, m.status
+            FROM purchase_order p JOIN order_manager m ON m.order_id = p.po_id;
+    stack_metadata:
+      db.object: v_order_status
+      db.kind: view
+      db.reads: purchase_order, order_manager
+findings: []
+suspected_defects:
+  - capability_key: customer-accounts
+    record_keys: [CUSTOMER-ACCOUNTS-ENTITY-0001]
+    severity: medium
+    category: other
+    title: Password column suggests credentials may be stored without a hash
+    description: >
+      signon_user.password is a plain varchar2(50) with no indication of hashing or salting; whether it holds clear text depends on application code not read in this unit.
+    traces:
+      - kind: db_object
+        path: petstore_oracle.sql
+        anchor: signon_user
+        line_start: 74
+        line_end: 77
