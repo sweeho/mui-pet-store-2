@@ -1,0 +1,192 @@
+{
+  "key": "SWHM3-MCK-13",
+  "mockup": "artifacts/SWHM3-S-0002/design/mockup-locale-selection-form.html",
+  "url": "http://127.0.0.1:3300/locale",
+  "width": 1440,
+  "at": "2026-11-21T16:47:19.687Z",
+  "pixelDifference": 0.0432,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "Arial": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded",
+      "monospace": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,147"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,185"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "button at 1316,14"
+    },
+    {
+      "kind": "style",
+      "text": "en_US",
+      "prop": "box",
+      "mockup": "1x1",
+      "built": "20x20"
+    },
+    {
+      "kind": "style",
+      "text": "English (United States)",
+      "prop": "box",
+      "mockup": "154x17",
+      "built": "190x37"
+    },
+    {
+      "kind": "style",
+      "text": "English (United States)",
+      "prop": "position",
+      "mockup": "319,222",
+      "built": "1226,14"
+    },
+    {
+      "kind": "style",
+      "text": "US English",
+      "prop": "box",
+      "mockup": "529x17",
+      "built": "60x15"
+    },
+    {
+      "kind": "style",
+      "text": "de_DE",
+      "prop": "box",
+      "mockup": "1x1",
+      "built": "20x20"
+    },
+    {
+      "kind": "style",
+      "text": "de_DE",
+      "prop": "position",
+      "mockup": "289,296",
+      "built": "281,287"
+    },
+    {
+      "kind": "missing",
+      "text": "German · Not yet translated — shown in US English",
+      "mockup": "span at 319,298"
+    },
+    {
+      "kind": "style",
+      "text": "ja_JP",
+      "prop": "box",
+      "mockup": "1x1",
+      "built": "20x20"
+    },
+    {
+      "kind": "style",
+      "text": "ja_JP",
+      "prop": "position",
+      "mockup": "289,352",
+      "built": "281,343"
+    },
+    {
+      "kind": "style",
+      "text": "Japanese",
+      "prop": "box",
+      "mockup": "529x17",
+      "built": "55x15"
+    },
+    {
+      "kind": "style",
+      "text": "zh_CN",
+      "prop": "box",
+      "mockup": "1x1",
+      "built": "20x20"
+    },
+    {
+      "kind": "style",
+      "text": "zh_CN",
+      "prop": "position",
+      "mockup": "289,408",
+      "built": "281,399"
+    },
+    {
+      "kind": "style",
+      "text": "Simplified Chinese",
+      "prop": "box",
+      "mockup": "529x17",
+      "built": "105x15"
+    },
+    {
+      "kind": "style",
+      "text": "Change language",
+      "prop": "position",
+      "mockup": "748,453",
+      "built": "738,454"
+    },
+    {
+      "kind": "extra",
+      "text": "Admin",
+      "built": "div at 12,223"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,260"
+    },
+    {
+      "kind": "extra",
+      "text": "German",
+      "built": "span at 313,300"
+    },
+    {
+      "kind": "extra",
+      "text": "· Not yet translated — shown in US English",
+      "built": "span at 359,300"
+    }
+  ]
+}

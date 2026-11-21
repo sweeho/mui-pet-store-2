@@ -5,6 +5,8 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import "@fontsource-variable/inter";
 
 import { APP_NAME } from "@/constants/app";
+import { LocaleProvider } from "@/lib/localization/LocaleProvider";
+import { getLocaleContext } from "@/lib/localization/request";
 import { Providers } from "./providers";
 import "./global.css";
 
@@ -13,12 +15,17 @@ export const metadata: Metadata = {
   description: `${APP_NAME}, created from the Next.js, MUI and Modernize stack template.`,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { chosen, locale, lang } = await getLocaleContext();
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body>
         <AppRouterCacheProvider>
-          <Providers>{children}</Providers>
+          <Providers>
+            <LocaleProvider chosen={chosen} locale={locale}>
+              {children}
+            </LocaleProvider>
+          </Providers>
         </AppRouterCacheProvider>
       </body>
     </html>

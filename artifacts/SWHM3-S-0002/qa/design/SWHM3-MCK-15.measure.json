@@ -1,0 +1,157 @@
+{
+  "key": "SWHM3-MCK-15",
+  "mockup": "artifacts/SWHM3-S-0002/design/mockup-locale-change-success-screen.html",
+  "url": "http://127.0.0.1:3300/locale/changed?from=/",
+  "width": 1440,
+  "at": "2026-11-21T16:47:23.070Z",
+  "pixelDifference": 0.045,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "monospace": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,147"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,185"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "button at 1316,14"
+    },
+    {
+      "kind": "style",
+      "text": "Language changed",
+      "prop": "background",
+      "mockup": "rgba(22, 163, 74, 0.12)",
+      "built": "rgb(68, 181, 110)"
+    },
+    {
+      "kind": "style",
+      "text": "The store is now in English (United States)",
+      "prop": "box",
+      "mockup": "860x30",
+      "built": "878x30"
+    },
+    {
+      "kind": "style",
+      "text": "Pages, prices and numbers now use US English.",
+      "prop": "box",
+      "mockup": "860x20",
+      "built": "878x20"
+    },
+    {
+      "kind": "style",
+      "text": "Back to the page you were on",
+      "prop": "position",
+      "mockup": "1156,88",
+      "built": "1166,89"
+    },
+    {
+      "kind": "style",
+      "text": "en_US",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog › Fish",
+      "mockup": "dd at 393,273"
+    },
+    {
+      "kind": "style",
+      "text": "$1,234.50",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "style",
+      "text": "1,234.5",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "style",
+      "text": "1,234.5",
+      "prop": "position",
+      "mockup": "549,341",
+      "built": "528,342"
+    },
+    {
+      "kind": "style",
+      "text": "Choose a different language",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "extra",
+      "text": "Admin",
+      "built": "div at 12,223"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,260"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1226,14"
+    }
+  ]
+}

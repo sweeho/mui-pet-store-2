@@ -8,13 +8,15 @@ import Typography from "@mui/material/Typography";
 import Link from "next/link";
 
 import { APP_NAME } from "@/constants/app";
+import { useT } from "@/lib/localization/LocaleProvider";
 import { MENU_ITEMS } from "@/shell/SidebarItems";
 
 /** The landing page: a welcome and one card per primary area, generated from MENU_ITEMS. */
 export function LandingView() {
+  const t = useT();
   const areas = MENU_ITEMS.filter((item) => item.href !== "/");
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box data-screen="main" sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Card
         variant="outlined"
         sx={{
@@ -45,13 +47,13 @@ export function LandingView() {
             }}
           >
             <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "primary.main" }} />
-            Welcome
+            {t("landing.welcome")}
           </Box>
           <Typography variant="h1" sx={{ fontSize: { xs: "1.625rem", sm: "2rem" } }}>
-            Find your next pet
+            {t("landing.title")}
           </Typography>
           <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 520, fontSize: "0.9375rem" }}>
-            Welcome to {APP_NAME}. Pick an area below to get started.
+            {t("landing.intro", { app: APP_NAME })}
           </Typography>
         </Box>
         <Box
@@ -71,7 +73,7 @@ export function LandingView() {
       </Card>
       <Box component="section" aria-labelledby="areas-heading">
         <Typography id="areas-heading" variant="h2" sx={{ mb: 1.5 }}>
-          Areas
+          {t("landing.areas")}
         </Typography>
         <Box
           sx={{
@@ -103,17 +105,17 @@ export function LandingView() {
                 </Box>
                 <Box sx={{ flex: 1 }}>
                   <Typography component="span" sx={{ fontWeight: 600, display: "block" }}>
-                    {item.title}
+                    {t(item.titleKey)}
                   </Typography>
                   <Typography component="span" color="text.secondary" sx={{ display: "block" }}>
-                    {item.description}
+                    {t(item.descriptionKey)}
                   </Typography>
                   <Typography
                     component="span"
                     color="primary"
                     sx={{ display: "flex", alignItems: "center", gap: 0.5, fontWeight: 500, mt: 1 }}
                   >
-                    {item.title}
+                    {t(item.titleKey)}
                     <IconArrowRight size={14} stroke={2} aria-hidden />
                   </Typography>
                 </Box>

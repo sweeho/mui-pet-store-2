@@ -1,0 +1,75 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=390"><title>Language — MUI Pet Store 2</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#4f46e5;--on-primary:#fff;--error:#dc2626;--warning:#d97706;--success:#16a34a;--info:#0284c7;--bg:#fff;--paper:#f8fafc;--text:#0f172a;--muted:#64748b;--divider:#e2e8f0;--r:4px;--primary-a8:rgba(79,70,229,.08);--primary-a16:rgba(79,70,229,.16)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:14px;color:var(--text);background:var(--paper);line-height:1.45}
+a{color:inherit;text-decoration:none;cursor:pointer}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12px}
+.rail{width:280px;border-right:1px solid var(--divider);background:var(--bg);display:flex;flex-direction:column;padding:0 12px}
+.brand{height:64px;display:flex;align-items:center;gap:10px;padding:0 8px;font-weight:700;font-size:16px}
+.logo{width:28px;height:28px;border-radius:var(--r);background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}
+.grp{font-size:12px;font-weight:600;color:var(--muted);padding:16px 8px 4px;letter-spacing:.02em}
+.ni{display:flex;align-items:center;gap:10px;height:44px;padding:0 10px;border-radius:var(--r);margin-bottom:2px}
+.ni svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:1.7;flex:none}
+.ni:hover{background:var(--paper)}
+.ni.on{background:var(--primary);color:var(--on-primary);font-weight:500}.ni.on svg{stroke:#fff}
+.btn{height:44px;padding:0 14px;border-radius:var(--r);border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:500;font-size:14px;white-space:nowrap}
+.pri{background:var(--primary);color:#fff}.pri:hover{background:var(--primary);box-shadow:0 0 0 3px var(--primary-a16)}
+.sec{background:var(--bg);border-color:var(--divider);color:var(--text)}.sec:hover{border-color:var(--primary);color:var(--primary)}
+.ib{width:44px;height:44px;border-radius:var(--r);border:1px solid var(--divider);background:var(--bg);display:grid;place-items:center;color:var(--text)}
+.ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.ib:hover{border-color:var(--primary);color:var(--primary)}
+.card{background:var(--bg);border:1px solid var(--divider);border-radius:var(--r)}
+.desc{color:var(--muted);margin-top:4px}
+h1{font-size:24px;font-weight:600;line-height:1.25;letter-spacing:-.01em}
+.opts{list-style:none}
+.opt{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px;border-top:1px solid var(--divider);cursor:pointer;position:relative}
+li:first-child .opt{border-top:0}
+.opt:hover{box-shadow:inset 3px 0 0 var(--primary)}
+.opt:hover .nm{color:var(--primary)}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.rd{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted);flex:none;display:grid;place-items:center;background:var(--bg)}
+.opt:has(input:checked){background:var(--primary-a8)}
+.opt:has(input:checked) .rd{border-color:var(--primary)}
+.opt:has(input:checked) .rd::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--primary)}
+.opt:has(input:focus-visible){outline:2px solid var(--primary);outline-offset:-2px}
+.nm{font-weight:500}
+.sub{font-size:12px;color:var(--muted)}
+.code{color:var(--muted);margin-left:auto;flex:none}
+.cur{font-size:12px;color:var(--primary);font-weight:500}
+.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.err{color:var(--error);font-size:12px;display:none}
+.err.show{display:block}
+.main{display:flex;flex-direction:column;min-height:100vh}
+.top{height:56px;flex:none;background:var(--bg);border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:8px;padding:0 12px;position:sticky;top:0;z-index:2}
+.sp{flex:1}
+.content{flex:1;padding:16px}
+.foot{border-top:1px solid var(--divider);background:var(--bg);padding:16px;display:flex;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.4);display:none;z-index:5}
+.drawer{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);transition:transform .2s;z-index:6}
+body.open .scrim{display:block}body.open .drawer{transform:none}
+</style></head><body><svg width="0" height="0" style="position:absolute"><symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></symbol><symbol id="i-cat" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12l2-8H6.2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="i-paw" viewBox="0 0 24 24"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1.5 2 3 1.5s1.5-.5 2.5-.5 1 0 2.5.5 3 0 3-1.5c0-2.5-2.5-6-5.5-6z"/></symbol></svg>
+<div class="scrim" onclick="document.body.classList.remove('open')"></div>
+<nav class="rail drawer" aria-label="Main"><div style="display:flex;align-items:center"><a class="brand" style="flex:1" data-goto="Landing page · Mobile"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg></span>MUI Pet Store 2</a><button class="ib" style="border:0" aria-label="Close menu" onclick="document.body.classList.remove('open')"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+<div class="grp">Shop</div><a class="ni" data-goto="Landing page · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a><a class="ni" data-goto="Category list · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cat"/></svg><span>Catalog</span></a><a class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-search"/></svg><span>Search</span></a><a class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"/></svg><span>Cart</span></a><div class="grp">Account</div><a class="ni" data-goto="Profile form · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg><span>Profile</span></a><a class="ni on" data-goto="Locale selection form · Mobile" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg><span>Language</span></a></nav>
+<div class="main"><header class="top"><button class="ib" aria-label="Open menu" onclick="document.body.classList.add('open')"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg></button>
+<a class="logo" data-goto="Landing page · Mobile" aria-label="MUI Pet Store 2 home"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg></a><div class="sp"></div>
+<button class="ib" data-goto="Locale selection form · Mobile" aria-label="Language: English (US)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg></button>
+<button class="ib" aria-label="Cart"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"/></svg></button>
+<button class="btn sec" data-goto="Sign in · Mobile">Sign in</button></header>
+<main class="content"><div style="margin-bottom:16px"><h1>Language</h1><p class="desc">Choose the language the store is shown in. Prices and numbers follow the same choice.</p></div>
+<form class="card" action="#" method="post" aria-labelledby="lg">
+<div style="padding:16px 16px 8px" id="lg"><span class="lbl">Language</span></div>
+<ul class="opts" role="radiogroup" aria-labelledby="lg"><li><label class="opt"><input type="radio" name="locale" value="en_US"><span class="rd"></span><span style="flex:1;min-width:0"><span class="nm" lang="en">English (United States)</span> <span class="cur">Current</span><span class="sub" style="display:block">US English</span></span><span class="mono code">en_US</span></label></li><li><label class="opt"><input type="radio" name="locale" value="de_DE"><span class="rd"></span><span style="flex:1;min-width:0"><span class="nm" lang="de">Deutsch (Deutschland)</span><span class="sub" style="display:block">German · Not yet translated — shown in US English</span></span><span class="mono code">de_DE</span></label></li><li><label class="opt"><input type="radio" name="locale" value="ja_JP" checked><span class="rd"></span><span style="flex:1;min-width:0"><span class="nm" lang="ja">日本語 (日本)</span><span class="sub" style="display:block">Japanese</span></span><span class="mono code">ja_JP</span></label></li><li><label class="opt"><input type="radio" name="locale" value="zh_CN"><span class="rd"></span><span style="flex:1;min-width:0"><span class="nm" lang="zh">简体中文 (中国)</span><span class="sub" style="display:block">Simplified Chinese</span></span><span class="mono code">zh_CN</span></label></li></ul>
+<div style="padding:16px;border-top:1px solid var(--divider);display:flex;flex-direction:column;gap:12px;background:var(--paper)">
+<span class="sub">Currently <b style="font-weight:500;color:var(--text)">English (United States)</b>. You’ll go back to the page you were on.</span>
+<button type="submit" class="btn pri" id="go" style="width:100%">Change language</button></div>
+<p class="err" id="err" role="alert" style="padding:0 16px 16px">Choose a language to continue.</p>
+<a id="nav" data-goto="Locale-change success screen · Mobile" hidden></a></form></main>
+<footer class="foot"><span>© 2026 MUI Pet Store 2</span><a data-goto="Locale selection form · Mobile">Language</a><span style="margin-left:auto">English (US)</span></footer></div>
+<script>
+document.querySelector('form').addEventListener('submit',function(e){e.preventDefault();var c=document.querySelector('input[name=locale]:checked');var er=document.getElementById('err');if(!c){er.classList.add('show');return;}er.classList.remove('show');var b=document.getElementById('go');b.textContent='Changing…';b.disabled=true;setTimeout(function(){document.getElementById('nav').click();},500);});
+</script></body></html>

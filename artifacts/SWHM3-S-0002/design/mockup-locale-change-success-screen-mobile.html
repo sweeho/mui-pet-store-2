@@ -1,0 +1,65 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=390"><title>Language changed — MUI Pet Store 2</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#4f46e5;--on-primary:#fff;--error:#dc2626;--warning:#d97706;--success:#16a34a;--info:#0284c7;--bg:#fff;--paper:#f8fafc;--text:#0f172a;--muted:#64748b;--divider:#e2e8f0;--r:4px;--primary-a8:rgba(79,70,229,.08);--primary-a16:rgba(79,70,229,.16);--success-a12:rgba(22,163,74,.12);--info-a8:rgba(2,132,199,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:14px;color:var(--text);background:var(--paper);line-height:1.45}
+a{color:inherit;text-decoration:none;cursor:pointer}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12px}
+.rail{width:280px;border-right:1px solid var(--divider);background:var(--bg);display:flex;flex-direction:column;padding:0 12px}
+.brand{height:64px;display:flex;align-items:center;gap:10px;padding:0 8px;font-weight:700;font-size:16px}
+.logo{width:28px;height:28px;border-radius:var(--r);background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.logo svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7}
+.grp{font-size:12px;font-weight:600;color:var(--muted);padding:16px 8px 4px;letter-spacing:.02em}
+.ni{display:flex;align-items:center;gap:10px;height:44px;padding:0 10px;border-radius:var(--r);margin-bottom:2px}
+.ni svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:1.7;flex:none}
+.ni:hover{background:var(--paper)}
+.ni.on{background:var(--primary);color:var(--on-primary);font-weight:500}.ni.on svg{stroke:#fff}
+.btn{height:44px;padding:0 14px;border-radius:var(--r);border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:500;font-size:14px;white-space:nowrap}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
+.pri{background:var(--primary);color:#fff}.pri:hover{background:var(--primary);box-shadow:0 0 0 3px var(--primary-a16)}
+.sec{background:var(--bg);border-color:var(--divider);color:var(--text)}.sec:hover{border-color:var(--primary);color:var(--primary)}
+.gh{background:transparent;color:var(--text)}.gh:hover{color:var(--primary);background:var(--primary-a8)}
+.ib{width:44px;height:44px;border-radius:var(--r);border:1px solid var(--divider);background:var(--bg);display:grid;place-items:center;color:var(--text)}
+.ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7}
+.ib:hover{border-color:var(--primary);color:var(--primary)}
+.card{background:var(--bg);border:1px solid var(--divider);border-radius:var(--r)}
+.badge{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:500}
+.badge i{width:6px;height:6px;border-radius:50%;display:block}
+.desc{color:var(--muted);margin-top:4px}
+h1{font-size:24px;font-weight:600;line-height:1.25;letter-spacing:-.01em}
+.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:var(--r);background:var(--info-a8);font-size:13px}
+.note svg{width:18px;height:18px;flex:none;stroke:var(--info);fill:none;stroke-width:1.8;margin-top:1px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 24px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd .mono{font-size:13px}
+.main{display:flex;flex-direction:column;min-height:100vh}
+.top{height:56px;flex:none;background:var(--bg);border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:8px;padding:0 12px;position:sticky;top:0;z-index:2}
+.sp{flex:1}
+.content{flex:1;padding:16px}
+.foot{border-top:1px solid var(--divider);background:var(--bg);padding:16px;display:flex;gap:16px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.scrim{position:fixed;inset:0;background:rgba(15,23,42,.4);display:none;z-index:5}
+.drawer{position:fixed;top:0;bottom:0;left:0;transform:translateX(-100%);transition:transform .2s;z-index:6}
+body.open .scrim{display:block}body.open .drawer{transform:none}
+</style></head><body><svg width="0" height="0" style="position:absolute"><symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></symbol><symbol id="i-cat" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol><symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol><symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12l2-8H6.2"/></symbol><symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></symbol><symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol><symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="i-paw" viewBox="0 0 24 24"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="17" cy="9" r="2"/><path d="M12 12c-3 0-5.5 3.5-5.5 6 0 1.5 1.5 2 3 1.5s1.5-.5 2.5-.5 1 0 2.5.5 3 0 3-1.5c0-2.5-2.5-6-5.5-6z"/></symbol></svg>
+<div class="scrim" onclick="document.body.classList.remove('open')"></div>
+<nav class="rail drawer" aria-label="Main"><div style="display:flex;align-items:center"><a class="brand" style="flex:1" data-goto="Landing page · Mobile"><span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg></span>MUI Pet Store 2</a><button class="ib" style="border:0" aria-label="Close menu" onclick="document.body.classList.remove('open')"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+<div class="grp">Shop</div><a class="ni" data-goto="Landing page · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-home"/></svg><span>Home</span></a><a class="ni" data-goto="Category list · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cat"/></svg><span>Catalog</span></a><a class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-search"/></svg><span>Search</span></a><a class="ni"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"/></svg><span>Cart</span></a><div class="grp">Account</div><a class="ni" data-goto="Profile form · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg><span>Profile</span></a><a class="ni on" data-goto="Locale selection form · Mobile" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg><span>Language</span></a></nav>
+<div class="main"><header class="top"><button class="ib" aria-label="Open menu" onclick="document.body.classList.add('open')"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-menu"/></svg></button>
+<a class="logo" data-goto="Landing page · Mobile" aria-label="MUI Pet Store 2 home"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg></a><div class="sp"></div>
+<button class="ib" data-goto="Locale selection form · Mobile" aria-label="Language: English (US)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg></button>
+<button class="ib" aria-label="Cart"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cart"/></svg></button>
+<button class="btn sec" data-goto="Sign in · Mobile">Sign in</button></header>
+<main class="content"><div style="display:flex;flex-direction:column;gap:16px;margin-bottom:16px"><div><span class="badge" style="background:var(--success-a12);color:var(--success);margin-bottom:8px"><i style="background:var(--success)"></i>Language changed</span>
+<h1>The store is now in English (United States)</h1><p class="desc">Pages, prices and numbers now use US English.</p></div>
+<button class="btn pri" style="width:100%" data-goto="Product list · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-back"/></svg>Back to the page you were on</button></div>
+<section class="card" style="padding:16px">
+<div class="lbl" style="margin-bottom:12px">Your language settings</div>
+<dl class="kv"><dt>Language</dt><dd>English (United States) <span class="mono" style="color:var(--muted)">en_US</span></dd>
+<dt>Returning to</dt><dd>Catalog › Fish</dd></dl>
+<div class="note" style="margin-top:16px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-info"/></svg><span><b style="font-weight:600">Currency format:</b> US dollar, symbol before the amount, comma for thousands, point for decimals — <span class="mono" style="font-size:13px">$1,234.50</span>. Numbers: <span class="mono" style="font-size:13px">1,234.5</span>.</span></div>
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--divider);display:flex;flex-direction:column"><a class="btn gh" data-goto="Locale selection form · Mobile"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-globe"/></svg>Choose a different language</a></div>
+</section></main>
+<footer class="foot"><span>© 2026 MUI Pet Store 2</span><a data-goto="Locale selection form · Mobile">Language</a><span style="margin-left:auto">English (US)</span></footer></div></body></html>

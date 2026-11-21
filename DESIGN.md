@@ -37,13 +37,31 @@ value, never a component.
 - a **240px navigation rail** on the left, fixed on a large screen and a drawer behind the header's
   menu button below `lg`. The store name at the top and the Home entry lead to the landing page,
   and the current area is highlighted;
-- a **header** (the `banner` landmark) and a **footer** (the `contentinfo` landmark) on every page;
+- the rail's entries sit in **labelled groups** (Shop, Account, Admin), each with a small muted
+  subheader. A capability adds its entry to the group it belongs to;
+- a **header** (the `banner` landmark) and a **footer** (the `contentinfo` landmark) on every page.
+  The header's right side carries the **language control**: the current language's name, which
+  opens the language page and remembers the page it came from;
 - the page's content in the one `main` landmark between them.
 
 Every page lives under `src/app/(DashboardLayout)/` and so renders inside the shell, including the
 "page not found" screen. A primary area gets one entry in `MENU_ITEMS`
 (`src/shell/SidebarItems.tsx`). The landing page's area links are generated from the same list.
 The rail is the first `navigation` landmark on the page.
+
+## Language and text
+
+The interface follows the shopper's language (ARCHITECTURE.md §Data flow):
+
+- No user-facing string is written in a component. It comes from the message catalogs in
+  `src/lib/localization/messages/`, and a missing key or locale shows the en_US text.
+- `<html lang>` is the current language, so screen readers pronounce the page correctly.
+- Money and numbers are always formatted for the locale, never by hand.
+- A language is named in its own script first, with the English name beside it, as in
+  `日本語 (日本) · Japanese`. A choice of a language that has no translation yet says so in its row.
+- A choose-one setting is a radio list with the current value marked **Current**, and one primary
+  button below it. A confirmation screen leads with what changed and offers one primary way back to
+  where the user was.
 
 ## State frames
 

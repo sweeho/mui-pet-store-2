@@ -1,0 +1,310 @@
+{
+  "key": "SWHM3-MCK-16",
+  "mockup": "artifacts/SWHM3-S-0002/design/mockup-locale-change-success-screen-mobile.html",
+  "url": "http://127.0.0.1:3300/locale/changed?from=/",
+  "width": 390,
+  "at": "2026-11-21T16:47:24.700Z",
+  "pixelDifference": 0.1553,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "monospace": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "style",
+      "text": "MUI Pet Store 2",
+      "prop": "box",
+      "mockup": "211x64",
+      "built": "135x44"
+    },
+    {
+      "kind": "style",
+      "text": "MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "-268,0",
+      "built": "68,9"
+    },
+    {
+      "kind": "missing",
+      "text": "Close menu",
+      "mockup": "button at -57,10"
+    },
+    {
+      "kind": "missing",
+      "text": "Shop",
+      "mockup": "div at -268,64"
+    },
+    {
+      "kind": "style",
+      "text": "Home",
+      "prop": "radius",
+      "mockup": "4px",
+      "built": "0px"
+    },
+    {
+      "kind": "style",
+      "text": "Home",
+      "prop": "box",
+      "mockup": "255x44",
+      "built": "220x20"
+    },
+    {
+      "kind": "style",
+      "text": "Home",
+      "prop": "position",
+      "mockup": "-268,101",
+      "built": "137,369"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at -268,147"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at -268,193"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at -268,239"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "div at -268,285"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at -268,323"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "weight",
+      "mockup": "500",
+      "built": "400"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "color",
+      "mockup": "rgb(255, 255, 255)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "background",
+      "mockup": "rgb(79, 70, 229)",
+      "built": "rgb(255, 255, 255)"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "radius",
+      "mockup": "4px",
+      "built": "0px"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "box",
+      "mockup": "255x44",
+      "built": "80x21"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "-268,369",
+      "built": "33,340"
+    },
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 198,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "button at 302,6"
+    },
+    {
+      "kind": "style",
+      "text": "Language changed",
+      "prop": "background",
+      "mockup": "rgba(22, 163, 74, 0.12)",
+      "built": "rgb(68, 181, 110)"
+    },
+    {
+      "kind": "style",
+      "text": "Language changed",
+      "prop": "position",
+      "mockup": "16,73",
+      "built": "16,87"
+    },
+    {
+      "kind": "style",
+      "text": "The store is now in English (United States)",
+      "prop": "position",
+      "mockup": "16,103",
+      "built": "16,117"
+    },
+    {
+      "kind": "style",
+      "text": "Pages, prices and numbers now use US English.",
+      "prop": "position",
+      "mockup": "16,167",
+      "built": "16,181"
+    },
+    {
+      "kind": "style",
+      "text": "Back to the page you were on",
+      "prop": "position",
+      "mockup": "16,203",
+      "built": "16,225"
+    },
+    {
+      "kind": "style",
+      "text": "Your language settings",
+      "prop": "position",
+      "mockup": "33,280",
+      "built": "33,310"
+    },
+    {
+      "kind": "style",
+      "text": "English (United States) en_US",
+      "prop": "position",
+      "mockup": "137,310",
+      "built": "137,340"
+    },
+    {
+      "kind": "style",
+      "text": "en_US",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "style",
+      "text": "en_US",
+      "prop": "position",
+      "mockup": "290,312",
+      "built": "290,342"
+    },
+    {
+      "kind": "style",
+      "text": "Returning to",
+      "prop": "position",
+      "mockup": "33,339",
+      "built": "33,369"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog › Fish",
+      "mockup": "dd at 137,339"
+    },
+    {
+      "kind": "style",
+      "text": "Currency format: US dollar, symbol before the amount, comma for thousands, point for decimals — $1,234.50. Numbers: 1,234.5.",
+      "prop": "position",
+      "mockup": "73,387",
+      "built": "73,417"
+    },
+    {
+      "kind": "style",
+      "text": "Currency format:",
+      "prop": "position",
+      "mockup": "73,388",
+      "built": "73,418"
+    },
+    {
+      "kind": "style",
+      "text": "$1,234.50",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "style",
+      "text": "$1,234.50",
+      "prop": "position",
+      "mockup": "170,426",
+      "built": "170,456"
+    },
+    {
+      "kind": "style",
+      "text": "1,234.5",
+      "prop": "font",
+      "mockup": "JetBrains Mono",
+      "built": "monospace"
+    },
+    {
+      "kind": "style",
+      "text": "1,234.5",
+      "prop": "position",
+      "mockup": "73,445",
+      "built": "73,475"
+    },
+    {
+      "kind": "style",
+      "text": "Choose a different language",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "style",
+      "text": "Choose a different language",
+      "prop": "box",
+      "mockup": "324x44",
+      "built": "216x37"
+    },
+    {
+      "kind": "style",
+      "text": "Choose a different language",
+      "prop": "position",
+      "mockup": "33,505",
+      "built": "33,535"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 306,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,9"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 203,0"
+    }
+  ]
+}

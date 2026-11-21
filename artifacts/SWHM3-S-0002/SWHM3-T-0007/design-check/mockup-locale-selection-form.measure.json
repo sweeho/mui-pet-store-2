@@ -1,0 +1,39 @@
+{
+ "mockup": {
+  "h1": {
+   "text": "Language",
+   "font": "24px 600",
+   "color": "rgb(15, 23, 42)",
+   "w": 1136,
+   "h": 30
+  },
+  "btn": {
+   "text": "Change language",
+   "font": "14px 500",
+   "color": "rgb(255, 255, 255)",
+   "w": 147,
+   "h": 36
+  }
+ },
+ "built": {
+  "h1": {
+   "text": "Language",
+   "font": "24px 600",
+   "color": "rgb(15, 23, 42)",
+   "w": 1152,
+   "h": 30
+  },
+  "btn": {
+   "text": "Change language",
+   "font": "14px 500",
+   "color": "rgb(255, 255, 255)",
+   "w": 149,
+   "h": 36
+  }
+ },
+ "tool": "manual Playwright probe (design-measure.mjs not available in this workspace)",
+ "checked": [
+  "h1 font size/weight/colour/height",
+  "primary button size"
+ ]
+}

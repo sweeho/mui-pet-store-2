@@ -17,24 +17,52 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { APP_NAME } from "@/constants/app";
+import { useT } from "@/lib/localization/LocaleProvider";
+import type { MessageKey } from "@/lib/localization/messages";
 
 import { BrandLogo } from "./BrandLogo";
 
-/** The sidebar's menu. Add a page by adding an entry. */
+export type MenuGroup = "shop" | "account" | "admin";
+
+/** The sidebar's menu, in groups. Add a page by adding an entry. */
 export const MENU_ITEMS = [
-  { title: "Home", href: "/", icon: IconLayoutDashboard, description: "The landing page." },
   {
-    title: "Localization",
-    href: "/localization",
-    icon: IconLanguage,
-    description: "See the languages the store supports.",
+    id: "home",
+    group: "shop",
+    href: "/",
+    icon: IconLayoutDashboard,
+    titleKey: "menu.home",
+    descriptionKey: "menu.home.description",
   },
   {
-    title: "Order administration",
+    id: "language",
+    group: "account",
+    href: "/locale",
+    icon: IconLanguage,
+    titleKey: "menu.language",
+    descriptionKey: "menu.language.description",
+  },
+  {
+    id: "orders",
+    group: "admin",
     href: "/admin/orders",
     icon: IconClipboardList,
-    description: "Approve or deny pending orders.",
+    titleKey: "menu.orders",
+    descriptionKey: "menu.orders.description",
   },
+] as const satisfies readonly {
+  id: string;
+  group: MenuGroup;
+  href: string;
+  icon: unknown;
+  titleKey: MessageKey;
+  descriptionKey: MessageKey;
+}[];
+
+const GROUPS: { id: MenuGroup; titleKey: MessageKey }[] = [
+  { id: "shop", titleKey: "menu.shop" },
+  { id: "account", titleKey: "menu.account" },
+  { id: "admin", titleKey: "menu.admin" },
 ];
 
 /** The current item: "/" only on the landing page, any other by prefix. */
@@ -43,6 +71,7 @@ const isCurrent = (pathname: string, href: string) =>
 
 export function SidebarItems() {
   const pathname = usePathname();
+  const t = useT();
   return (
     <Box sx={{ px: 1.5 }}>
       <Box sx={{ height: "64px", display: "flex", alignItems: "center" }}>
@@ -64,48 +93,51 @@ export function SidebarItems() {
           {APP_NAME}
         </Typography>
       </Box>
-      <List
-        component="nav"
-        subheader={
-          <ListSubheader
-            disableSticky
-            sx={{
-              px: 1,
-              pt: 2,
-              pb: 0.5,
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              lineHeight: 1.45,
-              color: "text.secondary",
-            }}
-          >
-            Areas
-          </ListSubheader>
-        }
-      >
-        {MENU_ITEMS.map((item) => (
-          <ListItemButton
-            key={item.href}
-            component={Link}
-            href={item.href}
-            selected={isCurrent(pathname, item.href)}
-            aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
-            sx={{
-              borderRadius: 1,
-              mb: 0.25,
-              height: 36,
-              "&.Mui-selected, &.Mui-selected:hover": {
-                bgcolor: "primary.main",
-                color: "primary.contrastText",
-                fontWeight: 500,
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <item.icon stroke={1.5} size="1.3rem" />
-            </ListItemIcon>
-            <ListItemText primary={item.title} />
-          </ListItemButton>
+      <List component="nav">
+        {GROUPS.map((group) => (
+          <Box key={group.id}>
+            <ListSubheader
+              component="div"
+              disableSticky
+              sx={{
+                px: 1,
+                pt: 2,
+                pb: 0.5,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                lineHeight: 1.45,
+                color: "text.secondary",
+              }}
+            >
+              {t(group.titleKey)}
+            </ListSubheader>
+            <List disablePadding>
+              {MENU_ITEMS.filter((item) => item.group === group.id).map((item) => (
+                <ListItemButton
+                  key={item.href}
+                  component={Link}
+                  href={item.href}
+                  selected={isCurrent(pathname, item.href)}
+                  aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
+                  sx={{
+                    borderRadius: 1,
+                    mb: 0.25,
+                    height: 36,
+                    "&.Mui-selected, &.Mui-selected:hover": {
+                      bgcolor: "primary.main",
+                      color: "primary.contrastText",
+                      fontWeight: 500,
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <item.icon stroke={1.5} size="1.3rem" />
+                  </ListItemIcon>
+                  <ListItemText primary={t(item.titleKey)} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Box>
         ))}
       </List>
     </Box>

@@ -1,8 +1,9 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import type { LibSQLDatabase } from "drizzle-orm/libsql";
 
 import { databaseUrl, prepareDatabase } from "./prepare";
-import { users } from "./schema";
+import * as schema from "./schema";
 
 // One connection per process, kept across hot reloads in development, and how to close it
 // (the test setup closes it after each test file).
@@ -17,7 +18,7 @@ function connect(url: string) {
     delete closers.appDb;
     client.close();
   };
-  return drizzle({ client, schema: { users } });
+  return drizzle({ client, schema });
 }
 
 type Db = ReturnType<typeof connect>;
@@ -44,3 +45,6 @@ export function getDb(): Promise<Db> {
   });
   return closers.appDb;
 }
+
+/** The database handle the library code takes. */
+export type AppDb = LibSQLDatabase<typeof schema>;

@@ -10,10 +10,15 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
-import { IconMenu } from "@tabler/icons-react";
+import Button from "@mui/material/Button";
+import { IconLanguage, IconMenu } from "@tabler/icons-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { APP_NAME } from "@/constants/app";
+
+import { useLocaleContext, useT } from "@/lib/localization/LocaleProvider";
+import { findSupportedLocale } from "@/lib/locales";
 
 import { BrandLogo } from "./BrandLogo";
 
@@ -33,14 +38,21 @@ const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-/** The top bar: the menu button that opens the sidebar on a small screen. */
+/** The top bar: the menu button on a small screen and the language control. */
 export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => void }) {
+  const t = useT();
+  const { chosen } = useLocaleContext();
+  const pathname = usePathname();
+  const name = findSupportedLocale(chosen)?.label ?? chosen;
+  const href = pathname.startsWith("/locale")
+    ? "/locale"
+    : `/locale?from=${encodeURIComponent(pathname)}`;
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
         <IconButton
           color="inherit"
-          aria-label="Open the menu"
+          aria-label={t("menu.open")}
           onClick={toggleMobileSidebar}
           sx={{
             display: { lg: "none", xs: "inline-flex" },
@@ -73,6 +85,16 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
           {APP_NAME}
         </Box>
         <Box flexGrow={1} />
+        <Button
+          component={Link}
+          href={href}
+          color="inherit"
+          aria-label={t("header.language", { name })}
+          startIcon={<IconLanguage size={16} stroke={1.8} aria-hidden />}
+          sx={{ color: "text.primary", fontWeight: 500 }}
+        >
+          {name}
+        </Button>
       </ToolbarStyled>
     </AppBarStyled>
   );
