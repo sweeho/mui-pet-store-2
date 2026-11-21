@@ -55,19 +55,47 @@ describe("batch-operations", () => {
   });
 
   // case: SWHM3-C-0238@v1
-  it("SWHM3-C-0238 default settings apply the four operating limits", async () => {
+  it("SWHM3-C-0238 default settings: order retention 180 days purges a 200-day-old order, keeps a 170-day-old one", async () => {
     const r = await rt();
-    expect(r.limits).toEqual({ orderRetentionDays: 180, backupRetentionDays: 7, stuckOrderHours: 24, lowStockUnits: 500 });
-    await r.seed({
-      orders: [order(1, "COMPLETED", 200 * DAY), order(2, "PENDING", 25 * HOUR)],
-      inventory: [{ itemId: "A", quantity: 499 }, { itemId: "B", quantity: 500 }],
-    });
-    expect((await r.runJob("aging-report")).output).toMatch(/STUCK[^\n]*\b2\b|\b2\b[^\n]*STUCK/);
-    const low = (await r.runJob("inventory-report")).output;
-    expect(low).toContain("A");
-    expect(low).not.toMatch(/\bB\b\s+500/);
+    await r.seed({ orders: [order(1, "COMPLETED", 200 * DAY), order(2, "COMPLETED", 170 * DAY)] });
     await r.runJob("purge");
     expect(r.orderExists(1)).toBe(false);
+    expect(r.orderExists(2)).toBe(true);
+  });
+
+  // case: SWHM3-C-0238@v1
+  it("SWHM3-C-0238 default settings: backup retention 7 days deletes a 8-day-old backup, keeps a 6-day-old one", async () => {
+    const r = await rt();
+    const make = (name: string, days: number) => {
+      const p = path.join(r.paths.backups, name);
+      fs.mkdirSync(p, { recursive: true });
+      const t = new Date(NOW.getTime() - days * DAY);
+      fs.utimesSync(p, t, t);
+      return p;
+    };
+    const old = make("PetStoreDB_20261114", 8);
+    const recent = make("PetStoreDB_20261116", 6);
+    await r.runJob("backup");
+    expect(fs.existsSync(old)).toBe(false);
+    expect(fs.existsSync(recent)).toBe(true);
+  });
+
+  // case: SWHM3-C-0238@v1
+  it("SWHM3-C-0238 default settings: stuck order threshold 24 hours flags a 25-hour-old order, not a 23-hour-old one", async () => {
+    const r = await rt();
+    await r.seed({ orders: [order(2, "PENDING", 25 * HOUR), order(3, "PENDING", 23 * HOUR)] });
+    const out = (await r.runJob("aging-report")).output;
+    expect(out).toMatch(/STUCK[^\n]*\b2\b|\b2\b[^\n]*STUCK/);
+    expect(out).not.toMatch(/STUCK[^\n]*\b3\b|\b3\b[^\n]*STUCK/);
+  });
+
+  // case: SWHM3-C-0238@v1
+  it("SWHM3-C-0238 default settings: low stock threshold 500 units lists item at 499, not item at 500", async () => {
+    const r = await rt();
+    await r.seed({ inventory: [{ itemId: "ITEM-LOW", quantity: 499 }, { itemId: "ITEM-OK", quantity: 500 }] });
+    const out = (await r.runJob("inventory-report")).output;
+    expect(out).toContain("ITEM-LOW");
+    expect(out).not.toContain("ITEM-OK");
   });
 
   // case: SWHM3-C-0239@v1
@@ -91,6 +119,10 @@ describe("batch-operations", () => {
     const monday = await rt({ now: new Date("2026-11-23T00:00:00Z") });
     const ran = await monday.advanceTo(new Date("2026-11-23T02:00:00Z"));
     expect(ran.map((x: { job: string }) => x.job)).not.toContain("purge");
+    const failed = await rt({ now: new Date("2026-11-22T00:00:00Z") });
+    failed.failJob("extract");
+    const ranFailed = await failed.advanceTo(SUNDAY(2));
+    expect(ranFailed.map((x: { job: string }) => x.job)).not.toContain("purge");
   });
 
   // case: SWHM3-C-0241@v1
@@ -311,6 +343,10 @@ describe("batch-operations", () => {
     await r.seed({ orders: [order(1, "COMPLETED", 40 * HOUR), order(2, "COMPLETED", 20 * HOUR), order(3, "COMPLETED", HOUR)] });
     await r.runJob("extract");
     const body = fs.readFileSync(r.paths.extract("20261120"), "utf8");
-    expect(body).toContain("TRAILER,20261120,1");
+    const lines = body.trim().split("\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatch(/(^|,)2(,|$)/);
+    expect(lines[0]).not.toMatch(/(^|,)[13](,|$)/);
+    expect(lines[1]).toBe("TRAILER,20261120,1");
   });
 });
