@@ -17,12 +17,30 @@ test.describe("order-approval", () => {
     await page.getByRole("button", { name: /sign in/i }).click();
     await page.goto("/admin/orders");
 
-    const pending = page.getByRole("row").filter({ hasText: "PENDING" });
-    expect(await pending.count()).toBeGreaterThanOrEqual(3);
+    // Pin three specific rows once (element handles), so a row changing its text or leaving the
+    // list after a click cannot shift which row the next click lands on.
+    const handles = await page.getByRole("row").filter({ hasText: "PENDING" }).elementHandles();
+    expect(handles.length).toBeGreaterThanOrEqual(3);
+    const rows = handles.slice(0, 3);
+    // Each row's order identifier: the first token containing a digit in its text.
+    const ids = await Promise.all(
+      rows.map(async (row) => {
+        const text = (await row.textContent()) ?? "";
+        const m = text.match(/[A-Za-z0-9-]*\d[A-Za-z0-9-]*/);
+        return m ? m[0] : "";
+      }),
+    );
+    for (const id of ids) expect(id).not.toBe("");
+    expect(new Set(ids).size).toBe(3);
 
-    await pending.nth(0).getByRole("button", { name: /approve/i }).click();
-    await pending.nth(1).getByRole("button", { name: /approve/i }).click();
-    await pending.nth(2).getByRole("button", { name: /deny/i }).click();
+    const clickIn = async (i: number, name: RegExp) => {
+      const button = await rows[i].$(`xpath=.//button[contains(translate(normalize-space(.), 'ADENPROV', 'adenprov'), '${name.source}')]`);
+      expect(button).not.toBeNull();
+      await button!.click();
+    };
+    await clickIn(0, /approve/);
+    await clickIn(1, /approve/);
+    await clickIn(2, /deny/);
 
     const writes: { url: string; body: string }[] = [];
     page.on("request", (r) => {
@@ -35,7 +53,15 @@ test.describe("order-approval", () => {
     await page.waitForLoadState("networkidle");
 
     expect(writes).toHaveLength(1);
-    expect(writes[0].body.match(/APPROVED/g) ?? []).toHaveLength(2);
-    expect(writes[0].body.match(/DENIED/g) ?? []).toHaveLength(1);
+    // Decision per order: the first decision word after each order's id.
+    const body = writes[0].body;
+    const decisionOf = (id: string) => {
+      const at = body.indexOf(id);
+      expect(at).toBeGreaterThanOrEqual(0);
+      return body.slice(at).match(/APPROVED|DENIED/)?.[0];
+    };
+    expect(decisionOf(ids[0])).toBe("APPROVED");
+    expect(decisionOf(ids[1])).toBe("APPROVED");
+    expect(decisionOf(ids[2])).toBe("DENIED");
   });
 });
