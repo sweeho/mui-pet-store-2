@@ -18,7 +18,7 @@ tokens. Components never carry their own colours: they use the theme through MUI
 | Divider                          | `#e2e8f0`                                                     |
 | Background default / paper       | `#ffffff` / `#f8fafc`                                         |
 | Corner radius                    | 4px                                                           |
-| Typeface                         | Inter                                                         |
+| Typeface                         | Inter; JetBrains Mono for codes and prices                    |
 | Type scale                       | page title 24px semibold, body 14px, labels and captions 12px |
 
 The font the tokens name is loaded in `src/app/layout.tsx` from its `@fontsource-variable` package,
@@ -69,9 +69,10 @@ The interface follows the shopper's language (ARCHITECTURE.md §Data flow):
 - **Breadcrumbs.** A page below an area's top level shows breadcrumbs that start at the area
   (Catalog › Fish › Angelfish), as a `nav` labelled "Breadcrumb" placed after the rail, so the rail
   stays the first navigation landmark. The last crumb is the current page and is not a link.
-- **Paged lists.** A list shows its range ("Categories 1–2") and a pager with **Previous** only after
-  the first page and **Next** only while more entries remain. Paging is in the address (`?start=`),
-  so a page can be linked and the browser's back button works.
+- **Paged lists.** A list shows its range ("Categories 1–2") and a pager with **Previous** and
+  **Next**. A button that does not apply (Previous on the first page, Next on the last) is shown
+  disabled, not hidden, so the pager keeps its place. Paging is in the address (`?start=`), so a
+  page can be linked and the browser's back button works.
 - **Nothing found is not an error.** An unknown entry, an empty search or a page past the end shows
   the empty frame with a way back to the list, never the error frame.
 
