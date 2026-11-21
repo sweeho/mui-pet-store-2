@@ -1,0 +1,168 @@
+recommendations:
+  - record_key: CUSTOMER-ACCOUNTS-REQUIREMENT-0008
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-RULE-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: ACCT-REQ-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0006
+    recommendation: edit
+    confidence: medium
+    reason: >
+      Pass B code reading shows only address fields are enforced; language and favorite category lists are discarded.
+    edited_requirement: The system SHALL require, for profile create/update, a non-blank last name, first name, street, city, state or province, postal code and telephone.
+  - record_key: CUST-RULE-0001
+    recommendation: accept
+    confidence: low
+    reason: >
+      Conflicts with the 30 minute web session rule; both exist in the source. Goes to Intent for the Business Owner to say which holds in production.
+  - record_key: CUSTAC-REQ-0001
+    recommendation: accept
+    confidence: low
+    reason: >
+      Same 15 minute vs 30 minute conflict; goes to Intent.
+  - record_key: CUSTOMER-ACCOUNTS-ENTITY-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-RULE-0006
+    recommendation: accept
+    confidence: low
+    reason: >
+      Same 15 vs 30 minute conflict; goes to Intent.
+  - record_key: ACC-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: ACC-ENT-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: ACCOUNTS-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: ACCOUNTS-BR-0002
+    recommendation: edit
+    confidence: high
+    reason: >
+      Code stores plain text, but this is a defect; confirm what the code does and send the defect to the Business Owner. Recommend rewording so the requirement does not mandate plain text.
+    edited_requirement: The system SHALL record that the legacy stores the sign-on password and card number unprotected, as a defect register entry.
+  - record_key: ACCOUNTS-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: ACCOUNTS-ENT-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTACC-ENT-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-REQ-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUST-REQ-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTACC-ENT-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-BUSINESS-RULE-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-BUSINESS-RULE-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-BUSINESS-RULE-0006
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-BUSINESS-RULE-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-ENTITY-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      User name limit is 25 in code but 50 in the schema; also the '%' and '*' rule appears in one pass. Confirm with Business Owner.
+  - record_key: CUSTOMER-ACCOUNTS-REQ-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
+  - record_key: CUSTOMER-ACCOUNTS-REQ-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes and the source agree on this statement; no conflicting source found.
