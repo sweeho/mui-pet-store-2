@@ -1,0 +1,149 @@
+records:
+  - record_key: ORDAPP-ENT-0001
+    kind: entity
+    capability_key: order-approval
+    requirement: The system SHALL keep one process-state record per order, keyed by order identifier, holding a single status string.
+    confidence: high
+    confidence_basis: Stated by the CMP fields and primary key in the deployment descriptor and by the abstract bean accessors; two places.
+    risk_class: operational
+    basis: Manager entity has cmp fields orderId (primary key) and status.
+    plain_text: Each order has exactly one tracked status, identified by the order number.
+    technical_note: ManagerEJB is a CMP 2.x entity bean with primkey-field orderId; ejbCreate stores both fields.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/ejb-jar.xml
+        line_start: 54
+        line_end: 65
+        excerpt: |
+          <reentrant>False</reentrant>
+          <cmp-version>2.x</cmp-version>
+          <abstract-schema-name>Manager</abstract-schema-name>
+          <primkey-field>orderId</primkey-field>
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/manager/ejb/ManagerEJB.java
+        line_start: 54
+        line_end: 66
+        excerpt: |
+          public abstract String getOrderId();
+          public abstract String getStatus();
+          public String ejbCreate(String orderId, String status) throws CreateException {
+    stack_metadata:
+      framework: EJB 2.x CMP
+      ejb.bean: ManagerEJB
+      ejb.transaction: Required
+  - record_key: ORDAPP-RULE-0001
+    kind: business-rule
+    capability_key: order-approval
+    requirement: The system SHALL recognise the order statuses PENDING, APPROVED, DENIED, SHIPPED_PART and COMPLETED.
+    confidence: medium
+    confidence_basis: One clear place (constants). The Manager does not validate status values, so the set is conventional, not enforced here.
+    risk_class: operational
+    basis: Status name constants with comments (placed but not approved, approved, denied, partially completed, completed).
+    plain_text: An order is pending, approved, denied, partly shipped or completed.
+    technical_note: OrderStatusNames string constants; ProcessManagerEJB.updateStatus accepts any string without checking allowed transitions.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/ejb/OrderStatusNames.java
+        line_start: 50
+        line_end: 65
+        excerpt: |
+          public static final String PENDING = "PENDING";
+          public  static final String APPROVED = "APPROVED";
+          public  static final String DENIED = "DENIED";
+          public  static final String SHIPPED_PART = "SHIPPED_PART";
+          public  static final String COMPLETED = "COMPLETED";
+    stack_metadata:
+      framework: Java
+  - record_key: ORDAPP-REQ-0001
+    kind: requirement
+    capability_key: order-approval
+    requirement: The system SHALL allow a status record to be created for an order, to have its status updated, and to have its status read, by order identifier.
+    confidence: high
+    confidence_basis: Session bean methods plus transaction and method-permission declarations in the descriptor.
+    risk_class: operational
+    basis: ProcessManagerEJB delegates to the Manager entity for create, find by key and set/get status.
+    plain_text: The system can record, change and look up the status of any order.
+    technical_note: Stateless session bean ProcessManagerEJB; all methods Required transaction. Unknown order id surfaces FinderException; no transition validation or timestamp.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/ejb/ProcessManagerEJB.java
+        line_start: 66
+        line_end: 87
+        excerpt: |
+          public void createManager(String orderId, String status) throws CreateException {
+            ManagerLocal manager = mlh.create(orderId, status);
+          public void updateStatus(String orderId, String status) throws FinderException {
+            manager.setStatus(status);
+          public String getStatus(String orderId) throws FinderException {
+    stack_metadata:
+      ejb.bean: ProcessManagerEJB
+      ejb.transaction: Required
+  - record_key: ORDAPP-REQ-0002
+    kind: requirement
+    capability_key: order-approval
+    requirement: The system SHALL return the set of orders having a given status.
+    confidence: high
+    confidence_basis: Declared finder query and the session bean method delegating to it.
+    risk_class: operational
+    basis: findOrdersByStatus uses an exact match on status.
+    plain_text: Staff can list all orders that are in a given status, for example all pending orders.
+    technical_note: EJB-QL SELECT DISTINCT OBJECT(a) FROM Manager a WHERE a.status = ?1.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/ejb-jar.xml
+        line_start: 70
+        line_end: 79
+        excerpt: |
+          <method-name>findOrdersByStatus</method-name>
+          <ejb-ql>SELECT DISTINCT OBJECT(a) FROM Manager a WHERE a.status = ?1</ejb-ql>
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/ejb/ProcessManagerEJB.java
+        line_start: 89
+        line_end: 91
+        excerpt: |
+          public Collection getOrdersByStatus(String status) throws FinderException {
+              return mlh.findOrdersByStatus(status);
+    stack_metadata:
+      db.object: Manager
+  - record_key: ORDAPP-WF-0001
+    kind: workflow
+    capability_key: order-approval
+    requirement: GIVEN a configured transition delegate class name WHEN a transition is requested THEN the system SHALL instantiate that delegate by name and run it with the XML message or message batch supplied.
+    confidence: low
+    confidence_basis: Only the framework plumbing (factory, interface, info holder) is in this module; no callers or delegate implementations here, so reachability and rules are inferred.
+    dispute:
+      reason: unresolved-reachability
+      detail: No caller in this module. Search other components for TransitionDelegate implementations and callers to settle whether it is live.
+    risk_class: operational
+    basis: Factory loads class reflectively; any failure becomes TransitionException.
+    plain_text: Order state changes are carried out by pluggable steps configured by name, each handed the order message.
+    technical_note: TransitionDelegateFactory uses Class.forName().newInstance(); TransitionDelegate has setup() and doTransition(TransitionInfo).
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/transitions/TransitionDelegateFactory.java
+        line_start: 12
+        line_end: 20
+        excerpt: |
+          td = (TransitionDelegate)Class.forName(className).newInstance();
+          } catch(Exception e) {
+            throw new TransitionException(e);
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/transitions/TransitionDelegate.java
+        line_start: 44
+        line_end: 50
+        excerpt: |
+          public interface TransitionDelegate {
+             public void setup() throws TransitionException;
+             public void doTransition(TransitionInfo info) throws TransitionException;
+    stack_metadata:
+      framework: Java reflection
+findings: []
+suspected_defects:
+  - capability_key: order-approval
+    record_keys: [ORDAPP-RULE-0001, ORDAPP-REQ-0001]
+    severity: low
+    category: other
+    title: Status values and transitions are not validated
+    description: >
+      updateStatus stores any string for any order; the order state machine is not enforced in this component.
+    traces:
+      - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/ejb/ProcessManagerEJB.java
+        line_start: 73
+        line_end: 79
