@@ -1,0 +1,102 @@
+records:
+  - record_key: NOTIF-INT-0001
+    kind: integration
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL accept a text message from a caller and publish it as a single text message onto a configured asynchronous queue, so that the message is processed later by a separate consumer.
+    confidence: high
+    confidence_basis: >
+      Enforced in the bean implementation (sendAMessage) and declared in the deployment descriptor (queue and connection-factory references, method listed). No consumer is in this module, so the downstream meaning is not seen.
+    risk_class: operational
+    basis: >
+      AsyncSenderEJB.sendAMessage creates a queue connection and session, a sender on the configured queue, a text message with the supplied string, and sends it. The component is a generic hand-off used to decouple callers (e.g. mail sending) from processing; the capability filing is inferred from the surrounding mailer components.
+    plain_text: >
+      When another part of the shop wants something done in the background, such as sending a customer e-mail, it hands a text message to this component, which puts it on a waiting line so it is handled separately and the customer is not kept waiting.
+    technical_note: >
+      Stateless session bean AsyncSenderEJB.sendAMessage(String) uses a QueueConnectionFactory and Queue looked up in ejbCreate through ServiceLocator under java:comp/env/jms/QueueConnectionFactory and java:comp/env/jms/AsyncSenderQueue (JNDINames). Local interface only. The capability key is a best fit; the module itself is generic.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 68
+        line_end: 90
+        excerpt: |
+          public void sendAMessage(String msg)  {
+            QueueSession session = null;
+            QueueConnection qConnect = null;
+            QueueSender qSender = null;
+
+            try {
+              qConnect = qFactory.createQueueConnection();
+              session = qConnect.createQueueSession(true,0);
+              qSender = session.createSender(q);
+              TextMessage jmsMsg = session.createTextMessage();
+              jmsMsg.setText(msg);
+              qSender.send(jmsMsg);
+      - path: legacy-source/app/src/components/asyncsender/src/ejb-jar.xml
+        line_start: 58
+        line_end: 67
+        excerpt: |
+          <resource-ref>
+            <res-ref-name>jms/QueueConnectionFactory</res-ref-name>
+            <res-type>javax.jms.QueueConnectionFactory</res-type>
+            <res-auth>Container</res-auth>
+            <res-sharing-scope>Shareable</res-sharing-scope>
+          </resource-ref>
+          <resource-env-ref>
+            <resource-env-ref-name>jms/AsyncSenderQueue</resource-env-ref-name>
+            <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
+          </resource-env-ref>
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: AsyncSenderEJB
+      ejb.transaction: Container
+      jms.queue: jms/AsyncSenderQueue
+  - record_key: NOTIF-BR-0001
+    kind: business-rule
+    capability_key: customer-notifications
+    requirement: >
+      GIVEN the queue cannot be reached or the message cannot be sent WHEN a caller submits a message THEN the system SHALL report failure to the caller as an error rather than silently dropping the message, and SHALL always close the queue connection.
+    confidence: medium
+    confidence_basis: >
+      One clear place (the catch/finally in sendAMessage); no test or document.
+    risk_class: operational
+    basis: >
+      Any exception is wrapped in an EJBException after printing the stack trace; the connection is closed in finally with close errors ignored.
+    plain_text: >
+      If a background message cannot be queued, the requesting part of the shop is told it failed, and the connection used is always released.
+    technical_note: >
+      catch (Exception) prints stack trace and throws EJBException; finally closes QueueConnection, swallowing exceptions. No retry. Lookup failure in ejbCreate is also an EJBException.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 80
+        line_end: 89
+        excerpt: |
+          }catch  (Exception e) {
+            e.printStackTrace();
+            throw new EJBException("askMDBToSendAMessage: Error!",e);
+          } finally {
+            try {
+                      if( qConnect != null ) {
+                qConnect.close();
+                      }
+            } catch(Exception e) {}
+              }
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: AsyncSenderEJB
+suspected_defects:
+  - capability_key: customer-notifications
+    record_keys: [NOTIF-INT-0001]
+    severity: low
+    category: other
+    title: Message is sent in a session marked transacted but never committed
+    description: >
+      The queue session is created transacted (true) and the code never calls commit; delivery depends on the container's handling of the managed connection. Behaviour is not provable from this module alone.
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 75
+        line_end: 75
+        excerpt: |
+          session = qConnect.createQueueSession(true,0);
+findings: []
