@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { EmptyState, ErrorState, LoadingState } from ".";
+import { EmptyState } from "./EmptyState";
+import { ErrorState } from "./ErrorState";
+import { LoadingState } from "./LoadingState";
 
 describe("state frames", () => {
   it("[SWHM3-C-0166] EmptyState shows its title and no retry control", () => {
