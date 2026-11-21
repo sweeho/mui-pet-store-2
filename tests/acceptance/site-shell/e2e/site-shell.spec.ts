@@ -105,7 +105,7 @@ test.describe("site-shell", () => {
       exercised++;
       // the empty page still renders inside the shell's main area, with a message and no retry control
       await expectSharedFrame(page);
-      await expect(page.getByRole("main").getByText(/\b(no\s+\w+(\s+\w+)?\s+(found|available|yet|to show|to display)|nothing (here|to show|found)|(is|are)\s+empty|empty)\b/i).first()).toBeVisible();
+      await expect(page.getByRole("main").getByText(/\b(no\s+\w+(\s+\w+)?\s+(found|available|yet|to show|to display)|nothing (here|to show|found)|(is|are)\s+empty)\b/i).first()).toBeVisible();
       await expect(page.getByRole("main").getByRole("button", { name: /retry|try again/i })).toHaveCount(0);
     }
     expect(exercised).toBeGreaterThan(0);
@@ -130,11 +130,21 @@ test.describe("site-shell", () => {
       if (seen.count === 0) continue; // page has no data request, so no failure to judge
       exercised++;
       await expectSharedFrame(page);
-      await expect(
-        page.getByRole("main").getByText(/error|fail|wrong|unable|couldn.?t|could not|problem/i).first(),
-      ).toBeVisible();
-      const retry = page.getByRole("main").getByRole("button", { name: /retry|try again/i }).first();
+      const main = page.getByRole("main");
+      const failureMessage = main
+        .getByRole("alert")
+        .or(main.getByText(/something went wrong|(failed|unable|could not|couldn.?t) (to )?(load|be loaded|fetch)|error (loading|while loading)/i))
+        .first();
+      await expect(failureMessage).toBeVisible();
+      const retry = main.getByRole("button", { name: /^\s*(retry|try again)\s*$/i }).first();
       await expect(retry).toBeVisible();
+      // clear the failure, activate retry: the page data is requested again and the error frame goes away
+      failing = false;
+      const refetch = page.waitForRequest((r) => new URL(r.url()).pathname.includes("/api/"));
+      await retry.click();
+      await refetch;
+      await expect(failureMessage).toBeHidden();
+      await expectSharedFrame(page);
     }
     expect(exercised).toBeGreaterThan(0);
   });
