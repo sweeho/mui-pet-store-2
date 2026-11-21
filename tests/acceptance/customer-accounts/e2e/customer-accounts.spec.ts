@@ -32,7 +32,7 @@ async function signOn(page: Page, userName: string, remember = false) {
   await page.getByLabel(/^user name$/i).first().fill(userName);
   await page.getByLabel(/^password$/i).fill(PASSWORD);
   if (remember) await page.getByLabel(/^remember my user name$/i).check();
-  await page.getByRole("button", { name: /sign on/i }).click();
+  await page.getByRole("main").getByRole("button", { name: /^sign on$/i }).click();
 }
 
 async function session(page: Page) {
@@ -60,8 +60,10 @@ test.describe("customer-accounts", () => {
 
   // case: SWHM3-C-0139@v1
   test("SWHM3-C-0139 failed creation redirects to error page", async ({ page }) => {
+    // a user name that is already taken cannot be created again
+    const taken = await createCustomer(page);
     await page.goto("/signup");
-    await page.getByLabel(/^user name$/i).fill("a".repeat(26));
+    await page.getByLabel(/^user name$/i).fill(taken);
     await page.getByLabel(/^password$/i).fill(PASSWORD);
     await page.getByRole("button", { name: /create account/i }).click();
     await expect(page).toHaveURL(/user-creation-error/);
@@ -100,14 +102,14 @@ test.describe("customer-accounts", () => {
   test("SWHM3-C-0151 unauthenticated customer screen request shows sign-on form", async ({ page }) => {
     await page.goto("/customer");
     await expect(page.getByLabel(/^user name$/i).first()).toBeVisible();
-    await expect(page.getByRole("button", { name: /sign on/i })).toBeVisible();
+    await expect(page.getByRole("main").getByRole("button", { name: /^sign on$/i })).toBeVisible();
   });
 
   // case: SWHM3-C-0152@v1
   test("SWHM3-C-0152 profile screen requires sign-on first", async ({ page }) => {
     await page.goto("/account/profile");
-    await expect(page.getByRole("button", { name: /sign on/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /save profile/i })).toHaveCount(0);
+    await expect(page.getByRole("main").getByLabel(/^password$/i)).toBeVisible();
+    await expect(page.getByLabel(/^postal code$/i)).toHaveCount(0);
   });
 
   // case: SWHM3-C-0153@v1
@@ -115,10 +117,10 @@ test.describe("customer-accounts", () => {
     const userName = await createCustomer(page);
     await page.goto("/account/profile");
     await signOn(page, userName);
+    await expect(page.getByRole("button", { name: /save profile/i })).toBeVisible();
     await expect(page).toHaveURL(/\/account\/profile/);
-    const s = await session(page);
-    expect(s.signedOn).toBe(true);
-    expect(s.userName).toBe(userName);
+    await expect.poll(async () => (await session(page)).signedOn).toBe(true);
+    expect((await session(page)).userName).toBe(userName);
   });
 
   // case: SWHM3-C-0155@v1
@@ -159,7 +161,7 @@ test.describe("customer-accounts", () => {
     await expect.poll(async () => (await session(page)).signedOn).toBe(true);
     const cookie = (await page.context().cookies()).find((c) => c.name === "bp_signon");
     expect(cookie).toBeDefined();
-    expect(decodeURIComponent(cookie!.value)).toContain(userName);
+    expect(decodeURIComponent(cookie!.value)).toBe(userName);
   });
 
   // case: SWHM3-C-0161@v1
@@ -167,7 +169,7 @@ test.describe("customer-accounts", () => {
     const userName = await createCustomer(page);
     await page.goto("/customer");
     await signOn(page, userName);
+    await expect(page.getByRole("main").getByRole("button", { name: /^sign on$/i })).toHaveCount(0);
     await expect(page).toHaveURL(/\/customer/);
-    await expect(page.getByRole("button", { name: /sign on/i })).toHaveCount(0);
   });
 });
