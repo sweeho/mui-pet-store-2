@@ -42,8 +42,12 @@ test.describe("checkout-order-placement", () => {
     const billTo = "bill.to@example.com";
     await page.getByLabel(/^e-?mail$/i).fill(billTo);
     await page.getByRole("button", { name: /^place order$/i }).click();
-    await expect(page.getByRole("heading", { name: /^order\s+\S+/i })).toBeVisible();
-    await expect(page.getByText(billTo, { exact: false })).toBeVisible();
+    // Exclude "Order summary"-style headings; the confirmation heading is "Order <id>" where the id has a digit.
+    await expect(
+      page.getByRole("heading", { name: /^order\s+(?!summary\b)\S*\d\S*$/i }).first(),
+    ).toBeVisible();
+    // The address may be repeated on the page; at least one visible occurrence is enough.
+    await expect(page.getByText(billTo, { exact: false }).first()).toBeVisible();
     await page.goto("/cart");
     await expect(page.getByText(/your cart is empty/i)).toBeVisible();
   });
