@@ -24,7 +24,7 @@ test.describe("supplier-fulfillment", () => {
     const row = page.getByRole("row").nth(1);
     const before = await row.innerText();
     await row.getByLabel(/^update$/i).check();
-    await row.getByLabel(/new quantity/i).fill("-3");
+    await row.getByLabel(/^new quantity$/i).fill("-3");
     await page.getByRole("button", { name: /update inventory/i }).click();
     await page.goto("/admin/inventory");
     expect(await page.getByRole("row").nth(1).innerText()).toBe(before);
