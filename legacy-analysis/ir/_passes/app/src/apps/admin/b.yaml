@@ -1,0 +1,420 @@
+records:
+  - record_key: OADM-REQ-0001
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL restrict the admin web entry point to authenticated users holding the administrator role, using a form-based sign-in with a login page and an error page.
+    confidence: high
+    confidence_basis: Declared in web.xml (constraint, login-config, security-role) and backed by login.jsp posting to the container check; the constraint scope is narrower than the whole module (see defect).
+    risk_class: regulated
+    basis: web.xml security-constraint on /AdminRequestProcessor for GET and POST with role administrator; FORM login-config.
+    plain_text: Only users with the administrator role can open the order administration tool, after signing in through a login form.
+    technical_note: web.xml security-constraint MySecureBit0 plus FORM login-config; login.jsp posts j_security_check.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/docroot/WEB-INF/web.xml
+        line_start: 75
+        line_end: 101
+        excerpt: |
+          <security-constraint>
+            <web-resource-collection>
+              <web-resource-name>MySecureBit0</web-resource-name>
+              <url-pattern>/AdminRequestProcessor</url-pattern>
+          ...
+            <auth-constraint>
+              <role-name>administrator</role-name>
+      - path: legacy-source/app/src/apps/admin/src/docroot/login.jsp
+        line_start: 52
+        line_end: 52
+        excerpt: |
+          <form action="j_security_check" method=post>
+    stack_metadata:
+      framework: servlet
+      jsp.page: login.jsp
+  - record_key: OADM-REQ-0002
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL expire an administrator session after 54 minutes of inactivity.
+    confidence: low
+    confidence_basis: A bare literal in web.xml with no comment or other source; the unusual value 54 suggests it may be arbitrary.
+    risk_class: operational
+    basis: session-timeout 54 in web.xml; no authoritative source found.
+    plain_text: An administrator who is inactive for 54 minutes has to sign in again.
+    technical_note: web.xml session-config/session-timeout = 54 (minutes).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/docroot/WEB-INF/web.xml
+        line_start: 67
+        line_end: 69
+        excerpt: |
+          <session-config>
+            <session-timeout>54</session-timeout>
+          </session-config>
+    stack_metadata:
+      session.scope: http-session
+  - record_key: OADM-WF-0001
+    kind: workflow
+    capability_key: order-administration
+    requirement: GIVEN an authenticated administrator posts the manage-orders screen request WHEN the request is processed THEN the system SHALL return a Java Web Start launch descriptor that starts the rich admin client, passing the server name, server port and the session id to it.
+    confidence: high
+    confidence_basis: Built in one method and dispatched on the currentScreen parameter; the descriptor construction is read directly.
+    risk_class: operational
+    basis: AdminRequestProcessor.doPost and buildJNLP.
+    plain_text: From the admin web page the administrator launches the desktop order administration tool, which reuses their signed-in session.
+    technical_note: AdminRequestProcessor.buildJNLP emits JNLP with main class PetStoreAdminClient, proxy class HttpPostPetStoreProxy, host, port, session id; content type application/x-java-jnlp-file; a logout screen value forwards to logout.jsp; a missing currentScreen returns nothing.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/AdminRequestProcessor.java
+        line_start: 102
+        line_end: 119
+        excerpt: |
+          String curScreen = req.getParameter("currentScreen");
+          if (curScreen == null) { return; }
+          ...
+          if(curScreen.equals("manageorders")) {
+              resp.setContentType("application/x-java-jnlp-file");
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/AdminRequestProcessor.java
+        line_start: 87
+        line_end: 91
+        excerpt: |
+          jnlp.append("<application-desc main-class=\"com.sun.j2ee.blueprints.admin.client.PetStoreAdminClient\">\n");
+          jnlp.append("<argument>com.sun.j2ee.blueprints.admin.client.HttpPostPetStoreProxy</argument>\n");
+          jnlp.append("<argument>").append(serverName).append("</argument>\n");
+          jnlp.append("<argument>").append(serverPort).append("</argument>\n");
+          jnlp.append("<argument>").append(req.getSession().getId()).append("</argument>\n");
+    stack_metadata:
+      framework: servlet
+      jsp.page: index.jsp
+  - record_key: OADM-REQ-0003
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL answer rich-client requests only when an existing session is present, and otherwise SHALL reply with an error telling the user the session timed out and to log in again as admin.
+    confidence: medium
+    confidence_basis: One clear check in ApplRequestProcessor; the session is only checked for existence, not role.
+    risk_class: regulated
+    basis: req.getSession(false) null check.
+    plain_text: If the administrator's session has expired, the tool tells them to sign in again instead of showing data.
+    technical_note: ApplRequestProcessor.doPost; error is an XML Response/Error element.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 88
+        line_end: 99
+        excerpt: |
+          if(session == null) {
+              out.println(replyHeader +
+                          "<Error>Session Timed Out; Please exit and " +
+                          "login as admin from the login page</Error>\n" +
+                          "</Response>\n");
+    stack_metadata:
+      framework: servlet
+      session.scope: http-session
+  - record_key: OADM-INT-0001
+    kind: integration
+    capability_key: order-administration
+    requirement: The system SHALL accept XML requests from the admin client with a Type of GETORDERS, UPDATESTATUS, REVENUE or ORDERS, and SHALL answer any other Type, or an unparseable request, with an Error response.
+    confidence: high
+    confidence_basis: Dispatch in processRequest, with the client proxy producing matching request types.
+    risk_class: operational
+    basis: processRequest if/else chain.
+    plain_text: The admin tool talks to the server through four kinds of request: list orders, update order statuses, revenue report, order-count report.
+    technical_note: ApplRequestProcessor.processRequest; client side HttpPostPetStoreProxy generates these.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 122
+        line_end: 147
+        excerpt: |
+          if (reqType.equals("GETORDERS")) {
+          else if (reqType.equals("UPDATESTATUS")) {
+          else if (reqType.equals("REVENUE") || reqType.equals("ORDERS")) {
+          else { ... "Unknown request type - " + reqType
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/HttpPostPetStoreProxy.java
+        line_start: 406
+        line_end: 406
+        excerpt: |
+          appendElement(sb, "Type", "UPDATESTATUS");
+    stack_metadata:
+      framework: servlet
+  - record_key: OADM-REQ-0004
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL list orders for a requested status, returning the total count and, for each order, the order id, user id, order date, order amount and status.
+    confidence: medium
+    confidence_basis: One clear implementation; the data comes from the order processing facade, whose behaviour is outside this module.
+    risk_class: financial
+    basis: ApplRequestProcessor.getOrders delegates to getOrdersByStatus.
+    plain_text: The administrator can see orders by status, with who ordered, when, how much and the current status.
+    technical_note: getOrders -> AdminRequestBD.getOrdersByStatus -> OPCAdminFacade remote EJB.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 166
+        line_end: 197
+        excerpt: |
+          OrdersTO orders = bd.getOrdersByStatus(status);
+          responseBuffer.append("<TotalCount>" + orders.size() + "</TotalCount>\n" );
+          ... <OrderId> <UserId> <OrderDate> <OrderAmount> <OrderStatus>
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/AdminRequestBD.java
+        line_start: 221
+        line_end: 233
+        excerpt: |
+          public OrdersTO getOrdersByStatus(String status) throws AdminBDException {
+              try { return opcAdminEJB.getOrdersByStatus(status);
+    stack_metadata:
+      ejb.bean: OPCAdminFacade
+  - record_key: OADM-REQ-0005
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL, when the administrator opens or refreshes the tool, load the orders of every status (PENDING, APPROVED, DENIED and COMPLETED) and show them in a read-only order view.
+    confidence: medium
+    confidence_basis: Read from DataSource loading code, one place.
+    risk_class: operational
+    basis: DataSource requests orders for the four statuses.
+    plain_text: The tool shows all orders, whatever their status.
+    technical_note: DataSource.getServerOrderData calls server.getOrders for each of four statuses.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/DataSource.java
+        line_start: 130
+        line_end: 141
+        excerpt: |
+          server.getOrders(PetStoreProxy.Order.PENDING)));
+          server.getOrders(PetStoreProxy.Order.APPROVED)));
+          server.getOrders(PetStoreProxy.Order.DENIED)));
+          server.getOrders(PetStoreProxy.Order.COMPLETED)));
+    stack_metadata:
+      framework: swing
+  - record_key: OADM-BR-0001
+    kind: business-rule
+    capability_key: order-approval
+    requirement: The system SHALL let an administrator set the status of a PENDING order only to PENDING, APPROVED or DENIED, singly or in bulk by selecting rows, and SHALL treat only orders in PENDING status as editable.
+    confidence: high
+    confidence_basis: Enforced in the approve panel (combo choices), the table model (status list restricted to PENDING) and the proxy order status check.
+    risk_class: financial
+    basis: OrdersApprovePanel status choices and bulk approve/deny; OrdersApproveTableModel statusList; PetStoreProxy status validation.
+    plain_text: Administrators can approve or deny orders waiting for approval, one at a time or many together. Orders that are no longer pending cannot be changed.
+    technical_note: OrdersApprovePanel combo items PENDING/APPROVED/DENIED; OrdersApproveTableModel statusList = {PENDING}.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/OrdersApprovePanel.java
+        line_start: 82
+        line_end: 84
+        excerpt: |
+          cellOptions.addItem(PetStoreProxy.Order.PENDING);
+          cellOptions.addItem(PetStoreProxy.Order.APPROVED);
+          cellOptions.addItem(PetStoreProxy.Order.DENIED);
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/DataSource.java
+        line_start: 419
+        line_end: 419
+        excerpt: |
+          statusList = new String[] { PetStoreProxy.Order.PENDING };
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/PetStoreProxy.java
+        line_start: 83
+        line_end: 85
+        excerpt: |
+          if ((status != Order.PENDING) &&
+              (status != Order.APPROVED) &&
+              (status != Order.DENIED) &&
+    stack_metadata:
+      framework: swing
+  - record_key: OADM-WF-0002
+    kind: workflow
+    capability_key: order-approval
+    requirement: GIVEN an administrator has marked orders as APPROVED or DENIED WHEN they commit THEN the system SHALL send the approved set and the denied set as separate status updates, SHALL ignore the commit if no order is marked, SHALL disable the approve, deny and commit actions while the update runs, and SHALL reload all order data afterwards.
+    confidence: high
+    confidence_basis: Client commit logic and server update handler read together.
+    risk_class: financial
+    basis: DataSource.commit and ApplRequestProcessor.updateOrders.
+    plain_text: Approvals and denials take effect only when the administrator commits them; the tool then refreshes the order list.
+    technical_note: OrdersApproveTableModel.commit calls server.updateStatus twice (APPROVED then DENIED) then getServerOrderData.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/DataSource.java
+        line_start: 435
+        line_end: 474
+        excerpt: |
+          if (approvedRows.size() == 0 && deniedRows.size() == 0) { return; }
+          ...
+          server.updateStatus(approvedOrders, PetStoreProxy.Order.APPROVED);
+          server.updateStatus(deniedOrders, PetStoreProxy.Order.DENIED);
+          return getServerOrderData();
+    stack_metadata:
+      framework: swing
+  - record_key: OADM-INT-0002
+    kind: integration
+    capability_key: order-approval
+    requirement: The system SHALL turn an UPDATESTATUS request into an order-approval XML message listing each order id with its new status (skipping entries lacking an id or status) and SHALL put it on the asynchronous messaging sender for the order processing centre; it SHALL answer SUCCESS once queued, not once applied.
+    confidence: high
+    confidence_basis: Handler and business delegate read; the message is built from XML documents shared with the order processing module.
+    risk_class: financial
+    basis: ApplRequestProcessor.updateOrders and AdminRequestBD.updateOrders.
+    plain_text: Approval decisions are passed to the order processing system as a message; the tool reports success when the message is sent, not when the orders are actually updated.
+    technical_note: OrderApproval/ChangedOrder via AsyncSender.sendAMessage(oa.toXML()). Status values are assumed identical between schemas (code comment).
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 205
+        line_end: 237
+        excerpt: |
+          if (orderId != null && orderStatus != null) {
+              oa.addOrder(new ChangedOrder(orderId, orderStatus));
+          ...
+          bd.updateOrders(oa);
+          return replyHeader + "<Type>UPDATEORDERS</Type>\n"
+              + "<Status>SUCCESS</Status>\n"
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/AdminRequestBD.java
+        line_start: 235
+        line_end: 250
+        excerpt: |
+          AsyncSender sender= home.create();
+          sender.sendAMessage(oa.toXML());
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        kind: document
+        anchor: "1.1 Order flow"
+        excerpt: |
+          otherwise --> PENDING until the Admin client approves or denies
+    stack_metadata:
+      jms.queue: OrderApproval (via AsyncSender)
+      ejb.bean: AsyncSenderEJB
+  - record_key: OADM-REQ-0006
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL warn the administrator and ask for confirmation before refreshing the order data when any order in the approval table has been marked but not committed.
+    confidence: medium
+    confidence_basis: One clear check in the refresh action.
+    risk_class: operational
+    basis: Refresh action compares each status to PENDING.
+    plain_text: Refreshing the list while there are unsaved approvals or denials prompts the administrator to confirm, so work is not lost silently.
+    technical_note: DataSource refresh action; RefreshWarningDialog message keys.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/DataSource.java
+        line_start: 219
+        line_end: 237
+        excerpt: |
+          if (!PetStoreProxy.Order.PENDING.equals(
+          ordersApproveTableModel.getValueAt(i, 4))) { isUncommitted = true;
+          ... JOptionPane.showConfirmDialog(parent, ... "RefreshWarningDialog.message"
+    stack_metadata:
+      framework: swing
+  - record_key: OADM-REQ-0007
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL provide sales charts, for a date range, showing revenue (sum of amounts) or order counts by category, and per item when a category is selected, with a total.
+    confidence: medium
+    confidence_basis: Server handler and client chart models read; the totals and category drill-down logic is in one place each.
+    risk_class: financial
+    basis: ApplRequestProcessor.getChartInfo; DataSource ChartModel.
+    plain_text: The administrator can chart sales revenue or order counts between two dates, by category and then by item within a category.
+    technical_note: REVENUE or ORDERS request; Category elements when no ReqCategory, Item elements otherwise; TotalSales sums values. Client defaults to 1/1/2001 through 12/31/2002.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 239
+        line_end: 297
+        excerpt: |
+          String xmlElement = (category == null) ? "Category" : "Item";
+          if (request.equals("REVENUE")) { ... totalAmount += amount;
+          ... responseBuffer.append("<TotalSales>");
+      - path: legacy-source/app/src/apps/admin/src/client/com/sun/j2ee/blueprints/admin/client/DataSource.java
+        line_start: 523
+        line_end: 528
+        excerpt: |
+          /** The default start date is 1/12/2001 for the demo. TODO In the
+           * released application this should default to the present day. */
+          private Date startDate = new Date("1/1/2001");
+          private Date endDate = new Date("12/31/2002");
+    stack_metadata:
+      framework: swing
+  - record_key: OADM-REQ-0008
+    kind: requirement
+    capability_key: order-administration
+    requirement: The system SHALL read chart request dates in month/day/year form.
+    confidence: medium
+    confidence_basis: One parser; no validation, so malformed dates are unhandled.
+    risk_class: operational
+    basis: getProperDate tokenises on "/".
+    plain_text: Report dates are entered as month/day/year.
+    technical_note: ApplRequestProcessor.getProperDate; deprecated java.util.Date constructor.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 319
+        line_end: 326
+        excerpt: |
+          StringTokenizer tokens = new StringTokenizer(inpDate, "/");
+          Integer month = ...; Integer day = ...; Integer year = ...;
+          return(new Date(year.intValue()-1900, month.intValue()-1, day.intValue()));
+    stack_metadata:
+      framework: servlet
+suspected_defects:
+  - capability_key: order-administration
+    record_keys: [OADM-REQ-0001, OADM-INT-0001]
+    severity: high
+    category: other
+    title: Data endpoint used by the rich client is not covered by the security constraint
+    description: >
+      Only /AdminRequestProcessor is protected by the administrator constraint. /ApplRequestProcessor, which lists and approves orders and returns revenue, only checks that a session exists, so any session (not necessarily an administrator's) is accepted.
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/docroot/WEB-INF/web.xml
+        line_start: 75
+        line_end: 88
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 88
+        line_end: 99
+  - capability_key: order-administration
+    record_keys: [OADM-REQ-0001]
+    severity: medium
+    category: other
+    title: Login form is pre-filled with the administrator user id and password
+    description: >
+      login.jsp ships default values jps_admin / admin in the input fields, and the transport guarantee is NONE (no encryption).
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/docroot/login.jsp
+        line_start: 60
+        line_end: 66
+  - capability_key: order-approval
+    record_keys: [OADM-INT-0002]
+    severity: medium
+    category: other
+    title: Success is reported when the approval message is queued, not applied
+    description: >
+      updateOrders answers SUCCESS after queuing the message; later failures are invisible to the administrator.
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 229
+        line_end: 237
+  - capability_key: order-administration
+    record_keys: [OADM-REQ-0004, OADM-REQ-0007]
+    severity: medium
+    category: error-swallowed
+    title: Backend failures return a null reply
+    description: >
+      getOrders and getChartInfo catch AdminBDException, print the stack trace and return null, so the client receives an empty body instead of an error; getOrders also returns null when no order set is returned.
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 197
+        line_end: 200
+  - capability_key: order-administration
+    record_keys: [OADM-REQ-0007]
+    severity: low
+    category: inconsistent-rounding
+    title: Revenue totalled in single-precision floating point
+    description: >
+      Revenue amounts are summed as float, so totals can lose precision for money values.
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/ApplRequestProcessor.java
+        line_start: 262
+        line_end: 270
+  - capability_key: order-administration
+    record_keys: [OADM-WF-0001]
+    severity: low
+    category: other
+    title: Logout screen falls through to the manage-orders check
+    description: >
+      After forwarding to logout the code continues to the next if, and a request without currentScreen returns an empty response.
+    traces:
+      - path: legacy-source/app/src/apps/admin/src/admin/com/sun/j2ee/blueprints/admin/web/AdminRequestProcessor.java
+        line_start: 109
+        line_end: 112
+findings: []
