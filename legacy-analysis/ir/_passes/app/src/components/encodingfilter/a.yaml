@@ -1,0 +1,57 @@
+records:
+  - record_key: LOC-REQ-0001
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL decode the body and parameters of every incoming web request using the character encoding configured for the application (UTF-8 in the Pet Store deployment) before any other processing reads them.
+    confidence: high
+    confidence_basis: >
+      Filter code sets the request encoding, and the web deployment descriptor both declares the UTF-8 init parameter and maps the filter to every URL. Two places agree; no test or document seen.
+    risk_class: operational
+    basis: >
+      EncodingFilter.doFilter calls setCharacterEncoding with the configured value then continues the chain; web.xml maps it to /*.
+    plain_text: >
+      All text submitted by customers, including non-Latin characters such as Japanese and Chinese, is read as UTF-8 so it is not garbled.
+    technical_note: >
+      Servlet Filter EncodingFilter reads init-param "encoding" in init(); mapped on /* in the petstore web.xml and declared before SignOnFilter. Applies to request only; response encoding is not set.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/encodingfilter/src/com/sun/j2ee/blueprints/encodingfilter/web/EncodingFilter.java
+        line_start: 61
+        line_end: 78
+        excerpt: |
+          public void init(FilterConfig config) throws ServletException {
+              this.config = config;
+              this.targetEncoding = config.getInitParameter("encoding");
+          }
+          ...
+              HttpServletRequest request = (HttpServletRequest)srequest;
+              request.setCharacterEncoding(targetEncoding);
+              // move on to the next
+             chain.doFilter(srequest,sresponse);
+      - path: legacy-source/app/src/apps/petstore/src/docroot/WEB-INF/web.xml
+        line_start: 47
+        line_end: 72
+        excerpt: |
+          <filter-name>EncodingFilter</filter-name>
+          <param-name>encoding</param-name>
+          <param-value>UTF-8</param-value>
+          <filter-mapping>
+            <filter-name>EncodingFilter</filter-name>
+            <url-pattern>/*</url-pattern>
+    stack_metadata:
+      framework: servlet-filter
+      declarative_validator: web.xml filter-mapping /*
+suspected_defects:
+  - capability_key: localization
+    record_keys: [LOC-REQ-0001]
+    severity: low
+    category: other
+    title: Default encoding ASCII is overwritten with null when init parameter is missing
+    description: >
+      The field defaults to "ASCII", but init() unconditionally assigns the init parameter, so a missing parameter yields null and the default is never used. The deployed descriptor supplies UTF-8, so it is latent.
+    traces:
+      - path: legacy-source/app/src/components/encodingfilter/src/com/sun/j2ee/blueprints/encodingfilter/web/EncodingFilter.java
+        line_start: 58
+        line_end: 63
+findings: []
