@@ -1,0 +1,73 @@
+records:
+  - record_key: BATCH-REQ-0001
+    kind: requirement
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL provide a shared diagnostic print facility (messages and exception details) whose output is controlled by a single compile-time switch, and SHALL emit no diagnostic output while that switch is off.
+    confidence: high
+    confidence_basis: >
+      The whole class is read and the switch is a constant false checked in every output method; no tests or docs exist, but the behaviour is unambiguous.
+    risk_class: operational
+    basis: >
+      Debug.debuggingOn is a final boolean set to false, and every print method is guarded by it. No capability fits exactly; filed under batch-operations as the nearest operational home.
+    plain_text: >
+      The application has an internal troubleshooting log that is switched off in the delivered product, so it writes nothing.
+    technical_note: >
+      Debug.java; debuggingOn is a compile-time constant. Helper used by other components for tracing. When on, println prefixes ">>" and writes to stderr; throwable printing writes message to stdout and stack trace to stderr.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/util/tracer/src/com/sun/j2ee/blueprints/util/tracer/Debug.java
+        line_start: 46
+        line_end: 58
+        excerpt: |
+          public static final boolean debuggingOn = false;
+
+          public static void print(String msg) {
+              if (debuggingOn) {
+                  System.err.print(msg);
+              }
+          }
+
+          public static void println(String msg) {
+              if (debuggingOn) {
+                  System.err.println(">>" + msg);
+              }
+          }
+    stack_metadata:
+      framework: plain-java
+  - record_key: BATCH-REQ-0002
+    kind: requirement
+    capability_key: batch-operations
+    requirement: >
+      GIVEN diagnostics are enabled WHEN an exception is reported THEN the system SHALL print the exception message, any supplied extra text, and the stack trace.
+    confidence: medium
+    confidence_basis: >
+      One clear place; behaviour is dormant because the switch is false.
+    risk_class: operational
+    basis: >
+      Throwable overload of print; Exception overloads delegate to it.
+    plain_text: >
+      When troubleshooting is turned on, errors are reported with their message, optional note and full detail.
+    technical_note: >
+      Debug.print(Throwable,String) lines 68-75; Exception overloads delegate. Unreachable at runtime as shipped (switch false).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/util/tracer/src/com/sun/j2ee/blueprints/util/tracer/Debug.java
+        line_start: 60
+        line_end: 75
+        excerpt: |
+          public static void print(Exception e, String msg) {
+              print((Throwable)e, msg);
+          }
+          public static void print(Throwable t, String msg) {
+              if (debuggingOn) {
+                  System.out.println("Received throwable with Message: "+t.getMessage());
+                  if (msg != null)
+                      System.out.print(msg);
+                  t.printStackTrace();
+              }
+          }
+    stack_metadata:
+      framework: plain-java
+findings: []
+suspected_defects: []
