@@ -4,7 +4,9 @@
  * Contract: admin sign-in at /admin (fields labelled Username and Password, button "Sign in"),
  * administrator jps_admin/admin. The order tool /admin/orders lists pending orders, each row with
  * an "Approve" and a "Deny" button, and has a "Save" button that commits all decisions of the
- * batch in one request (one non-GET request carrying every decision).
+ * batch in one request (one non-GET request carrying every decision). The saved batch is sent on as
+ * an order-approval message, which is processed: afterwards the decided orders are no longer
+ * listed as PENDING at /admin/orders.
  */
 import { expect, test } from "@playwright/test";
 
@@ -63,5 +65,17 @@ test.describe("order-approval", () => {
     expect(decisionOf(ids[0])).toBe("APPROVED");
     expect(decisionOf(ids[1])).toBe("APPROVED");
     expect(decisionOf(ids[2])).toBe("DENIED");
+
+    // The message was sent and processed: each decided order has left the PENDING list.
+    await expect
+      .poll(
+        async () => {
+          await page.goto("/admin/orders");
+          const pending = await page.getByRole("row").filter({ hasText: "PENDING" }).allTextContents();
+          return ids.filter((id) => pending.some((t) => t.includes(id))).length;
+        },
+        { timeout: 15000 },
+      )
+      .toBe(0);
   });
 });
