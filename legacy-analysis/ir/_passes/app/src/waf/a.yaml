@@ -1,0 +1,264 @@
+records:
+  - record_key: LOCALIZATION-REQ-0001
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL change the shopper's session locale to the requested locale when a locale-change request names a valid locale code, and SHALL report a failure when the code cannot be parsed.
+    confidence: medium
+    confidence_basis: >
+      Read in the web-tier action and mirrored by the EJB-tier action, but the framework demo page is the only caller I found in this module; whether the storefront uses it was not visible here.
+    risk_class: presentational
+    basis: >
+      The web action reads the "locale" parameter, converts it, stores it in the session and raises a change event; if conversion returns null it throws an action exception.
+    plain_text: >
+      A shopper can switch the store's language, and the choice is remembered for the rest of the visit. An unrecognised language choice is rejected with an error.
+    technical_note: >
+      ChangeLocaleHTMLAction.perform stores the Locale under the session key com.sun.j2ee.blueprints.waf.LOCALE and returns ChangeLocaleEvent; ChangeLocaleEJBAction copies it to the state machine attribute "locale".
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/action/actions/ChangeLocaleHTMLAction.java
+        line_start: 73
+        line_end: 83
+        excerpt: |
+          String localeString = request.getParameter("locale");
+          Locale locale = I18nUtil.getLocaleFromString(localeString);
+          HttpSession session = request.getSession();
+          if (locale != null) {
+              session.setAttribute(LOCALE,locale);
+              return new ChangeLocaleEvent(locale);
+          } else {
+              throw new HTMLActionException("ChangeLocaleAction: Unable to change language to " + localeString);
+          }
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/ejb/action/actions/ChangeLocaleEJBAction.java
+        line_start: 54
+        line_end: 54
+        excerpt: |
+          machine.setAttribute("locale", ce.getLocale());
+    stack_metadata:
+      framework: WAF (J2EE Blueprints web application framework)
+      session.scope: session
+  - record_key: LOCALIZATION-RULE-0002
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      The system SHALL interpret a locale code as language_COUNTRY[_variant], SHALL treat the text "default" (any case) as the server default locale, and SHALL treat null or a code with no underscore as invalid.
+    confidence: medium
+    confidence_basis: >
+      One clear parsing routine; I saw only the first lines of the variant handling and no test or document describing the format.
+    risk_class: presentational
+    basis: >
+      I18nUtil.getLocaleFromString returns null for null input and for strings without '_', Locale.getDefault() for "default", and otherwise splits on underscores.
+    plain_text: >
+      Language choices are written like en_US or ja_JP. Anything not in that form is refused, except the word "default", which means the server's own language.
+    technical_note: >
+      I18nUtil.getLocaleFromString, lines 168-183.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 168
+        line_end: 183
+        excerpt: |
+          public static Locale getLocaleFromString(String localeString) {
+              if (localeString == null) return null;
+              if (localeString.toLowerCase().equals("default")) return Locale.getDefault();
+              int languageIndex = localeString.indexOf('_');
+              if (languageIndex  == -1) return null;
+    stack_metadata:
+      framework: WAF
+  - record_key: LOCALIZATION-RULE-0003
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      GIVEN a request reaches the front controller and the session has no locale, WHEN the request is processed, THEN the system SHALL set the session locale to the configured default locale (en_US).
+    confidence: high
+    confidence_basis: >
+      Enforced in the front controller code and configured in web.xml (default_locale en_US).
+    risk_class: presentational
+    basis: >
+      MainServlet.doProcess sets the default before processing; default comes from the default_locale init parameter.
+    plain_text: >
+      A visitor who has not chosen a language is shown the store in US English.
+    technical_note: >
+      MainServlet.doProcess and init (default_locale); web.xml init-param default_locale=en_US on webTierEntryPoint.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/MainServlet.java
+        line_start: 110
+        line_end: 113
+        excerpt: |
+          // set the locale of the user to default if not set
+          if (request.getSession().getAttribute(WebKeys.LOCALE) == null) {
+              request.getSession().setAttribute(WebKeys.LOCALE, defaultLocale);
+          }
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 45
+        line_end: 48
+        excerpt: |
+          <init-param>
+            <param-name>default_locale</param-name>
+            <param-value>en_US</param-value>
+          </init-param>
+    stack_metadata:
+      framework: WAF
+      session.scope: session
+  - record_key: LOCALIZATION-RULE-0004
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      The system SHALL choose the screen-definition locale for a page request as: the "locale" request parameter if present, otherwise the session locale; and SHALL fall back to the default locale when no screens are defined for the chosen locale.
+    confidence: medium
+    confidence_basis: >
+      One clear place (TemplateServlet); the fallback behaviour is visible in code only.
+    risk_class: presentational
+    basis: >
+      TemplateServlet picks the parameter over the session and replaces an unknown locale with the default.
+    plain_text: >
+      A language named in the page address wins over the remembered choice. If the store has no pages for that language, it shows the default language instead.
+    technical_note: >
+      TemplateServlet.doProcess; the supported locale list is the init-param "locales" (en_US only in this web.xml).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 157
+        line_end: 166
+        excerpt: |
+          String languageParam = request.getParameter("locale");
+          // The language when specified as a parameter overrides the language set in the session
+          if (languageParam != null) {
+              localeString = languageParam;
+          } else if (request.getSession().getAttribute(WebKeys.LOCALE) != null) {
+              localeString = ((Locale)request.getSession().getAttribute(WebKeys.LOCALE)).toString();
+          }
+          if (allScreens.get(localeString) == null) {
+             localeString = defaultLocale;
+          }
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 55
+        line_end: 58
+        excerpt: |
+          <init-param>
+            <param-name>locales</param-name>
+            <param-value>en_US</param-value>
+          </init-param>
+    stack_metadata:
+      framework: WAF
+      jsp.page: "*.screen via TemplateServlet"
+  - record_key: LOCALIZATION-REQ-0005
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL format currency and numbers according to the shopper's locale with a caller-specified number of decimal places, and SHALL split search keywords into words using the locale's word-break rules.
+    confidence: medium
+    confidence_basis: >
+      Utility routines clear in one file; their callers are outside this module, so actual use was not verified.
+    risk_class: financial
+    basis: >
+      I18nUtil.formatCurrency/formatNumber set min and max fraction digits to the precision; parseKeywords uses BreakIterator for the locale.
+    plain_text: >
+      Prices and numbers appear in the style of the shopper's language, and search words are split the way that language writes them.
+    technical_note: >
+      I18nUtil formatCurrency, formatNumber, parseKeywords (locale-aware overload); parseKeywords returns null on error after logging via Debug.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 60
+        line_end: 82
+        excerpt: |
+          public static String formatCurrency(double amount, int precision, Locale locale){
+              NumberFormat nf = NumberFormat.getCurrencyInstance(locale);
+              nf.setMinimumFractionDigits(precision);
+              nf.setMaximumFractionDigits(precision);
+              return nf.format(amount);
+          }
+    stack_metadata:
+      framework: WAF
+  - record_key: CUSTOMER-ACCOUNTS-RULE-0006
+    kind: business-rule
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL expire an inactive web session after 30 minutes.
+    confidence: low
+    confidence_basis: >
+      A single configuration literal; no code, comment or document states the intent.
+    risk_class: operational
+    basis: >
+      web.xml session-config declares session-timeout 30.
+    plain_text: >
+      A shopper who is inactive for 30 minutes is signed out and loses their session.
+    technical_note: >
+      web.xml session-config/session-timeout = 30 (minutes). No authoritative source other than the literal was found.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 100
+        line_end: 102
+        excerpt: |
+          <session-config>
+            <session-timeout>30</session-timeout>
+          </session-config>
+    stack_metadata:
+      framework: servlet container
+      session.scope: session
+  - record_key: CUSTOMER-ACCOUNTS-RULE-0007
+    kind: business-rule
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL route pages marked as requiring sign-in only to signed-in customers, and SHALL map sign-in failure, duplicate account and general failure exceptions to the SIGN_IN_ERROR, DUPLICATE_ACCOUNT and ERROR screens.
+    confidence: medium
+    confidence_basis: >
+      The declarations are in configuration (requestmappings.xml) and parsed by the WAF; enforcement of the flag was not located in this module, so I did not confirm it blocks anonymous access.
+    risk_class: regulated
+    basis: >
+      requestmappings.xml marks editaccount, signin, placeorder, validatebillinginformation, validateshippinginformation and commitorder with requiresSignin="true"; exception-mapping entries pick the error screens.
+    plain_text: >
+      Editing an account, placing an order and entering billing or shipping details need the customer to be signed in. Failed sign-in, duplicate accounts and unexpected errors each show their own error page.
+    technical_note: >
+      URLMappingsXmlDAO parses REQUIRES_SIGNIN; enforcement is expected in the petstore handlers/flow, outside this shard.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+        line_start: 56
+        line_end: 59
+        excerpt: |
+          <url-mapping url="/editaccount" screen="EDIT_ACCOUNT" requiresSignin="true"/>
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+        line_start: 129
+        line_end: 131
+        excerpt: |
+          <exception-mapping exception-class="com.sun.j2ee.blueprints.petstore.control.exceptions.SigninFailedException" screen="SIGN_IN_ERROR"/>
+          <exception-mapping exception-class="com.sun.j2ee.blueprints.petstore.control.exceptions.DuplicateAccountException" screen="DUPLICATE_ACCOUNT"/>
+          <exception-mapping exception-class="com.sun.j2ee.blueprints.petstore.control.exceptions.GeneralFailureException" screen="ERROR"/>
+    stack_metadata:
+      framework: WAF
+      struts.action: n/a (WAF url-mapping)
+findings:
+  - kind: conflict
+    path: legacy-source/app/src/waf/src/docroot/changelocale.jsp
+    description: >
+      The demo page offers en_US, de_DE, ja_JP and zh_CN, the capability list and runbook name en, ja and zh, the admin guide says only en and ja ship, and web.xml lists only en_US. A human needs to decide which locales are in scope. The doc anchor is the admin guide section 3.2 "Adding a localization".
+suspected_defects:
+  - capability_key: localization
+    record_keys: [LOCALIZATION-RULE-0004]
+    severity: low
+    category: other
+    title: Locale parameter is not validated and may clash with the supported list
+    description: >
+      The "locale" request parameter is used unparsed; an unsupported value silently falls back to the default. Separately, the web.xml supports only en_US while the demo page offers four locales and the admin guide says en and ja.
+    traces:
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 157
+        line_end: 166
+      - path: legacy-analysis/sources/pdf/petstore-admin-guide/extracted.md
+        kind: document
+        anchor: "3.2 Adding a localization"
+  - capability_key: localization
+    record_keys: [LOCALIZATION-RULE-0002]
+    severity: low
+    category: error-swallowed
+    title: Unparseable locale codes ignored by the screen selector, thrown by the action
+    description: >
+      The change-locale action throws on a bad code, but TemplateServlet falls back silently, so behaviour differs between the two paths.
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/action/actions/ChangeLocaleHTMLAction.java
+        line_start: 81
+        line_end: 83
