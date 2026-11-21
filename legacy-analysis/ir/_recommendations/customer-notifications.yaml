@@ -1,0 +1,73 @@
+recommendations:
+  - record_key: NOTIF-RULE-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Only documents state it and the enforcing code is in OPC; ORD-APPR-REQ-0008 and CUSTNO-REQ-0001 confirm the code flags. Trust code plus config.
+  - record_key: CUSTN-RULE-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Constants and stylesheet selection agree across three MDBs.
+  - record_key: CUSTNO-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      petstore.properties ships false; but env-entry flags in ejb-jar are the enforced switches, so the Business Owner should confirm which config governs.
+  - record_key: CUSTNOT-ENT-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      DTD only, duplicate of NOTIF-ENT-0001; consider merging.
+  - record_key: CUSTNOTIF-BR-0003
+    recommendation: edit
+    confidence: low
+    reason: >
+      Transacted-session flag is normally ignored under container transaction; confirm intended semantic (release only on commit).
+    edited_requirement: >
+      The system SHALL release each queued message only if the caller's transaction commits.
+  - record_key: CUSTNOTIF-REQ-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Unchecked method permission on a local-only bean; confirm as internal-only access.
+  - record_key: NOTIF-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Single catch/finally, clear.
+  - record_key: NOTIF-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      DTD and parser agree.
+  - record_key: NOTIF-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Code and resource-ref agree; the unused locale parameter is implementation detail.
+  - record_key: NOTIF-RULE-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Confirm what the code does; whether silent discard is right is the Business Owner's decision in the defect register.
+  - record_key: NOTIF-RULE-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Redelivery limits are container configuration; poison-message loop risk goes to the Business Owner.
+  - record_key: ORD-APPR-REQ-0009
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Stylesheets exist; default fallback unverified, and CUSTN-RULE-0002 says a missing sheet fails, so the conflict goes to Intent.
+  - record_key: NOTIF-INT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Code and descriptor agree.
+  - record_key: NOTIF-WF-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      MDB, descriptor and DTD agree.
