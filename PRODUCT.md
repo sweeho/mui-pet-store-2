@@ -68,7 +68,7 @@ No source documents were uploaded, so no disagreement between documents and the 
 - customer-notifications: queue-based HTML order-status e-mail with enablement switches, locale-specific rendering and defined failure handling.
 - order-administration: administrator-only management client with order list by status, batch decisions, sales charts and session expiry.
 - batch-operations: nightly and weekly batch chain with backup, Finance extract, reports, integrity check, purge, logging and exit codes.
-- Site shell (from the specification; describe it in one line)
+- site-shell: landing page, one global navigation rail, shared header and footer, and the shared empty, error and loading frames every page renders inside (→ `openspec/specs/site-shell/` once archived; change swhm3-i-0001-bootstrap-landing-page-and).
 
 ## Screens
 
