@@ -1,0 +1,49 @@
+# Java Pet Store 1.3.2 on the J2EE 1.3.1 Reference Implementation (Cloudscape database
+# and JMS are inside the RI, so one service). See README.md before starting.
+# Build context is the legacy source tree, which must be present at ../../legacy-source.
+services:
+  petstore:
+    build:
+      context: ../../legacy-source
+      additional_contexts:
+        vendor: ./vendor # j2sdk 1.4 and J2EE SDK 1.3.1 archives, not in the repository
+      dockerfile_inline: |
+        FROM debian:bullseye-slim
+        RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates unzip procps \
+            && rm -rf /var/lib/apt/lists/*
+        COPY --from=vendor / /vendor/
+        # Java 1.4 and the J2EE 1.3.1 RI: unpack whatever archives are in vendor/
+        RUN set -e; mkdir -p /opt/java /opt/j2ee; \
+            tar -xzf /vendor/j2sdk-1_4_2-linux.tar.gz -C /opt/java --strip-components=1; \
+            tar -xzf /vendor/j2sdkee-1_3_1-linux.tar.gz -C /opt/j2ee --strip-components=1
+        # Ant is not in the legacy tree (the bundled copy was removed); 1.6.5 runs on Java 1.4
+        RUN curl -fsSL https://archive.apache.org/dist/ant/binaries/apache-ant-1.6.5-bin.tar.gz \
+            | tar -xz -C /opt && mv /opt/apache-ant-1.6.5 /opt/ant
+        ENV JAVA_HOME=/opt/java J2EE_HOME=/opt/j2ee ANT_HOME=/opt/ant \
+            PATH=/opt/java/bin:/opt/j2ee/bin:/opt/ant/bin:$PATH
+        COPY app /petstore
+        WORKDIR /petstore
+        # Build the four EARs with the legacy Ant build (src/build.xml), then configure the RI
+        RUN ant -Dj2ee.home=$J2EE_HOME -buildfile src/build.xml core
+    environment:
+      JAVA_HOME: /opt/java
+      J2EE_HOME: /opt/j2ee
+    # Start order per the Sun install guide: Cloudscape, RI, one-off setup, deploy the EARs.
+    command:
+      - sh
+      - -c
+      - |
+        cloudscape -start &
+        j2ee -verbose &
+        sleep 40
+        ant -Dj2ee.home=$$J2EE_HOME -buildfile setup.xml core
+        ant -Dj2ee.home=$$J2EE_HOME -buildfile setup.xml deploy
+        wait
+    ports:
+      - "8000:8000" # the RI web container: /petstore, /opc, /supplier, /admin
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8000/petstore/ >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 40
+      start_period: 120s
