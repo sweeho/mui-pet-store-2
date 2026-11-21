@@ -96,8 +96,8 @@ GIVEN an order whose locale is neither US nor Japan (for example Chinese), WHEN 
 - **THEN** it remains PENDING
 
 ### Requirement: Single approval-state record per order
-Recovered from: APP-ENT-0008
 ID: SWHM3-R-0011
+Recovered from: APP-ENT-0008
 The system SHALL keep for each order a single approval-state record with a mandatory status.
 
 #### Scenario: Status mandatory
@@ -133,8 +133,8 @@ GIVEN an incoming OrderApproval document WHEN it is parsed THEN the system SHALL
 - **THEN** it is rejected
 
 ### Requirement: Order status listing
-Recovered from: ORDER-APPROVAL-BUSINESS-RULE-0001
 ID: SWHM3-R-0012
+Recovered from: ORDER-APPROVAL-BUSINESS-RULE-0001
 The system SHALL expose the status of each purchase order by joining the order with its order-manager status, listing order id, user, date, value and status, and only orders that have a matching order-manager record SHALL appear.
 
 #### Scenario: Order without status record
