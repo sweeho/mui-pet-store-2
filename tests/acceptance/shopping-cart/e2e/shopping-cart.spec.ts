@@ -22,8 +22,19 @@ test.describe("shopping-cart", () => {
       const p1 = await one.newPage();
       const p2 = await two.newPage();
       await p1.goto("/store");
-      await p1.getByRole("button", { name: /add to cart/i }).first().click();
+      const addButton = p1.getByRole("button", { name: /add to cart/i }).first();
+      // The product's own name: the first non-empty line of the card that holds the button.
+      const cardText = await addButton
+        .locator("xpath=ancestor::*[self::li or self::article or self::tr or contains(@class,'Card')][1]")
+        .innerText();
+      const productName = cardText
+        .split("\n")
+        .map((line) => line.trim())
+        .find((line) => line !== "" && !/add to cart/i.test(line));
+      expect(productName).toBeTruthy();
+      await addButton.click();
       await p1.goto("/cart");
+      await expect(p1.getByText(productName as string).first()).toBeVisible();
       await expect(p1.getByText(/your cart is empty/i)).toHaveCount(0);
       await p2.goto("/cart");
       await expect(p2.getByText(/your cart is empty/i)).toBeVisible();
