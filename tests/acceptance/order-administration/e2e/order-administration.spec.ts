@@ -28,7 +28,7 @@ test.describe("order-administration", () => {
     const row = page.getByRole("row").filter({ hasText: "PENDING" }).first();
     await expect(row.getByRole("cell").nth(4)).toBeVisible(); // id, user id, date, value, status
     await expect(row).toContainText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/);
-    await expect(row).toContainText(/\d+(\.\d+)?/);
+    await expect(row.getByRole("cell").nth(3)).toHaveText(/^\s*\D{0,3}\d[\d,]*\.\d{2}\s*$/); // value: two-decimal amount, not an id
     await expect(row.getByRole("button", { name: /approve/i })).toBeVisible();
     for (const status of ["APPROVED", "DENIED", "COMPLETED"]) {
       const ro = page.getByRole("row").filter({ hasText: status }).first();
