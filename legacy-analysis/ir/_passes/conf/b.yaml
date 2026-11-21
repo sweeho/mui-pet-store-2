@@ -26,7 +26,8 @@ records:
           # Order Processing Center (ejb-jar.xml of opc)
           opc.autoApprove.limit.en_US=500
           opc.autoApprove.limit.ja_JP=50000
-      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+      - kind: document
+        path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
         anchor: p1
         excerpt: |
           total under limit (US 500, JP 50000)  --> APPROVED automatically
@@ -53,15 +54,13 @@ records:
     traces:
       - path: legacy-source/conf/petstore.properties
         line_start: 23
-        line_end: 31
+        line_end: 23
         excerpt: |
           catalog.locales=en_US,ja_JP,zh_CN
-          catalog.defaultLocale=en_US
-          catalog.pageSize=2
-          signon.session.timeoutMinutes=15
-          signon.rememberUsernameCookie=bp_signon
-
-          # Order Processing Center (ejb-jar.xml of opc)
+      - path: legacy-source/conf/petstore.properties
+        line_start: 30
+        line_end: 31
+        excerpt: |
           opc.autoApprove.limit.en_US=500
           opc.autoApprove.limit.ja_JP=50000
   - record_key: LOCL-REQ-0001
@@ -224,7 +223,8 @@ records:
           opc.mail.sendConfirmation=false
           opc.mail.sendApproval=false
           opc.mail.sendCompletedOrder=false
-      - path: legacy-analysis/sources/pdf/petstore-admin-guide/extracted.md
+      - kind: document
+        path: legacy-analysis/sources/pdf/petstore-admin-guide/extracted.md
         anchor: p1
         excerpt: |
           Notifications about order status are disabled by default.
@@ -258,7 +258,8 @@ records:
           jms.topic.invoice=jms/opc/InvoiceTopic
           jms.queue.supplierPurchaseOrder=jms/supplier/PurchaseOrderQueue
           jms.queue.mail=jms/opc/MailQueue
-      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+      - kind: document
+        path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
         anchor: p1
         excerpt: |
           APPROVED --> Supplier (PurchaseOrderQueue) --> ships from INVENTORY --> InvoiceTopic --> OPC
@@ -310,7 +311,7 @@ records:
     plain_text: >
       Old orders are kept 180 days, backups 7 days, orders are flagged stuck after 24 hours, and stock under 500 units is reported as low.
     technical_note: >
-      Duplicated in conf/petstore.properties (batch.*) and conf/env.sh (PS_*); the batch scripts read env.sh, so the two can drift apart. Low-stock wording: runbook says "below 500".
+      Duplicated in conf/petstore.properties (batch.*) and conf/env.sh (PS_*); the batch scripts read env.sh, so the two can drift apart.
     interface: false
     stack_metadata:
       batch.trigger: shell scripts sourcing conf/env.sh
@@ -334,7 +335,8 @@ records:
           PS_BACKUP_KEEP_DAYS=7
           PS_STUCK_ORDER_HOURS=24
           PS_LOW_STOCK_QTY=500
-      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+      - kind: document
+        path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
         anchor: p1
         excerpt: |
           Order retention180 days
@@ -345,10 +347,10 @@ records:
     kind: requirement
     capability_key: batch-operations
     requirement: >
-      The system SHALL write one job-log line at the start and end of every batch job, time-stamped and tagged with the job name, to batch.log in the log folder.
+      The system SHALL write a time-stamped, job-tagged line to batch.log in the log folder whenever a batch job logs through the shared logging helper.
     confidence: medium
     confidence_basis: >
-      ps_log helper plus the runbook statement; whether every job calls it was not checked here.
+      ps_log helper plus the runbook statement of one line per job start and end; whether every job calls it was not checked here.
     risk_class: operational
     basis: >
       ps_log function and runbook job-log row.
@@ -411,7 +413,7 @@ suspected_defects:
     category: other
     title: Batch database credentials are hard-coded in clear text in the environment script
     description: >
-      env.sh embeds the database user and a plaintext password in PS_DB_URL, while properties holds a separate password entry; the two are duplicated rather than shared.
+      env.sh embeds the database user and a plaintext password in the batch database URL, while properties holds a separate password entry; the two are duplicated rather than shared.
     traces:
       - path: legacy-source/conf/env.sh
         line_start: 73
@@ -431,7 +433,8 @@ suspected_defects:
         line_end: 30
         excerpt: |
           opc.autoApprove.limit.en_US=500
-      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+      - kind: document
+        path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
         anchor: p1
         excerpt: |
           An order is pending if its total value is greater than $500.
