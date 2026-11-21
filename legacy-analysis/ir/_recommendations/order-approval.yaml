@@ -1,0 +1,83 @@
+recommendations:
+  - record_key: ORDAPP-RULE-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code constants and the class comment agree on SHIPPED_PART; the user guide omits it. Goes to Intent for the Business Owner as a document conflict.
+  - record_key: ORDAPP-WF-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Mechanism is stated in code only; confirm it is reachable before relying on it.
+  - record_key: ORDA-RULE-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Read from the code path; confirm that sending an empty batch is intended and not a defect.
+  - record_key: ORDAPP-DOC-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Runbook and code agree on the locale limits.
+  - record_key: ORD-APPR-REQ-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree and the PENDING check is explicit in code.
+  - record_key: ORD-APPR-REQ-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree on the status update and notice.
+  - record_key: ORDAPP-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Configuration properties and code agree on 500 and 50000.
+  - record_key: ORDER-ADMIN-REQ-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Read from the admin request processor.
+  - record_key: ORDER-ADMIN-REQ-0006
+    recommendation: edit
+    confidence: medium
+    reason: >
+      The guide says "exceeds 500" but code approves only strictly below 500, so exactly 500 is pending. Trust the code; the conflict goes to Intent for the Business Owner.
+    edited_requirement: The system SHALL treat orders as pending admin approval when their total is not below the locale limit (500 for US); orders below it are approved automatically.
+  - record_key: ORDER-APPROVAL-BR-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      The MDB has limits for two locales only.
+  - record_key: APPROVAL-BR-0001
+    recommendation: edit
+    confidence: medium
+    reason: >
+      The DDL list omits SHIPPED_PART, which code sets. Confirm the live constraint; this may be a legacy defect for the defect register.
+    edited_requirement: The system SHALL keep one process-manager record per order whose status is one of PENDING, APPROVED, DENIED, SHIPPED_PART or COMPLETED.
+  - record_key: ORDAPP-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Read from ProcessManagerEJB.
+  - record_key: ORDAPP-RULE-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Schema validation and root check are explicit in the xmldocuments component.
+  - record_key: ORDER-APPROVAL-WF-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree.
+  - record_key: ORDAPP-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      ejb-jar and the bean class agree.
+  - record_key: ORDAPP-INT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Schema and parser agree.
