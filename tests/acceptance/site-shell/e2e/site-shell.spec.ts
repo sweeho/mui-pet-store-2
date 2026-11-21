@@ -35,6 +35,14 @@ const trackApi = (page: Page) => {
   return seen;
 };
 
+/** The shared frame: header, navigation and footer around the main area. */
+async function expectSharedFrame(page: Page) {
+  await expect(page.getByRole("banner").first()).toBeVisible();
+  await expect(page.getByRole("navigation").first()).toBeVisible();
+  await expect(page.getByRole("main").first()).toBeVisible();
+  await expect(page.getByRole("contentinfo").first()).toBeVisible();
+}
+
 test.describe("site-shell", () => {
   // case: SWHM3-C-0163@v1
   test("SWHM3-C-0163 root route shows landing page linking to all primary areas", async ({ page, baseURL }) => {
@@ -115,8 +123,8 @@ test.describe("site-shell", () => {
       if (seen.count === 0) continue; // page has no data request, so no empty state to judge
       exercised++;
       // the empty page still renders inside the shell's main area, with a message and no retry control
-      await expect(page.getByRole("main").first()).toBeVisible();
-      expect(((await page.getByRole("main").first().innerText()) ?? "").trim().length).toBeGreaterThan(0);
+      await expectSharedFrame(page);
+      await expect(page.getByRole("main").getByText(/\b(no|nothing|empty|none|yet)\b/i).first()).toBeVisible();
       await expect(page.getByRole("main").getByRole("button", { name: /retry|try again/i })).toHaveCount(0);
     }
     expect(exercised).toBeGreaterThan(0);
@@ -140,6 +148,10 @@ test.describe("site-shell", () => {
       await page.waitForLoadState("networkidle");
       if (seen.count === 0) continue; // page has no data request, so no failure to judge
       exercised++;
+      await expectSharedFrame(page);
+      await expect(
+        page.getByRole("main").getByText(/error|fail|wrong|unable|couldn.?t|could not|problem/i).first(),
+      ).toBeVisible();
       const retry = page.getByRole("main").getByRole("button", { name: /retry|try again/i }).first();
       await expect(retry).toBeVisible();
       failing = false;
