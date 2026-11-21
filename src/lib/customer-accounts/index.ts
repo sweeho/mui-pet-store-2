@@ -1,7 +1,5 @@
-import type { Profile } from "./types";
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export function newProfile(init?: Partial<Profile>): Profile {
+export function newProfile(init?: Record<string, unknown>): Record<string, unknown> {
   throw new Error("VortexNotImplemented");
 }
 
