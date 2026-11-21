@@ -1,0 +1,46 @@
+%% EXTRACTED FROM LEGACY SOURCE — evidence of what exists, not a build target. Where this disagrees with a capability delta spec, the delta spec wins.
+%% Source: legacy-source/db/schema/petstore_oracle.sql
+erDiagram
+  CATEGORY ||--o{ CATEGORY_DETAILS : "per locale"
+  CATEGORY ||--o{ PRODUCT : contains
+  PRODUCT ||--o{ PRODUCT_DETAILS : "per locale"
+  PRODUCT ||--o{ ITEM : has
+  ITEM ||--o{ ITEM_DETAILS : "per locale"
+  SIGNON_USER ||--o| CUSTOMER : "user_id = username"
+  CUSTOMER ||--|| ACCOUNT : has
+  CUSTOMER ||--|| PROFILE : has
+  ACCOUNT ||--|| CONTACT_INFO : has
+  ACCOUNT ||--|| CREDIT_CARD : has
+  CONTACT_INFO }o--|| ADDRESS : at
+  PURCHASE_ORDER }o--|| CONTACT_INFO : "ship to"
+  PURCHASE_ORDER }o--|| CREDIT_CARD : "paid by"
+  PURCHASE_ORDER ||--o{ PO_LINE_ITEM : lines
+  PURCHASE_ORDER ||--o| ORDER_MANAGER : "order_id = po_id (no FK)"
+  SUPPLIER_ORDER }o--|| CONTACT_INFO : "ship to"
+  SUPPLIER_ORDER ||--o{ SUPPLIER_LINE_ITEM : lines
+  INVENTORY {
+    varchar item_id PK
+    int quantity
+  }
+  COUNTER {
+    varchar name PK
+    int counter
+  }
+  CATEGORY { varchar catid PK }
+  CATEGORY_DETAILS { varchar catid PK "FK" varchar locale PK varchar name }
+  PRODUCT { varchar productid PK varchar catid FK }
+  PRODUCT_DETAILS { varchar productid PK "FK" varchar locale PK varchar name }
+  ITEM { varchar itemid PK varchar productid FK }
+  ITEM_DETAILS { varchar itemid PK "FK" varchar locale PK decimal listprice decimal unitcost }
+  SIGNON_USER { varchar username PK varchar password "plain text" }
+  ADDRESS { varchar address_id PK varchar street_name1 varchar city varchar state varchar zip_code varchar country }
+  CONTACT_INFO { varchar contact_id PK varchar address_id FK varchar email }
+  CREDIT_CARD { varchar card_id PK varchar card_number "clear" varchar card_type varchar expiry_date }
+  ACCOUNT { varchar account_id PK varchar status varchar contact_id FK varchar card_id FK }
+  PROFILE { varchar profile_id PK varchar preferred_language }
+  CUSTOMER { varchar user_id PK varchar account_id FK varchar profile_id FK }
+  PURCHASE_ORDER { varchar po_id PK number po_date number po_value varchar contact_id FK varchar card_id FK }
+  PO_LINE_ITEM { varchar po_id PK "FK" varchar line_number PK int quantity int quantity_shipped }
+  ORDER_MANAGER { varchar order_id PK varchar status "PENDING APPROVED DENIED COMPLETED" }
+  SUPPLIER_ORDER { varchar po_id PK varchar po_status "PENDING COMPLETED" varchar contact_id FK }
+  SUPPLIER_LINE_ITEM { varchar po_id PK "FK" varchar line_number PK int quantity }
