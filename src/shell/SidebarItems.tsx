@@ -97,6 +97,7 @@ export function SidebarItems() {
         {GROUPS.map((group) => (
           <Box key={group.id}>
             <ListSubheader
+              component="div"
               disableSticky
               sx={{
                 px: 1,

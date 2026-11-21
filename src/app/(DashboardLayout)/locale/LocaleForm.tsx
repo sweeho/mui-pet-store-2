@@ -135,7 +135,8 @@ export function LocaleForm({
           borderTop: 1,
           borderColor: "divider",
           display: "flex",
-          alignItems: "center",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "stretch", sm: "center" },
           gap: 1.5,
           bgcolor: "secondary.light",
         }}
@@ -143,7 +144,15 @@ export function LocaleForm({
         <Typography color="text.secondary" sx={{ flex: 1, fontSize: "0.75rem" }}>
           {t("locale.currently", { name: currentLabel })}
         </Typography>
-        <Button type="submit" variant="contained">
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            height: { sm: 36 },
+            minHeight: { xs: 44, sm: 0 },
+            width: { xs: "100%", sm: "auto" },
+          }}
+        >
           {t("locale.submit")}
         </Button>
       </Box>

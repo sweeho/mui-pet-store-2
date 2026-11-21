@@ -1,16 +1,22 @@
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 import { IconArrowLeft, IconInfoCircle, IconLanguage } from "@tabler/icons-react";
-import Link from "next/link";
 
 import { formatCurrency, formatNumber } from "@/lib/localization/locale";
 import { getMessages, translate, type MessageKey } from "@/lib/localization/messages";
 import { getLocaleContext } from "@/lib/localization/request";
 import { findSupportedLocale } from "@/lib/locales";
 import { safeFrom } from "@/lib/problem";
-import { MENU_ITEMS } from "@/shell/SidebarItems";
+
+import { LinkButton } from "../LinkButton";
+
+/** Page titles for the "Returning to" line (the menu lives in a client module). */
+const PAGE_TITLES: Record<string, MessageKey> = {
+  "/": "menu.home",
+  "/locale": "menu.language",
+  "/admin/orders": "menu.orders",
+};
 
 /** The confirmation after a language change, with a way back. */
 export default async function LocaleChangedPage({
@@ -23,8 +29,8 @@ export default async function LocaleChangedPage({
   const from = safeFrom((await searchParams).from);
   const entry = findSupportedLocale(chosen);
   const name = entry?.label ?? chosen;
-  const menu = MENU_ITEMS.find((i) => i.href === from);
-  const returning = menu ? m[menu.titleKey] : from;
+  const titleKey = PAGE_TITLES[from];
+  const returning = titleKey ? m[titleKey] : from;
   const styleKey = `style.${chosen}` as MessageKey;
   const style = entry ? m[styleKey] : "";
   return (
@@ -54,14 +60,18 @@ export default async function LocaleChangedPage({
             {translate(m, "changed.description", { english: entry?.englishName ?? chosen })}
           </Typography>
         </Box>
-        <Button
-          component={Link}
+        <LinkButton
           href={from}
           variant="contained"
           startIcon={<IconArrowLeft size={16} />}
+          sx={{
+            height: { sm: 36 },
+            minHeight: { xs: 44, sm: 0 },
+            width: { xs: "100%", sm: "auto" },
+          }}
         >
           {m["changed.back"]}
-        </Button>
+        </LinkButton>
       </Box>
       <Card variant="outlined" component="section" sx={{ p: 2, maxWidth: 640 }}>
         <Typography sx={{ fontSize: "0.75rem", fontWeight: 600, color: "text.secondary", mb: 1.5 }}>
@@ -114,14 +124,13 @@ export default async function LocaleChangedPage({
           </span>
         </Box>
         <Box sx={{ mt: 2, pt: 1.5, borderTop: 1, borderColor: "divider" }}>
-          <Button
-            component={Link}
+          <LinkButton
             href={`/locale?from=${encodeURIComponent(from)}`}
             startIcon={<IconLanguage size={16} />}
             sx={{ pl: 0 }}
           >
             {m["changed.other"]}
-          </Button>
+          </LinkButton>
         </Box>
       </Card>
     </Box>
