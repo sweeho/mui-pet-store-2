@@ -1,0 +1,199 @@
+{
+  "key": "SWHM3-MCK-26",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-search-results-mobile.html",
+  "url": "http://127.0.0.1:3200/catalog/search?q=fish",
+  "width": 390,
+  "at": "2026-11-21T17:56:34.150Z",
+  "pixelDifference": 0.0714,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded",
+      "JetBrains Mono Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "b at 100,17"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "fish",
+      "prop": "position",
+      "mockup": "51,76",
+      "built": "55,87"
+    },
+    {
+      "kind": "style",
+      "text": "Catalog",
+      "prop": "position",
+      "mockup": "16,133",
+      "built": "16,151"
+    },
+    {
+      "kind": "style",
+      "text": "›",
+      "prop": "position",
+      "mockup": "66,133",
+      "built": "66,150"
+    },
+    {
+      "kind": "style",
+      "text": "Search results",
+      "prop": "position",
+      "mockup": "77,133",
+      "built": "77,150"
+    },
+    {
+      "kind": "style",
+      "text": "Items matching any of: fish",
+      "prop": "position",
+      "mockup": "16,190",
+      "built": "16,206"
+    },
+    {
+      "kind": "style",
+      "text": "Large Angelfish EST-1 · Angelfish $16.50",
+      "prop": "position",
+      "mockup": "16,226",
+      "built": "17,252"
+    },
+    {
+      "kind": "style",
+      "text": "Large Angelfish",
+      "prop": "position",
+      "mockup": "105,246",
+      "built": "105,271"
+    },
+    {
+      "kind": "style",
+      "text": "EST-1 · Angelfish",
+      "prop": "position",
+      "mockup": "105,271",
+      "built": "105,295"
+    },
+    {
+      "kind": "style",
+      "text": "$16.50",
+      "prop": "position",
+      "mockup": "283,258",
+      "built": "283,282"
+    },
+    {
+      "kind": "style",
+      "text": "Small Angelfish EST-2 · Angelfish $16.50",
+      "prop": "position",
+      "mockup": "16,320",
+      "built": "17,346"
+    },
+    {
+      "kind": "style",
+      "text": "Small Angelfish",
+      "prop": "position",
+      "mockup": "105,340",
+      "built": "105,365"
+    },
+    {
+      "kind": "style",
+      "text": "EST-2 · Angelfish",
+      "prop": "position",
+      "mockup": "105,365",
+      "built": "105,389"
+    },
+    {
+      "kind": "missing",
+      "text": "1–2",
+      "mockup": "span at 16,431"
+    },
+    {
+      "kind": "style",
+      "text": "Previous",
+      "prop": "position",
+      "mockup": "42,418",
+      "built": "42,443"
+    },
+    {
+      "kind": "style",
+      "text": "Next",
+      "prop": "position",
+      "mockup": "212,418",
+      "built": "212,443"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 239,867"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 293,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "Results 1–2",
+      "built": "p at 16,456"
+    },
+    {
+      "kind": "extra",
+      "text": "Results",
+      "built": "span at 16,456"
+    }
+  ]
+}

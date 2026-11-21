@@ -1,0 +1,247 @@
+{
+  "key": "SWHM3-MCK-24",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-item-detail-mobile.html",
+  "url": "http://127.0.0.1:3200/catalog/items/EST-1",
+  "width": 390,
+  "at": "2026-11-21T17:56:30.844Z",
+  "pixelDifference": 0.1257,
+  "pageHeights": {
+    "mockup": 923,
+    "built": 968
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded",
+      "JetBrains Mono Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "b at 100,17"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "314x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "51,76",
+      "built": "29,90"
+    },
+    {
+      "kind": "style",
+      "text": "Catalog",
+      "prop": "position",
+      "mockup": "16,133",
+      "built": "16,151"
+    },
+    {
+      "kind": "style",
+      "text": "›",
+      "prop": "position",
+      "mockup": "66,133",
+      "built": "66,150"
+    },
+    {
+      "kind": "style",
+      "text": "Fish",
+      "prop": "position",
+      "mockup": "77,133",
+      "built": "77,151"
+    },
+    {
+      "kind": "style",
+      "text": "Angelfish",
+      "prop": "position",
+      "mockup": "117,133",
+      "built": "117,151"
+    },
+    {
+      "kind": "style",
+      "text": "Large Angelfish",
+      "prop": "position",
+      "mockup": "186,133",
+      "built": "186,150"
+    },
+    {
+      "kind": "style",
+      "text": "Item EST-1 in Angelfish.",
+      "prop": "position",
+      "mockup": "16,190",
+      "built": "16,206"
+    },
+    {
+      "kind": "style",
+      "text": "EST-1",
+      "prop": "position",
+      "mockup": "80,482",
+      "built": "88,556"
+    },
+    {
+      "kind": "style",
+      "text": "Salt water fish from Australia.",
+      "prop": "position",
+      "mockup": "33,542",
+      "built": "41,617"
+    },
+    {
+      "kind": "style",
+      "text": "$16.50",
+      "prop": "position",
+      "mockup": "33,578",
+      "built": "41,654"
+    },
+    {
+      "kind": "style",
+      "text": "each",
+      "prop": "position",
+      "mockup": "121,590",
+      "built": "129,666"
+    },
+    {
+      "kind": "missing",
+      "text": "Add to cart",
+      "mockup": "button at 33,625"
+    },
+    {
+      "kind": "style",
+      "text": "Details",
+      "prop": "position",
+      "mockup": "33,693",
+      "built": "41,712"
+    },
+    {
+      "kind": "style",
+      "text": "Product",
+      "prop": "position",
+      "mockup": "33,720",
+      "built": "41,738"
+    },
+    {
+      "kind": "style",
+      "text": "FI-SW-01",
+      "prop": "position",
+      "mockup": "220,731",
+      "built": "218,749"
+    },
+    {
+      "kind": "style",
+      "text": "Category",
+      "prop": "position",
+      "mockup": "33,760",
+      "built": "41,778"
+    },
+    {
+      "kind": "style",
+      "text": "Size",
+      "prop": "position",
+      "mockup": "33,800",
+      "built": "41,818"
+    },
+    {
+      "kind": "style",
+      "text": "Large",
+      "prop": "position",
+      "mockup": "153,800",
+      "built": "151,818"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,890",
+      "built": "16,935"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,890"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 239,890"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 293,890"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    }
+  ]
+}
