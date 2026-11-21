@@ -12,29 +12,74 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import Typography from "@mui/material/Typography";
-import { IconLayoutDashboard } from "@tabler/icons-react";
+import { IconClipboardList, IconLanguage, IconLayoutDashboard } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { APP_NAME } from "@/constants/app";
 
+import { BrandLogo } from "./BrandLogo";
+
 /** The sidebar's menu. Add a page by adding an entry. */
-export const MENU_ITEMS = [{ title: "Home", href: "/", icon: IconLayoutDashboard }];
+export const MENU_ITEMS = [
+  { title: "Home", href: "/", icon: IconLayoutDashboard, description: "The landing page." },
+  {
+    title: "Localization",
+    href: "/localization",
+    icon: IconLanguage,
+    description: "See the languages the store supports.",
+  },
+  {
+    title: "Order administration",
+    href: "/admin/orders",
+    icon: IconClipboardList,
+    description: "Approve or deny pending orders.",
+  },
+];
+
+/** The current item: "/" only on the landing page, any other by prefix. */
+const isCurrent = (pathname: string, href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
 export function SidebarItems() {
   const pathname = usePathname();
   return (
-    <Box sx={{ px: 3 }}>
-      <Box sx={{ height: "70px", display: "flex", alignItems: "center" }}>
-        <Typography component={Link} href="/" variant="h4" color="primary">
+    <Box sx={{ px: 1.5 }}>
+      <Box sx={{ height: "64px", display: "flex", alignItems: "center" }}>
+        <Typography
+          component={Link}
+          href="/"
+          variant="h4"
+          color="text.primary"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1.25,
+            px: 1,
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <BrandLogo />
           {APP_NAME}
         </Typography>
       </Box>
       <List
         component="nav"
         subheader={
-          <ListSubheader disableSticky sx={{ px: 0, fontWeight: 700, lineHeight: "26px" }}>
-            HOME
+          <ListSubheader
+            disableSticky
+            sx={{
+              px: 1,
+              pt: 2,
+              pb: 0.5,
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              lineHeight: 1.45,
+              color: "text.secondary",
+            }}
+          >
+            Areas
           </ListSubheader>
         }
       >
@@ -43,8 +88,18 @@ export function SidebarItems() {
             key={item.href}
             component={Link}
             href={item.href}
-            selected={pathname === item.href}
-            sx={{ borderRadius: "8px", mb: 0.5 }}
+            selected={isCurrent(pathname, item.href)}
+            aria-current={isCurrent(pathname, item.href) ? "page" : undefined}
+            sx={{
+              borderRadius: 1,
+              mb: 0.25,
+              height: 36,
+              "&.Mui-selected, &.Mui-selected:hover": {
+                bgcolor: "primary.main",
+                color: "primary.contrastText",
+                fontWeight: 500,
+              },
+            }}
           >
             <ListItemIcon sx={{ minWidth: 36 }}>
               <item.icon stroke={1.5} size="1.3rem" />

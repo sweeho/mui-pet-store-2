@@ -1,0 +1,158 @@
+{
+  "key": "SWHM3-MCK-5",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-empty-state.html",
+  "url": "http://localhost:3000/admin/orders",
+  "width": 1440,
+  "at": "2026-11-21T15:07:34.857Z",
+  "pixelDifference": 0.042,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Shop",
+      "mockup": "div at 12,64"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "div at 12,253"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 12,367"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin",
+      "mockup": "div at 12,405"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Cart",
+      "mockup": "div at 272,88"
+    },
+    {
+      "kind": "missing",
+      "text": "Everything you’ve added this visit.",
+      "mockup": "p at 272,149"
+    },
+    {
+      "kind": "missing",
+      "text": "Your cart is empty",
+      "mockup": "h2 at 761,331"
+    },
+    {
+      "kind": "missing",
+      "text": "Add a pet from the catalog and it will show up here.",
+      "mockup": "p at 671,361"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 761,401"
+    },
+    {
+      "kind": "missing",
+      "text": "Shared empty frame — every page passes its own title, line and next step.",
+      "mockup": "p at 272,514"
+    },
+    {
+      "kind": "extra",
+      "text": "Areas",
+      "built": "li at 12,64"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "a at 12,139"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,177"
+    },
+    {
+      "kind": "extra",
+      "text": "Approve or deny pending orders.",
+      "built": "p at 264,127"
+    },
+    {
+      "kind": "extra",
+      "text": "No orders yet",
+      "built": "h2 at 780,289"
+    },
+    {
+      "kind": "extra",
+      "text": "Orders waiting for review will show up here.",
+      "built": "p at 698,316"
+    }
+  ]
+}
