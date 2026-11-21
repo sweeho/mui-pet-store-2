@@ -1,0 +1,214 @@
+records:
+  - record_key: BATCH-BR-0001
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL, in the catalog integrity check, report every category that has no product, every product that has no item, every item whose list price is below its unit cost, every item lacking a description for any locale of its category (en_US, ja_JP, zh_CN), and every item with no supplier inventory row, and SHALL fail the job when any such row is found.
+    confidence: medium
+    confidence_basis: One clear place (the SQL header comment and queries); the job exit code 4 is stated in the SQL comment and shell script. Not cross-checked with a document.
+    risk_class: operational
+    basis: Five queries C1 to C5 each must return zero rows.
+    plain_text: A nightly check lists categories with no products, products with no items, items sold below cost, items missing a description in a served language, and items the supplier does not stock. Any finding raises an alert to operations.
+    technical_note: db/batch/catalog_check.sql run by batch/ps_catalog_check.sh; exit 4 on any C1-C5 row. C4 compares item_details locales against category_details locales, not a fixed list, despite the comment naming three locales.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/catalog_check.sql
+        line_start: 1
+        line_end: 17
+        excerpt: |
+          -- PS_CATALOG_CHECK: catalog integrity checks. Each query must return 0 rows;
+          -- the script fails the job (code 4) when any row starts with C1 to C5.
+          -- C1: categories with no product
+          SELECT 'C1' AS chk, c.catid FROM category c
+      - path: legacy-source/batch/ps_catalog_check.sh
+        line_start: 18
+        line_end: 18
+        excerpt: |
+          exit 4
+    stack_metadata:
+      db.object: category, product, item, item_details, category_details, inventory
+      batch.trigger: ps_catalog_check.sh
+  - record_key: BATCH-BR-0002
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL report supplier inventory items whose quantity is below the configured low-stock threshold (500 by default), ordered by quantity ascending then item id, showing the en_US description, and SHALL log the count of tracked items and total units in stock.
+    confidence: high
+    confidence_basis: SQL, shell script and env.sh configuration all agree on the threshold parameter and default.
+    risk_class: operational
+    basis: Parameterised query :LOW_QTY bound from PS_LOW_STOCK_QTY=500.
+    plain_text: A report lists supplier items running low on stock (below 500 units unless changed), lowest first, with totals of items tracked and units in stock.
+    technical_note: db/batch/inventory_report.sql; threshold from conf/env.sh PS_LOW_STOCK_QTY; output inventory_YYYYMMDD.txt. Description joined for en_US only.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/inventory_report.sql
+        line_start: 1
+        line_end: 10
+        excerpt: |
+          -- PS_INVENTORY_REPORT: supplier stock below the threshold, lowest first.
+          -- :LOW_QTY is PS_LOW_STOCK_QTY from conf/env.sh.
+           WHERE i.quantity < :LOW_QTY
+           ORDER BY i.quantity, i.item_id;
+      - path: legacy-source/conf/env.sh
+        line_start: 18
+        line_end: 18
+        excerpt: |
+          PS_LOW_STOCK_QTY=500
+    stack_metadata:
+      db.object: inventory, item, item_details
+      batch.trigger: ps_inventory_report.sh
+  - record_key: BATCH-BR-0003
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL list every order still PENDING or APPROVED more than 24 hours after its order date, oldest first, with order id, user, locale, value and status, SHALL summarise order counts per status, and SHALL list orders the supplier has COMPLETED while the order manager status is not COMPLETED; the aging job SHALL end with code 4 when any order is listed.
+    confidence: medium
+    confidence_basis: SQL and script comments agree on 24 hours; the exit-4 condition is one script. The 24h value is also a literal in the script header rather than configuration.
+    risk_class: operational
+    basis: Queries STUCK and MISMATCH, plus status counts.
+    plain_text: A daily report flags orders waiting for approval or awaiting a supplier invoice for over a day, shows counts by status, and flags orders where the supplier finished but the store never closed the order (a lost invoice message). Operations is alerted if any is found.
+    technical_note: db/batch/order_aging.sql joins purchase_order/order_manager/supplier_order; cutoff passed as :CUTOFF_MS (now minus 24h).
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_aging.sql
+        line_start: 1
+        line_end: 14
+        excerpt: |
+          -- PS_ORDER_AGING_REPORT: orders still PENDING or APPROVED after 24 hours.
+          WHERE m.status IN ('PENDING', 'APPROVED') AND p.po_date < :CUTOFF_MS
+          WHERE s.po_status = 'COMPLETED' AND m.status <> 'COMPLETED';
+      - path: legacy-source/batch/ps_order_aging_report.sh
+        line_start: 3
+        line_end: 4
+        excerpt: |
+          # Lists orders not COMPLETED or DENIED after 24 hours (stuck in the OPC flow)
+          # to order_aging_YYYYMMDD.txt. Ends with code 4 when any order is listed.
+    stack_metadata:
+      db.object: purchase_order, order_manager, supplier_order
+      batch.trigger: ps_order_aging_report.sh
+  - record_key: BATCH-BR-0004
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL export the purchase orders dated from yesterday 00:00 (inclusive) to today 00:00 (exclusive) to a UTF-8 comma-separated file named orders_YYYYMMDD.csv containing order id, user id, date, locale, value, line item count and status, ordered by order id.
+    confidence: medium
+    confidence_basis: One SQL file with comments; file naming is in the comment, performed by script not read in detail.
+    risk_class: financial
+    basis: Derby export of a fixed query for Finance.
+    plain_text: Each day the previous day's orders are exported to a file for Finance, with their value, number of lines and status.
+    technical_note: db/batch/order_extract.sql uses SYSCS_UTIL.SYSCS_EXPORT_QUERY with bound epoch-ms window; script renames the output.
+    interface: true
+    traces:
+      - path: legacy-source/db/batch/order_extract.sql
+        line_start: 1
+        line_end: 12
+        excerpt: |
+          -- PS_ORDER_EXTRACT: export yesterday's purchase orders for Finance.
+          WHERE p.po_date >= :LO_MS AND p.po_date < :HI_MS
+          ORDER BY p.po_id',
+          ':OUT_FILE', ',', '"', 'UTF-8');
+    stack_metadata:
+      db.object: purchase_order, order_manager, po_line_item
+      batch.trigger: ps_order_extract.sh
+  - record_key: BATCH-BR-0005
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL permanently delete COMPLETED and DENIED orders older than the retention limit (180 days by default), together with their supplier orders and lines, order lines, contact, address and credit card records, in a single transaction.
+    confidence: high
+    confidence_basis: SQL comment, shell script comment and env.sh PS_ORDER_RETENTION_DAYS=180 agree.
+    risk_class: regulated
+    basis: Deletes in dependency order after staging ids in a temporary table; COMMIT at end, autocommit off.
+    plain_text: Finished or denied orders older than 180 days are removed along with the customer's address, contact and card details attached to them.
+    technical_note: db/batch/order_purge.sql; cutoff is midnight N days ago via ps_midnight_ms. Retention from conf/env.sh.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 1
+        line_end: 26
+        excerpt: |
+          -- PS_ORDER_PURGE: delete COMPLETED and DENIED orders older than 180 days.
+          WHERE m.status IN ('COMPLETED', 'DENIED') AND p.po_date < :CUTOFF_MS;
+          DELETE FROM credit_card        WHERE card_id IN (SELECT card_id FROM session.purge_po);
+          COMMIT;
+      - path: legacy-source/batch/ps_order_purge.sh
+        line_start: 3
+        line_end: 8
+        excerpt: |
+          # Deletes COMPLETED and DENIED orders older than 180 days, with their lines,
+          CUTOFF_MS=$(ps_midnight_ms "$PS_ORDER_RETENTION_DAYS")
+    stack_metadata:
+      db.object: purchase_order, order_manager, supplier_order, po_line_item, contact_info, address, credit_card
+      batch.trigger: ps_order_purge.sh
+  - record_key: BATCH-BR-0006
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL run the order purge only after the order extract has run, so that every order has been extracted before deletion.
+    confidence: low
+    confidence_basis: Stated only in a SQL comment; no enforcement seen in the SQL itself (scheduling not inspected in this pass).
+    risk_class: financial
+    basis: Comment on order_purge.sql.
+    plain_text: Old orders are only deleted after they have been exported for Finance.
+    technical_note: Ordering is by schedule only; the purge SQL does not check that an extract exists.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 2
+        line_end: 2
+        excerpt: |
+          -- Runs only after PS_ORDER_EXTRACT so every order has been extracted first.
+    stack_metadata:
+      batch.trigger: ps_order_purge.sh
+  - record_key: BATCH-BR-0007
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: The system SHALL take an online backup of the PetStore database into the backup folder, moved to a dated folder.
+    confidence: medium
+    confidence_basis: One SQL call and comment; folder move is described in a comment only.
+    risk_class: operational
+    basis: SYSCS_BACKUP_DATABASE call.
+    plain_text: The store database is backed up nightly while running.
+    technical_note: db/batch/db_backup.sql calls Derby SYSCS_UTIL.SYSCS_BACKUP_DATABASE to /var/petstore/backup; ps_db_backup.sh moves it.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/db_backup.sql
+        line_start: 1
+        line_end: 3
+        excerpt: |
+          -- PS_DB_BACKUP: online backup of PetStoreDB.
+          CALL SYSCS_UTIL.SYSCS_BACKUP_DATABASE('/var/petstore/backup');
+    stack_metadata:
+      batch.trigger: ps_db_backup.sh
+suspected_defects:
+  - capability_key: batch-operations
+    record_keys: [BATCH-BR-0003]
+    severity: low
+    category: contradicts-document
+    title: Aging script header contradicts query on which statuses are reported
+    description: >
+      The script comment says orders "not COMPLETED or DENIED" are listed; the query lists only PENDING and APPROVED, so any other non-terminal status is missed.
+    traces:
+      - path: legacy-source/batch/ps_order_aging_report.sh
+        line_start: 3
+        line_end: 3
+      - path: legacy-source/db/batch/order_aging.sql
+        line_start: 7
+        line_end: 7
+  - capability_key: batch-operations
+    record_keys: [BATCH-BR-0001]
+    severity: low
+    category: contradicts-document
+    title: Catalog check C4 comment names fixed locales but query uses category locales
+    description: >
+      Comment says locales en_US, ja_JP, zh_CN; the query derives locales from category_details, so a missing category locale row hides gaps.
+    traces:
+      - path: legacy-source/db/batch/catalog_check.sql
+        line_start: 11
+        line_end: 14
+  - capability_key: batch-operations
+    record_keys: [BATCH-BR-0005, BATCH-BR-0006]
+    severity: medium
+    category: data-corruption
+    title: Purge does not verify extraction and may delete shared contact/address/card rows
+    description: >
+      The purge deletes contact, address and card rows referenced by the staged orders without checking that another order does not reference them, and without checking that the extract ran.
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 20
+        line_end: 25
+findings: []
