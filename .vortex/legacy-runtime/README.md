@@ -22,9 +22,9 @@ docker compose -f .vortex/legacy-runtime/compose.yaml ps   # wait for "healthy" 
 Both are Sun/Oracle downloads under a click-through licence; put them in
 `.vortex/legacy-runtime/vendor/` before building:
 
-| File | Content |
-|---|---|
-| `j2sdk-1_4_2-linux.tar.gz` | Java 2 SDK 1.4.2 for Linux (the RI needs Java 1.4) |
+| File                         | Content                                                        |
+| ---------------------------- | -------------------------------------------------------------- |
+| `j2sdk-1_4_2-linux.tar.gz`   | Java 2 SDK 1.4.2 for Linux (the RI needs Java 1.4)             |
 | `j2sdkee-1_3_1-linux.tar.gz` | J2EE SDK 1.3.1 (the Reference Implementation, with Cloudscape) |
 
 Rename the downloaded archives to those names, or edit the two `tar` lines in
