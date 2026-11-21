@@ -13,11 +13,11 @@ import { expect, test } from "@playwright/test";
 async function fillShipping(page: import("@playwright/test").Page, complete: boolean) {
   await page.goto("/checkout/shipping");
   if (complete) {
-    await page.getByLabel(/street/i).fill("1 Main St");
-    await page.getByLabel(/city/i).fill("Town");
-    await page.getByLabel(/state/i).fill("CA");
-    await page.getByLabel(/zip/i).fill("90001");
-    await page.getByLabel(/country/i).fill("US");
+    await page.getByLabel(/^street$/i).fill("1 Main St");
+    await page.getByLabel(/^city$/i).fill("Town");
+    await page.getByLabel(/^state$/i).fill("CA");
+    await page.getByLabel(/^zip$/i).fill("90001");
+    await page.getByLabel(/^country$/i).fill("US");
   }
   await page.getByRole("button", { name: /continue/i }).click();
 }
