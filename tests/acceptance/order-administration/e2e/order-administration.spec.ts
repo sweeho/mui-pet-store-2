@@ -11,8 +11,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function signIn(page: Page, user: string, password: string) {
   await page.goto("/admin");
-  await page.getByLabel(/username/i).fill(user);
-  await page.getByLabel(/password/i).fill(password);
+  await page.getByLabel(/^username$/i).fill(user);
+  await page.getByLabel(/^password$/i).fill(password);
   await page.getByRole("button", { name: /sign in/i }).click();
 }
 const asAdmin = (page: Page) => signIn(page, "jps_admin", "admin");
@@ -59,7 +59,7 @@ test.describe("order-administration", () => {
     await page.getByRole("button", { name: /log ?out/i }).or(page.getByRole("link", { name: /log ?out/i })).click();
     await expect(page.getByText(/logged out|logout|signed out/i).first()).toBeVisible();
     await page.goto("/admin");
-    await expect(page.getByLabel(/username/i)).toBeVisible();
+    await expect(page.getByLabel(/^username$/i)).toBeVisible();
   });
 
   // case: SWHM3-C-0106@v1
@@ -67,7 +67,7 @@ test.describe("order-administration", () => {
     await signIn(page, "j2ee", "j2ee");
     await expect(page.getByRole("button", { name: /manage orders/i })).toHaveCount(0);
     await page.goto("/admin");
-    await expect(page.getByLabel(/username/i)).toBeVisible();
+    await expect(page.getByLabel(/^username$/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
   });
 
@@ -75,6 +75,6 @@ test.describe("order-administration", () => {
   test("SWHM3-C-0107 administrator signs in and sees admin home", async ({ page }) => {
     await asAdmin(page);
     await expect(page.getByRole("button", { name: /manage orders/i }).or(page.getByRole("link", { name: /manage orders/i }))).toBeVisible();
-    await expect(page.getByLabel(/password/i)).toHaveCount(0);
+    await expect(page.getByLabel(/^password$/i)).toHaveCount(0);
   });
 });
