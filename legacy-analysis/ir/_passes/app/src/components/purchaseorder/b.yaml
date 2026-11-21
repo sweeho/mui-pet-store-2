@@ -1,0 +1,221 @@
+records:
+  - record_key: ORD-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL persist a purchase order with order id, user id, e-mail id, order date (epoch time), locale, and total value.
+    confidence: high
+    confidence_basis: >
+      Declared as CMP fields in ejb-jar.xml and set in the create method; the DTD lists the same fields.
+    risk_class: financial
+    basis: Purchase order entity bean fields and create method.
+    plain_text: >
+      Every order records who placed it, their e-mail, when, in which locale, and the order total.
+    technical_note: >
+      PurchaseOrderEJB.ejbCreate copies the fields from the PurchaseOrder value object. Total is a float.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderEJB.java
+        line_start: 197
+        line_end: 205
+        excerpt: |
+          setPoId(purchaseOrder.getOrderId());
+          setPoUserId(purchaseOrder.getUserId());
+          setPoEmailId(purchaseOrder.getEmailId());
+          setPoDate(purchaseOrder.getOrderDate().getTime());
+          setPoLocale(purchaseOrder.getLocale().toString());
+          setPoValue(purchaseOrder.getTotalPrice());
+      - path: legacy-source/app/src/components/purchaseorder/src/ejb-jar.xml
+        line_start: 60
+        line_end: 70
+        excerpt: |
+          <cmp-field>
+            <description>no description</description>
+            <field-name>poId</field-name>
+          </cmp-field>
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: PurchaseOrderEJB
+      ejb.transaction: Required
+  - record_key: ORD-REQ-0001
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL, when creating a purchase order, also create and attach a copy of its shipping contact information, its credit card details, and one order line per submitted line item, all within the same transaction as the order.
+    confidence: high
+    confidence_basis: >
+      Create logic in ejbPostCreate plus container-transaction Required and relationship declarations in ejb-jar.xml.
+    risk_class: financial
+    basis: ejbPostCreate builds contact info, card and line items; failure raises CreateException.
+    plain_text: >
+      Placing an order saves the customer's contact details, payment card and every ordered item together; if any part cannot be saved the order is not created.
+    technical_note: >
+      Line items are created with shipped quantity 0 (lineItemref.create(li, 0)). Naming-lookup failure is converted to CreateException.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderEJB.java
+        line_start: 211
+        line_end: 238
+        excerpt: |
+          cinfoloc = (ContactInfoLocal) cinforef.create(purchaseOrder.getShippingInfo());
+          ...
+          lineItemref.create(li, 0);
+          ...
+          throw new CreateException("ServiceLocator Ex while persisting PO CMR :" + ne.getMessage());
+      - path: legacy-source/app/src/components/purchaseorder/src/ejb-jar.xml
+        line_start: 369
+        line_end: 392
+        excerpt: |
+          Every PO has 1 or more line items relate to it
+          <cascade-delete />
+    stack_metadata:
+      ejb.bean: PurchaseOrderEJB
+      ejb.transaction: Required
+  - record_key: ORD-RULE-0001
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL require a purchase order to contain at least one line item, and SHALL delete a purchase order's line items when the order is deleted.
+    confidence: medium
+    confidence_basis: >
+      Stated in an ejb-jar.xml comment and the DTD (LineItem+) and cascade-delete; the Java create path does not itself reject an empty list.
+    risk_class: operational
+    basis: Relationship comment, DTD cardinality, cascade-delete.
+    plain_text: >
+      An order must have at least one item, and removing an order removes its items.
+    technical_note: >
+      Minimum is enforced only by the DTD for XML documents; ejbPostCreate iterates whatever collection is given.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/rsrc/schemas/PurchaseOrder.dtd
+        line_start: 38
+        line_end: 38
+        excerpt: |
+          <!ELEMENT PurchaseOrder (OrderId, UserId, EmailId, OrderDate, ShippingInfo, BillingInfo, TotalPrice, CreditCard, LineItem+)>
+      - path: legacy-source/app/src/components/purchaseorder/src/ejb-jar.xml
+        line_start: 369
+        line_end: 388
+        excerpt: |
+          Every PO has 1 or more line items relate to it
+          <cascade-delete />
+    stack_metadata:
+      ejb.bean: PurchaseOrderEJB
+  - record_key: ORD-INT-0001
+    kind: integration
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL exchange a purchase order as an XML document containing order id, user id, e-mail id, order date, shipping info, billing info, total price, credit card and one or more line items, with a locale attribute defaulting to en_US.
+    confidence: medium
+    confidence_basis: >
+      DTD states the format; the XML reader in PurchaseOrder.java parses it (seen at one line only); who consumes it is outside this module.
+    risk_class: operational
+    basis: PurchaseOrder.dtd and XML parsing in PurchaseOrder.java.
+    plain_text: >
+      Orders are passed to other parts of the system in a defined document format.
+    technical_note: >
+      DTD with parameter entities for ContactInfo, LineItem, CreditCard. TotalPrice parsed with getContentAsFloat.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/rsrc/schemas/PurchaseOrder.dtd
+        line_start: 38
+        line_end: 42
+        excerpt: |
+          <!ELEMENT PurchaseOrder (OrderId, ...LineItem+)>
+          <!ATTLIST PurchaseOrder
+          	locale CDATA "en_US"
+          >
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrder.java
+        line_start: 309
+        line_end: 309
+        excerpt: |
+          purchaseOrder.setTotalPrice(XMLDocumentUtils.getContentAsFloat(child, false));
+    stack_metadata:
+      framework: XML DTD
+  - record_key: ORD-REQ-0002
+    kind: requirement
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL find purchase orders whose order date falls between two given epoch-time bounds, inclusive.
+    confidence: high
+    confidence_basis: >
+      EJB-QL finder in ejb-jar.xml; the runbook's nightly order extract describes a day-window export of purchase orders.
+    risk_class: operational
+    basis: findPOBetweenDates query.
+    plain_text: >
+      Orders can be looked up for a date range, used for the nightly finance extract of the previous day's orders.
+    technical_note: >
+      BETWEEN is inclusive on both ends. The extract itself is a separate SQL batch not in this module.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/ejb-jar.xml
+        line_start: 120
+        line_end: 126
+        excerpt: |
+          <method-name>findPOBetweenDates</method-name>
+          <ejb-ql>SELECT OBJECT(a) From PurchaseOrder a WHERE a.poDate BETWEEN ?1 AND ?2</ejb-ql>
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        anchor: 3.2 PS_ORDER_EXTRACT
+        excerpt: |
+          Exports yesterday's purchase orders (00:00 to 24:00 server time) to /var/petstore/extract/orders_YYYYMMDD.csv
+    stack_metadata:
+      ejb.bean: PurchaseOrderEJB
+  - record_key: SUP-RULE-0001
+    kind: business-rule
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL, on receipt of a supplier invoice, add the invoiced quantity to the shipped quantity of each matching order line (matched by item id), and SHALL report the order as completely fulfilled only when every line's shipped quantity equals its ordered quantity.
+    confidence: medium
+    confidence_basis: >
+      One clear implementation in PurchaseOrderHelper.processInvoice; no test or document describes it directly.
+    risk_class: financial
+    basis: processInvoice accumulates shipped quantity and compares to quantity.
+    plain_text: >
+      When a supplier reports shipped items, the order's shipped counts go up; the order counts as complete only when everything ordered has shipped.
+    technical_note: >
+      Comparison is != so over-shipment also yields false (not complete). Lines are matched by item id only, so duplicate item ids on one order would each receive the full shipped amount.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderHelper.java
+        line_start: 80
+        line_end: 103
+        excerpt: |
+          li.setQuantityShipped(li.getQuantityShipped() + shipped.intValue());
+          ...
+          if(li.getQuantity() != li.getQuantityShipped()) { return false; }
+    stack_metadata:
+      framework: EJB 2.0 helper
+suspected_defects:
+  - capability_key: supplier-fulfillment
+    record_keys: [SUP-RULE-0001]
+    severity: low
+    category: other
+    title: Over-shipment or duplicate item ids prevent order completion
+    description: >
+      Completion needs exact equality of ordered and shipped quantity, and shipped amounts apply to every line with the same item id; an over-shipment leaves the order never complete.
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderHelper.java
+        line_start: 87
+        line_end: 100
+  - capability_key: checkout-order-placement
+    record_keys: [ORD-ENT-0001]
+    severity: medium
+    category: data-corruption
+    title: Shipping info replaced by billing info when order is read back
+    description: >
+      Only one contact record is stored (created from shipping info); getData returns it as both billing and shipping, marked XXX. Distinct billing address is lost.
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderEJB.java
+        line_start: 267
+        line_end: 268
+  - capability_key: checkout-order-placement
+    record_keys: [ORD-ENT-0001]
+    severity: low
+    category: inconsistent-rounding
+    title: Order total stored as binary float
+    description: >
+      Money total is a float, which cannot represent decimal amounts exactly.
+    traces:
+      - path: legacy-source/app/src/components/purchaseorder/src/com/sun/j2ee/blueprints/purchaseorder/ejb/PurchaseOrderEJB.java
+        line_start: 139
+        line_end: 145
+findings: []
