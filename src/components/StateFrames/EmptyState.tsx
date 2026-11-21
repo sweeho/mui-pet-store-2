@@ -27,26 +27,26 @@ export function EmptyState({
     >
       <Box
         sx={{
-          width: 36,
-          height: 36,
-          borderRadius: 1,
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
           bgcolor: "primary.light",
           color: "primary.main",
           display: "grid",
           placeItems: "center",
         }}
       >
-        <IconInbox size={20} stroke={1.7} aria-hidden />
+        <IconInbox size={28} stroke={1.7} aria-hidden />
       </Box>
       <Typography component="h2" variant="h3" sx={{ mt: 2, mb: 0.5, fontSize: "1.125rem" }}>
         {title}
       </Typography>
       {description ? (
-        <Typography color="text.secondary" sx={{ maxWidth: 360 }}>
+        <Typography color="text.secondary" sx={{ maxWidth: 400 }}>
           {description}
         </Typography>
       ) : null}
-      {action ? <Box sx={{ mt: 2.5 }}>{action}</Box> : null}
+      {action ? <Box sx={{ mt: 2.5, width: { xs: "100%", sm: "auto" } }}>{action}</Box> : null}
     </Card>
   );
 }

@@ -7,6 +7,7 @@ import { problem } from "@/lib/problem";
  * deny-by-default arrives with sign-in (SWHM3-I-0004).
  */
 export const PUBLIC_PATHS = [
+  "/catalog",
   "/locale",
   "/locale/changed",
   "/api/locale",

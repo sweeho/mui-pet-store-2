@@ -1,4 +1,4 @@
-import { integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -26,19 +26,27 @@ export const auditLog = sqliteTable("audit_log", {
 
 export const category = sqliteTable("category", { id: text("id").primaryKey() });
 
-export const product = sqliteTable("product", {
-  id: text("id").primaryKey(),
-  categoryId: text("category_id")
-    .notNull()
-    .references(() => category.id),
-});
+export const product = sqliteTable(
+  "product",
+  {
+    id: text("id").primaryKey(),
+    categoryId: text("category_id")
+      .notNull()
+      .references(() => category.id),
+  },
+  (t) => [index("product_category_id_idx").on(t.categoryId)],
+);
 
-export const item = sqliteTable("item", {
-  id: text("id").primaryKey(),
-  productId: text("product_id")
-    .notNull()
-    .references(() => product.id),
-});
+export const item = sqliteTable(
+  "item",
+  {
+    id: text("id").primaryKey(),
+    productId: text("product_id")
+      .notNull()
+      .references(() => product.id),
+  },
+  (t) => [index("item_product_id_idx").on(t.productId)],
+);
 
 // Per-locale text: one row per (id, locale).
 export const categoryDetails = sqliteTable(
@@ -52,7 +60,10 @@ export const categoryDetails = sqliteTable(
     image: text("image"),
     description: text("description"),
   },
-  (t) => [primaryKey({ columns: [t.categoryId, t.locale] })],
+  (t) => [
+    primaryKey({ columns: [t.categoryId, t.locale] }),
+    index("category_details_locale_name_idx").on(t.locale, t.name),
+  ],
 );
 
 export const productDetails = sqliteTable(
@@ -66,7 +77,10 @@ export const productDetails = sqliteTable(
     image: text("image"),
     description: text("description"),
   },
-  (t) => [primaryKey({ columns: [t.productId, t.locale] })],
+  (t) => [
+    primaryKey({ columns: [t.productId, t.locale] }),
+    index("product_details_locale_name_idx").on(t.locale, t.name),
+  ],
 );
 
 export const itemDetails = sqliteTable(

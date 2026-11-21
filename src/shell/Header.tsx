@@ -11,13 +11,14 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import { IconLanguage, IconMenu } from "@tabler/icons-react";
+import { IconLanguage, IconMenu, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { APP_NAME } from "@/constants/app";
 
 import { useLocaleContext, useT } from "@/lib/localization/LocaleProvider";
+import { withBasePath } from "@/lib/paths";
 import { findSupportedLocale } from "@/lib/locales";
 
 import { BrandLogo } from "./BrandLogo";
@@ -35,6 +36,7 @@ const AppBarStyled = styled(AppBar)(({ theme }) => ({
 
 const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
   width: "100%",
+  flexWrap: "wrap",
   color: theme.palette.text.secondary,
 }));
 
@@ -43,6 +45,9 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
   const t = useT();
   const { chosen } = useLocaleContext();
   const pathname = usePathname();
+  // On the results page the box holds the keywords that were searched.
+  const searched = useSearchParams();
+  const query = pathname.startsWith("/catalog/search") ? (searched.get("q") ?? "") : "";
   const name = findSupportedLocale(chosen)?.label ?? chosen;
   const href = pathname.startsWith("/locale")
     ? "/locale"
@@ -83,6 +88,48 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
         >
           <BrandLogo />
           {APP_NAME}
+        </Box>
+        <Box
+          component="form"
+          role="search"
+          action={withBasePath("/catalog/search")}
+          method="get"
+          sx={{
+            order: { xs: 3, lg: 0 },
+            flex: { xs: "1 0 100%", lg: "0 1 420px" },
+            height: 36,
+            mb: { xs: 1, lg: 0 },
+            ml: { lg: 1 },
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            px: 1.5,
+            border: 1,
+            borderColor: "divider",
+            borderRadius: 1,
+            color: "text.secondary",
+            "&:focus-within": { borderColor: "primary.main" },
+          }}
+        >
+          <IconSearch size={18} stroke={1.7} aria-hidden />
+          <Box
+            component="input"
+            type="search"
+            name="q"
+            key={query}
+            defaultValue={query}
+            aria-label={t("header.search")}
+            placeholder={t("header.search.placeholder")}
+            sx={{
+              border: 0,
+              outline: 0,
+              flex: 1,
+              minWidth: 0,
+              font: "inherit",
+              color: "text.primary",
+              bgcolor: "transparent",
+            }}
+          />
         </Box>
         <Box flexGrow={1} />
         <Button

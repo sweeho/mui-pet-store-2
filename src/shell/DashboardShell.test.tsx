@@ -6,7 +6,10 @@ import { theme } from "@/theme/theme";
 
 import { DashboardShell } from "./DashboardShell";
 
-jest.mock("next/navigation", () => ({ usePathname: () => "/" }));
+jest.mock("next/navigation", () => ({
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 describe("DashboardShell", () => {
   it("[SWHM3-C-0165] renders content in main between a banner and a footer", () => {

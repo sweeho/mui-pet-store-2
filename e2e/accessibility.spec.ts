@@ -33,6 +33,21 @@ test.describe("accessibility", () => {
     await expectAccessibleStructure(page);
   });
 
+  test("catalog pages", async ({ page }) => {
+    for (const path of [
+      "/catalog",
+      "/catalog/categories/FISH",
+      "/catalog/products/FI-SW-01",
+      "/catalog/items/EST-1",
+      "/catalog/search?q=fish",
+      "/catalog/search?q=unicorn",
+      "/catalog/items/NOPE",
+    ]) {
+      await page.goto(path);
+      await expectAccessibleStructure(page);
+    }
+  });
+
   test("empty frame", async ({ page }) => {
     await page.goto("/admin/orders");
     await expectAccessibleStructure(page);
