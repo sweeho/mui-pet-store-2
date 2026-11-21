@@ -1,0 +1,41 @@
+recommendations:
+  - record_key: ORD-APPR-REQ-0011
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Three passes agree on the aggregation. Float accumulation is a suspected defect for the Business Owner to rule on.
+  - record_key: ORDER-ADMIN-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      web.xml declares the constraint and the login page agrees. The unprotected data endpoint, pre-filled default credentials and absent TLS go to the defect register.
+  - record_key: ORDER-ADMIN-REQ-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      The server handler and client charts agree; aggregation sits in the facade, which another pass confirms. Float totals and unhandled malformed dates are defects to confirm.
+  - record_key: ORD-APPR-REQ-0010
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Facade code and user guide agree on listing and the pending/non-pending panes. Overlaps ORDER-ADMIN-REQ-0004; the Business Owner may merge them.
+  - record_key: ORDER-ADMIN-INT-0008
+    recommendation: accept
+    confidence: high
+    reason: >
+      Server dispatcher and client proxy agree on the four types. Errors inside a 200 body are legacy behaviour to confirm.
+  - record_key: ORDER-ADMIN-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      web.xml and the servlet agree, but 54 minutes is an undocumented literal; the Business Owner should confirm the value is intended.
+  - record_key: ORDER-ADMIN-REQ-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Server handler, client requests and the user guide agree.
+  - record_key: ORDER-ADMIN-WF-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      One servlet dispatch plus the page fields; Java Web Start launch is legacy technology, so only the user-visible launch and logout should be carried over.
