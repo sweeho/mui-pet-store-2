@@ -1,0 +1,175 @@
+recommendations:
+  - record_key: CHK-BR-0005
+    recommendation: accept
+    confidence: low
+    reason: >
+      DTD marks Country optional but the reader treats it as mandatory. Recommend confirming what the code does; which is right is a Business Owner decision and the document conflict goes to Intent.
+  - record_key: CHK-BR-0010
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-BR-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-ENT-0010
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-BR-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-INT-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-REQ-0006
+    recommendation: edit
+    confidence: low
+    reason: >
+      Open access is the absence of a role check in the legacy descriptor; confirm with the Business Owner whether it was intended rather than carrying it forward.
+    edited_requirement: >
+      The system SHALL require a signed-in caller and a granted permission before a record is read or changed.
+  - record_key: CHK-BR-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-BRL-0005
+    recommendation: edit
+    confidence: low
+    reason: >
+      Open access is the absence of a role check in the legacy descriptor; confirm with the Business Owner whether it was intended rather than carrying it forward.
+    edited_requirement: >
+      The system SHALL require a signed-in caller and a granted permission before a record is read or changed.
+  - record_key: CHK-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-ENT-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-REQ-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHKOUT-ENT-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-ORDER-PLACEMENT-BR-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-ORDER-PLACEMENT-ENT-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-ORDER-PLACEMENT-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-ORDER-PLACEMENT-REQ-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHECKOUT-REQ-0001
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Service-locator plumbing is a legacy implementation detail (naming-directory lookup) of the J2EE stack, not order-placement behaviour a rebuild must match.
+  - record_key: CHECKOUT-REQ-0003
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Service-locator plumbing is a legacy implementation detail (naming-directory lookup) of the J2EE stack, not order-placement behaviour a rebuild must match.
+  - record_key: CHECKOUT-REQ-0004
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Service-locator plumbing is a legacy implementation detail (naming-directory lookup) of the J2EE stack, not order-placement behaviour a rebuild must match.
+  - record_key: CHECKOUT-REQ-0005
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Service-locator plumbing is a legacy implementation detail (naming-directory lookup) of the J2EE stack, not order-placement behaviour a rebuild must match.
+  - record_key: CHK-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-BR-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-BR-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-INT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHK-REQ-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: CHKORD-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: FULFILL-ENT-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
+  - record_key: ORD-APPR-REQ-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Pass A and pass B agree on the code and DDL behaviour; accept as written.
