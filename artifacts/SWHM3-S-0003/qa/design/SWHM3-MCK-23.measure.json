@@ -1,0 +1,186 @@
+{
+  "key": "SWHM3-MCK-23",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-item-detail.html",
+  "url": "http://127.0.0.1:3200/catalog/items/EST-1",
+  "width": 1440,
+  "at": "2026-11-21T17:56:29.189Z",
+  "pixelDifference": 0.0365,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded",
+      "JetBrains Mono Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,299"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Add to cart",
+      "mockup": "button at 877,363"
+    },
+    {
+      "kind": "style",
+      "text": "Details",
+      "prop": "position",
+      "mockup": "877,423",
+      "built": "877,376"
+    },
+    {
+      "kind": "style",
+      "text": "Product",
+      "prop": "position",
+      "mockup": "877,449",
+      "built": "877,402"
+    },
+    {
+      "kind": "style",
+      "text": "FI-SW-01",
+      "prop": "position",
+      "mockup": "1084,461",
+      "built": "1084,413"
+    },
+    {
+      "kind": "style",
+      "text": "Category",
+      "prop": "position",
+      "mockup": "877,489",
+      "built": "877,442"
+    },
+    {
+      "kind": "style",
+      "text": "Size",
+      "prop": "position",
+      "mockup": "877,529",
+      "built": "877,482"
+    },
+    {
+      "kind": "style",
+      "text": "Large",
+      "prop": "position",
+      "mockup": "1017,529",
+      "built": "1017,482"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,336"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1226,14"
+    }
+  ]
+}

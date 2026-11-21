@@ -1,0 +1,140 @@
+{
+  "key": "SWHM3-MCK-28",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-search-results-no-matches-mobile.html",
+  "url": "http://127.0.0.1:3200/catalog/search?q=unicorn",
+  "width": 390,
+  "at": "2026-11-21T17:56:37.411Z",
+  "pixelDifference": 0.1461,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "b at 100,17"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "unicorn",
+      "prop": "position",
+      "mockup": "51,76",
+      "built": "55,87"
+    },
+    {
+      "kind": "style",
+      "text": "Catalog",
+      "prop": "position",
+      "mockup": "16,133",
+      "built": "16,151"
+    },
+    {
+      "kind": "style",
+      "text": "›",
+      "prop": "position",
+      "mockup": "66,133",
+      "built": "66,150"
+    },
+    {
+      "kind": "style",
+      "text": "Search results",
+      "prop": "position",
+      "mockup": "77,133",
+      "built": "77,150"
+    },
+    {
+      "kind": "style",
+      "text": "Items matching any of: unicorn",
+      "prop": "position",
+      "mockup": "16,190",
+      "built": "16,206"
+    },
+    {
+      "kind": "style",
+      "text": "No pets match “unicorn”",
+      "prop": "position",
+      "mockup": "88,339",
+      "built": "88,388"
+    },
+    {
+      "kind": "style",
+      "text": "Try a different keyword, such as a pet type (“dog”) or a breed (“goldfish”), or browse the catalog by category.",
+      "prop": "position",
+      "mockup": "33,369",
+      "built": "41,415"
+    },
+    {
+      "kind": "style",
+      "text": "Browse the catalog",
+      "prop": "position",
+      "mockup": "33,450",
+      "built": "41,496"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 239,867"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 293,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    }
+  ]
+}

@@ -28,6 +28,10 @@ describe("proxy", () => {
     expect(res.status).toBe(403);
   });
 
+  it("lists the catalog browsing entry point as public", () => {
+    expect(PUBLIC_PATHS).toContain("/catalog");
+  });
+
   it("lists the localization entry points as public", () => {
     expect(PUBLIC_PATHS).toEqual(
       expect.arrayContaining(["/locale", "/api/locale", "/locale-link"]),

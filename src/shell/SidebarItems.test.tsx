@@ -16,4 +16,12 @@ describe("SidebarItems", () => {
     for (const group of ["Shop", "Account", "Admin"])
       expect(within(nav).getByText(group)).toBeInTheDocument();
   });
+
+  it("lists Catalog and Search in the Shop group", () => {
+    expect(MENU_ITEMS.filter((i) => i.group === "shop").map((i) => i.href)).toEqual([
+      "/",
+      "/catalog",
+      "/catalog/search",
+    ]);
+  });
 });

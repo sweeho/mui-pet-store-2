@@ -41,7 +41,13 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       <PageWrapper>
         <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
         <Container
-          sx={{ paddingTop: "24px", paddingBottom: "32px", maxWidth: "1200px", flexGrow: 1 }}
+          sx={{
+            paddingTop: "24px",
+            paddingBottom: "32px",
+            paddingX: { xs: "16px", sm: "32px" },
+            maxWidth: "1200px",
+            flexGrow: 1,
+          }}
         >
           <Box component="main">{children}</Box>
         </Container>

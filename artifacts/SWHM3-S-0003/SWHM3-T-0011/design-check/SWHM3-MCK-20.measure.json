@@ -1,0 +1,199 @@
+{
+  "key": "SWHM3-MCK-20",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-product-list-mobile.html",
+  "url": "http://127.0.0.1:3300/catalog/categories/FISH",
+  "width": 390,
+  "at": "2026-11-21T17:44:53.234Z",
+  "pixelDifference": 0.0757,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "JetBrains Mono Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "b at 100,17"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "51,76",
+      "built": "55,87"
+    },
+    {
+      "kind": "style",
+      "text": "Catalog",
+      "prop": "position",
+      "mockup": "16,133",
+      "built": "16,151"
+    },
+    {
+      "kind": "style",
+      "text": "›",
+      "prop": "position",
+      "mockup": "66,133",
+      "built": "66,150"
+    },
+    {
+      "kind": "style",
+      "text": "Fish",
+      "prop": "position",
+      "mockup": "77,133",
+      "built": "77,150"
+    },
+    {
+      "kind": "style",
+      "text": "Salt water and fresh water fish. Choose a product to see its items.",
+      "prop": "position",
+      "mockup": "16,190",
+      "built": "16,206"
+    },
+    {
+      "kind": "style",
+      "text": "Angelfish Salt water fish from Australia. FI-SW-01",
+      "prop": "position",
+      "mockup": "16,246",
+      "built": "17,272"
+    },
+    {
+      "kind": "style",
+      "text": "Angelfish",
+      "prop": "position",
+      "mockup": "105,259",
+      "built": "105,284"
+    },
+    {
+      "kind": "style",
+      "text": "Salt water fish from Australia.",
+      "prop": "position",
+      "mockup": "105,281",
+      "built": "105,305"
+    },
+    {
+      "kind": "style",
+      "text": "FI-SW-01",
+      "prop": "position",
+      "mockup": "105,305",
+      "built": "105,328"
+    },
+    {
+      "kind": "style",
+      "text": "Goldfish Fresh water fish from China. FI-FW-02",
+      "prop": "position",
+      "mockup": "16,347",
+      "built": "17,371"
+    },
+    {
+      "kind": "style",
+      "text": "Goldfish",
+      "prop": "position",
+      "mockup": "105,360",
+      "built": "105,383"
+    },
+    {
+      "kind": "style",
+      "text": "Fresh water fish from China.",
+      "prop": "position",
+      "mockup": "105,382",
+      "built": "105,404"
+    },
+    {
+      "kind": "style",
+      "text": "FI-FW-02",
+      "prop": "position",
+      "mockup": "105,405",
+      "built": "105,428"
+    },
+    {
+      "kind": "style",
+      "text": "1–2",
+      "prop": "position",
+      "mockup": "16,464",
+      "built": "16,487"
+    },
+    {
+      "kind": "style",
+      "text": "Previous",
+      "prop": "position",
+      "mockup": "42,451",
+      "built": "42,474"
+    },
+    {
+      "kind": "style",
+      "text": "Next",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(148, 163, 184)"
+    },
+    {
+      "kind": "style",
+      "text": "Next",
+      "prop": "position",
+      "mockup": "212,451",
+      "built": "212,474"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 239,867"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 293,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    }
+  ]
+}

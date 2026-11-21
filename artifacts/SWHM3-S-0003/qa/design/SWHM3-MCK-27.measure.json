@@ -1,0 +1,100 @@
+{
+  "key": "SWHM3-MCK-27",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-search-results-no-matches.html",
+  "url": "http://127.0.0.1:3200/catalog/search?q=unicorn",
+  "width": 1440,
+  "at": "2026-11-21T17:56:35.784Z",
+  "pixelDifference": 0.0275,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,299"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,336"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 285,23"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1226,14"
+    }
+  ]
+}
