@@ -1,0 +1,410 @@
+records:
+  - record_key: LOC-REQ-0001
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL assign the configured default locale (en_US) to any session that has no locale yet, on the first request handled by the main controller.
+    confidence: high
+    confidence_basis: >
+      Enforced in the controller code and the default is declared in the web deployment descriptor (two places).
+    risk_class: presentational
+    basis: Controller servlet sets session locale when absent, using the default_locale init parameter.
+    plain_text: A visitor who has not picked a language is shown the site in US English.
+    technical_note: MainServlet.doProcess sets WebKeys.LOCALE from init-param default_locale (web.xml).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/MainServlet.java
+        line_start: 111
+        line_end: 113
+        excerpt: |
+          if (request.getSession().getAttribute(WebKeys.LOCALE) == null) {
+              request.getSession().setAttribute(WebKeys.LOCALE, defaultLocale);
+          }
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 66
+        line_end: 69
+        excerpt: |
+          <init-param>
+            <param-name>default_locale</param-name>
+            <param-value>en_US</param-value>
+          </init-param>
+    stack_metadata:
+      framework: custom WAF controller servlet
+      session.scope: session
+
+  - record_key: LOC-REQ-0002
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL let a user change the session locale by submitting a locale string of the form language_COUNTRY; a locale parameter that cannot be parsed SHALL cause the change to fail with an error.
+    confidence: medium
+    confidence_basis: One clear place (the change-locale action plus I18nUtil parser); no test or document describing it.
+    risk_class: presentational
+    basis: ChangeLocaleHTMLAction stores the parsed locale in the session or raises an exception.
+    plain_text: Users can switch the site language; an unrecognised language choice is rejected with an error.
+    technical_note: >
+      ChangeLocaleHTMLAction on changelocale.do. Parser requires an underscore; null or no-underscore returns null; the string "default" maps to the JVM default locale. The sample JSP offers en_US, de_DE, ja_JP, zh_CN.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/action/actions/ChangeLocaleHTMLAction.java
+        line_start: 73
+        line_end: 83
+        excerpt: |
+          String localeString = request.getParameter("locale");
+          Locale locale = I18nUtil.getLocaleFromString(localeString);
+          HttpSession session = request.getSession();
+          if (locale != null) {
+              session.setAttribute(LOCALE,locale);
+              return new ChangeLocaleEvent(locale);
+          } else {
+              throw new HTMLActionException("ChangeLocaleAction: Unable to change language to " + localeString);
+          }
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 168
+        line_end: 172
+        excerpt: |
+          public static Locale getLocaleFromString(String localeString) {
+              if (localeString == null) return null;
+              if (localeString.toLowerCase().equals("default")) return Locale.getDefault();
+              int languageIndex = localeString.indexOf('_');
+              if (languageIndex  == -1) return null;
+    stack_metadata:
+      framework: custom WAF
+      session.scope: session
+
+  - record_key: LOC-BR-0003
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      GIVEN a screen request, WHEN a locale request parameter is present, THEN the system SHALL use it in preference to the session locale; WHEN the chosen locale has no loaded screen definitions, THEN the system SHALL fall back to the default locale; WHEN the screen is missing from the chosen locale's definitions, THEN the system SHALL load it from the default locale's definitions.
+    confidence: medium
+    confidence_basis: One clear place (template servlet); only en_US is configured in the descriptor so the fallback is the only path exercised by the configuration seen.
+    risk_class: presentational
+    basis: Locale resolution order in TemplateServlet.process.
+    plain_text: A language chosen in the link beats the saved language; if no pages exist in that language the English pages are shown.
+    technical_note: >
+      web.xml configures locales=en_US only, while requestmappings.xml references a ja_JP definition file (screendefinitions_en_US.xml is the only one under WEB-INF in this module), so non-English falls back to en_US here.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 157
+        line_end: 166
+        excerpt: |
+          String languageParam = request.getParameter("locale");
+          if (languageParam != null) {
+              localeString = languageParam;
+          } else if (request.getSession().getAttribute(WebKeys.LOCALE) != null) {
+              localeString = ((Locale)request.getSession().getAttribute(WebKeys.LOCALE)).toString();
+          }
+          if (allScreens.get(localeString) == null) {
+             localeString = defaultLocale;
+          }
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 236
+        line_end: 241
+        excerpt: |
+          if (screen == null) {
+              System.err.println("Screen not Found loading default from " + defaultLocale);
+              localeScreens = (Screens)allScreens.get(defaultLocale);
+              screen = (Screen)localeScreens.getScreen(screenName);
+          }
+    stack_metadata:
+      framework: custom WAF template servlet
+
+  - record_key: LOC-BR-0004
+    kind: business-rule
+    capability_key: localization
+    requirement: >
+      The system SHALL format currency and numbers according to the user's locale with a caller-specified number of fraction digits, and SHALL split search keywords into words using the locale's word-break rules.
+    confidence: medium
+    confidence_basis: One clear place (utility class); callers are outside this module so actual use was not confirmed.
+    risk_class: presentational
+    basis: I18nUtil formatting and keyword parsing helpers.
+    plain_text: Prices, numbers and search words follow the conventions of the user's language.
+    technical_note: I18nUtil.formatCurrency/formatNumber (NumberFormat with min/max fraction digits), parseKeywords(String, Locale) via BreakIterator; also convertJISEncoding for Japanese URL-encoded input.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 100
+        line_end: 105
+        excerpt: |
+          public static String formatCurrency(double amount, int precision, Locale locale){
+              NumberFormat nf = NumberFormat.getCurrencyInstance(locale);
+              nf.setMinimumFractionDigits(precision);
+              nf.setMaximumFractionDigits(precision);
+              return nf.format(amount);
+          }
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 136
+        line_end: 139
+        excerpt: |
+          public static Vector parseKeywords(String keywordString, Locale locale){
+              if (keywordString != null){
+                  Vector keywords = new Vector();
+                  BreakIterator breakIt = BreakIterator.getWordInstance(locale);
+
+  - record_key: CUS-REQ-0005
+    kind: requirement
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL expire an idle web session after 30 minutes.
+    confidence: medium
+    confidence_basis: One clear place, the deployment descriptor; no test or comment elsewhere in the module.
+    risk_class: operational
+    basis: session-timeout declared in web.xml.
+    plain_text: A visitor who is inactive for 30 minutes is logged out and loses their session.
+    technical_note: web.xml session-config session-timeout=30 (minutes).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 99
+        line_end: 101
+        excerpt: |
+          <session-config>
+            <session-timeout>30</session-timeout>
+          </session-config>
+    stack_metadata:
+      session.scope: session
+
+  - record_key: CAT-WF-0006
+    kind: workflow
+    capability_key: catalog-browsing
+    requirement: >
+      The system SHALL serve every request ending in .do through a single front controller that (1) resolves the last URL path segment to a configured mapping, (2) runs the mapped action if the mapping declares one, (3) dispatches any resulting event to the controller component, and (4) forwards to the screen named by the mapping or by the mapping's flow handler.
+    confidence: high
+    confidence_basis: Seen in the servlet code, request processor, flow manager and the mapping/web descriptors (several places).
+    risk_class: operational
+    basis: Request lifecycle of the web application framework shared by the whole storefront.
+    plain_text: Every page request goes through one common entry point that decides what to do and which page to show next.
+    technical_note: >
+      MainServlet (*.do) -> RequestProcessor.processRequest -> WebController.handleEvent -> ScreenFlowManager.forwardToNextScreen. Mapping key is the last path segment of the URI. No capability in the list covers framework plumbing, so filed under catalog-browsing as closest (page navigation).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/MainServlet.java
+        line_start: 114
+        line_end: 116
+        excerpt: |
+          try {
+                   getRequestProcessor().processRequest(request);
+                   getScreenFlowManager().forwardToNextScreen(request,response);
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/RequestProcessor.java
+        line_start: 128
+        line_end: 143
+        excerpt: |
+          if (action != null) {
+              action.setServletContext(request.getSession().getServletContext());
+              action.doStart(request);
+              ev = action.perform(request);
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 91
+        line_end: 94
+        excerpt: |
+          <servlet-mapping>
+            <servlet-name>webTierEntryPoint</servlet-name>
+            <url-pattern>*.do</url-pattern>
+          </servlet-mapping>
+    stack_metadata:
+      framework: custom WAF (Sun Blueprints)
+
+  - record_key: CAT-BR-0007
+    kind: business-rule
+    capability_key: catalog-browsing
+    requirement: >
+      GIVEN a request whose mapping has a flow handler, WHEN the handler returns a result code, THEN the system SHALL show the screen configured for that result, or treat the result itself as the screen name when no result is configured; GIVEN no screen can be determined, THEN the system SHALL fail with a "Screen not found" error.
+    confidence: medium
+    confidence_basis: One clear place (ScreenFlowManager); a handler that throws is logged and swallowed, which leaves the screen empty (see defect).
+    risk_class: operational
+    basis: Flow-handler result to screen resolution.
+    plain_text: After some actions the next page depends on the outcome of the action; if none can be found the user sees an error.
+    technical_note: ScreenFlowManager.forwardToNextScreen; getResultScreen then fallback to flowResult.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/flow/ScreenFlowManager.java
+        line_start: 142
+        line_end: 156
+        excerpt: |
+          String flowResult = handler.processFlow(request);
+          handler.doEnd(request);
+          currentScreen = urlMapping.getResultScreen(flowResult);
+          if (currentScreen == null) currentScreen = flowResult;
+          ...
+          if (currentScreen == null) {
+              System.err.println("ScreenFlowManager: Screen not found for " + selectedURL);
+              throw new RuntimeException("Screen not found for " + selectedURL);
+
+  - record_key: CAT-BR-0008
+    kind: business-rule
+    capability_key: catalog-browsing
+    requirement: >
+      GIVEN an exception during request handling, WHEN its class is, or extends, a class listed in the exception mappings, THEN the system SHALL forward to the mapped error screen; WHEN no mapping matches, THEN the system SHALL raise a generic servlet error.
+    confidence: medium
+    confidence_basis: One clear place (MainServlet and ScreenFlowManager) plus the mapping file.
+    risk_class: operational
+    basis: Exception-to-screen mapping with subclass matching.
+    plain_text: When something goes wrong the user is shown an error page suited to the kind of failure.
+    technical_note: >
+      mappings.xml maps petstore.controller.exceptions.GeneralFailureException to error.screen; that class sits in a different package from the waf GeneralFailureException, so the mapping may never match (see defect).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/MainServlet.java
+        line_start: 117
+        line_end: 127
+        excerpt: |
+          } catch (Throwable ex) {
+              String nextScreen = getScreenFlowManager().getExceptionScreen(ex);
+              request.setAttribute("javax.servlet.jsp.jspException", ex);
+              if (nextScreen == null) {
+                  ex.printStackTrace();
+                  throw new ServletException("MainServlet: unknown exception: " + className);
+              }
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/mappings.xml
+        line_start: 65
+        line_end: 65
+        excerpt: |
+          <exception-mapping exception-class="com.sun.j2ee.blueprints.petstore.controller.exceptions.GeneralFailureException" screen="error.screen"/>
+
+  - record_key: CUS-BR-0009
+    kind: business-rule
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL declare, per URL mapping, whether sign-in is required (requiresSignin), and the configuration SHALL name the sign-in, sign-in-error and default screens. Pages requiring sign-in include account editing, order placement, order commit and checkout shipping/billing steps.
+    confidence: low
+    confidence_basis: >
+      The declaration is in requestmappings.xml, but MainServlet loads mappings.xml, which has no requiresSignin attribute, and no waf code reads that attribute. Enforcement was not seen in this module.
+    dispute:
+      reason: unresolved-reachability
+      detail: >
+        requestmappings.xml (petstore URLs, requiresSignin) is not the file MainServlet/ScreenFlowManager load (/WEB-INF/mappings.xml). Whether the petstore application ships its own filter or a different file enforcing sign-in must be settled outside this module.
+    risk_class: regulated
+    basis: requiresSignin attributes on url-mapping entries.
+    plain_text: Account editing, placing an order and the checkout steps are meant to be available only to signed-in customers.
+    technical_note: docroot/WEB-INF/xml/requestmappings.xml; sign-in screens SIGN_IN, SIGN_IN_ERROR.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+        line_start: 47
+        line_end: 51
+        excerpt: |
+          <signin-screen>SIGN_IN</signin-screen>
+          <signin-error-screen>SIGN_IN_ERROR</signin-error-screen>
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+        line_start: 63
+        line_end: 63
+        excerpt: |
+          <url-mapping url="/editaccount" screen="EDIT_ACCOUNT" requiresSignin="true"/>
+
+  - record_key: CHK-BR-0010
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The checkout flow SHALL route the shipping-information step to billing validation on result 1 and to a missing-form-data screen on result 2, and the billing step to shipping entry (1), billing re-display (2) or missing-form-data (3); order commit SHALL require sign-in.
+    confidence: low
+    confidence_basis: Single declarative file that the waf controller does not load (see CUS-BR-0009); handlers are outside this module.
+    dispute:
+      reason: unresolved-reachability
+      detail: Same as CUS-BR-0009; confirm petstore module's own mappings are the live ones.
+    risk_class: financial
+    basis: handler-result screen routing in requestmappings.xml.
+    plain_text: Checkout moves from shipping to billing and back, and sends the customer to a "missing information" page when a form is incomplete.
+    technical_note: ShippingFlowHandler and AccountFlowHandler result codes mapped to screens.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+        line_start: 78
+        line_end: 95
+        excerpt: |
+          <url-mapping url="/validateshippinginformation" useRequestHandler="true" useFlowHandler="true" requiresSignin="true">
+          ...
+              <handler-result result="1" screen="VALIDATE_BILLING_INFORMATION"/>
+              <handler-result result="2" screen="MISSING_FORM_DATA"/>
+
+  - record_key: LOC-REQ-0011
+    kind: requirement
+    capability_key: localization
+    requirement: >
+      The system SHALL render each page from a named screen definition (template plus parameters) looked up by the requested screen name for the user's locale, and SHALL print a "Definition for screen ... not found" message when no definition exists in any locale.
+    confidence: medium
+    confidence_basis: One clear place (template servlet); definitions in XML.
+    risk_class: presentational
+    basis: TemplateServlet for *.screen requests.
+    plain_text: Pages are assembled from a template and per-language page definitions; a missing page definition shows an error message.
+    technical_note: web.xml maps *.screen to TemplateServlet; the screen name is URL segment before the last dot. The pseudo-screen PREVIOUS returns to the last screen shown, restoring cached request parameters/attributes only if the cache_previous_* flags are true (both false in web.xml).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 248
+        line_end: 251
+        excerpt: |
+          } else {
+              response.setContentType("text/html;charset=8859_1");
+              PrintWriter out = response.getWriter();
+              out.println("<font size=+4>Error:</font><br>Definition for screen " + screenName + " not found");
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/web.xml
+        line_start: 85
+        line_end: 88
+        excerpt: |
+          <servlet-mapping>
+            <servlet-name>TemplateServlet</servlet-name>
+            <url-pattern>*.screen</url-pattern>
+          </servlet-mapping>
+
+suspected_defects:
+  - capability_key: catalog-browsing
+    record_keys: [CAT-BR-0008]
+    severity: medium
+    category: other
+    title: Exception mapping names a class from another package
+    description: >
+      mappings.xml maps petstore.controller.exceptions.GeneralFailureException to the error screen, but the exception in this module is waf.exceptions.GeneralFailureException. The class cannot be loaded here (logged) so framework failures fall through to a generic servlet error.
+    traces:
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/mappings.xml
+        line_start: 65
+        line_end: 65
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/flow/ScreenFlowManager.java
+        line_start: 170
+        line_end: 173
+  - capability_key: catalog-browsing
+    record_keys: [CAT-BR-0007, CAT-WF-0006]
+    severity: medium
+    category: error-swallowed
+    title: Action or flow-handler load failures are only logged
+    description: >
+      RequestProcessor.getAction and ScreenFlowManager catch any exception while loading an action or flow handler and print to stderr; the request then continues with no action or no screen (producing a "Screen not found" runtime error or a silent skip of the action).
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/RequestProcessor.java
+        line_start: 160
+        line_end: 162
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/controller/web/flow/ScreenFlowManager.java
+        line_start: 148
+        line_end: 150
+  - capability_key: localization
+    record_keys: [LOC-REQ-0002]
+    severity: low
+    category: other
+    title: Locale parser never reads a variant
+    description: >
+      getLocaleFromString sets variantIndex to -1 and never assigns it, so a variant segment is dropped; country with a third segment includes the underscore (e.g. "US_POSIX" as country). The event class registered in mappings.xml (waf.event.events.ChangeLocaleEvent) also differs from the one the action creates (waf.event.impl.ChangeLocaleEvent), so no EJB action is attached to the locale-change event.
+    traces:
+      - path: legacy-source/app/src/waf/src/controller/com/sun/j2ee/blueprints/waf/util/I18nUtil.java
+        line_start: 182
+        line_end: 189
+      - path: legacy-source/app/src/waf/src/docroot/WEB-INF/mappings.xml
+        line_start: 45
+        line_end: 48
+  - capability_key: localization
+    record_keys: [LOC-BR-0003]
+    severity: low
+    category: other
+    title: Template servlet cannot cope with a missing default-locale screen
+    description: >
+      If the default locale has no loaded definitions, or the URL has no dot, TemplateServlet dereferences null (NullPointerException); also locale list is en_US only although mapping files reference ja_JP.
+    traces:
+      - path: legacy-source/app/src/waf/src/view/template/com/sun/j2ee/blueprints/waf/view/template/TemplateServlet.java
+        line_start: 237
+        line_end: 241
+
+findings:
+  - kind: ambiguity
+    path: legacy-source/app/src/waf/src/docroot/WEB-INF/xml/requestmappings.xml
+    description: >
+      requestmappings.xml carries petstore URL mappings and handler classes, not the waf ones; no waf code loads it. A human should confirm whether it is dead sample content or the live configuration of the storefront. No document under legacy-analysis/sources bears on this framework module.
