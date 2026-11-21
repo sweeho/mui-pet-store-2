@@ -136,6 +136,14 @@ test.describe("customer-accounts", () => {
     await page.getByLabel(/^telephone$/i).fill("555");
     await page.getByRole("button", { name: /save profile/i }).click();
     await expect(page.getByText(/profile saved/i)).toHaveCount(0);
+    // the refusal names the missing field: a message that mentions the postal code
+    // together with a refusal word (a bare field label does not match)
+    const word = "required|missing|blank|empty|enter|must|invalid|cannot|cannot be";
+    await expect(
+      page
+        .getByText(new RegExp(`postal code.*(${word})|(${word}).*postal code`, "i"))
+        .first(),
+    ).toBeVisible();
   });
 
   // case: SWHM3-C-0156@v1
