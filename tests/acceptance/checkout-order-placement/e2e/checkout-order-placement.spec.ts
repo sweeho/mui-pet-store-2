@@ -5,10 +5,18 @@
  * "Checkout" button. The shipping-information form at /checkout/shipping has fields labelled
  * "Street", "City", "State", "Zip", "Country" and a "Continue" button. A complete form continues to
  * /checkout/billing (billing validation); an incomplete form shows a "Missing form data" heading.
- * Placing the order (button "Place order" on /checkout/billing, after signing in) shows
- * "Order <id>" and the bill-to e-mail, and the cart then shows "Your cart is empty".
+ * Sign-in is the form at /admin (fields labelled Username and Password, button "Sign in"; plain user
+ * j2ee/j2ee). Placing the order (button "Place order" on /checkout/billing, once signed in) shows a
+ * heading "Order <id>" and the bill-to e-mail address, and the cart then shows "Your cart is empty".
  */
 import { expect, test } from "@playwright/test";
+
+async function signIn(page: import("@playwright/test").Page) {
+  await page.goto("/admin");
+  await page.getByLabel(/^username$/i).fill("j2ee");
+  await page.getByLabel(/^password$/i).fill("j2ee");
+  await page.getByRole("button", { name: /sign in/i }).click();
+}
 
 async function fillShipping(page: import("@playwright/test").Page, complete: boolean) {
   await page.goto("/checkout/shipping");
@@ -19,18 +27,20 @@ async function fillShipping(page: import("@playwright/test").Page, complete: boo
     await page.getByLabel(/^zip$/i).fill("90001");
     await page.getByLabel(/^country$/i).fill("US");
   }
-  await page.getByRole("button", { name: /continue/i }).click();
+  await page.getByRole("button", { name: /^continue$/i }).click();
 }
 
 test.describe("checkout-order-placement", () => {
   // case: SWHM3-C-0033@v1
   test("SWHM3-C-0033 response returns order id and e-mail and empties cart", async ({ page }) => {
+    await signIn(page);
     await page.goto("/store");
     await page.getByRole("button", { name: /add to cart/i }).first().click();
     await fillShipping(page, true);
-    await page.getByRole("button", { name: /place order/i }).click();
-    await expect(page.getByText(/order\s+\S+/i).first()).toBeVisible();
-    await expect(page.getByText(/@/).first()).toBeVisible();
+    await expect(page).toHaveURL(/\/checkout\/billing/);
+    await page.getByRole("button", { name: /^place order$/i }).click();
+    await expect(page.getByRole("heading", { name: /^order\s+\S+/i })).toBeVisible();
+    await expect(page.getByText(/[^\s@]+@[^\s@]+\.[^\s@]+/).first()).toBeVisible();
     await page.goto("/cart");
     await expect(page.getByText(/your cart is empty/i)).toBeVisible();
   });

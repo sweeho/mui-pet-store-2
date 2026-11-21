@@ -11,7 +11,7 @@
  *   expiryMonth(card) / expiryYear(card) -> string               card = { number?, type?, expiry? }
  * rt:
  *   rt.contacts.create({familyName, givenName, email, phone, address?}) -> {id, addressId}
- *   rt.contacts.remove(id); rt.addresses.{create(a) -> {id}, read(id), exists(id), remove(id), list()}
+ *   rt.contacts.{remove(id), exists(id)}; rt.addresses.{create(a) -> {id}, read(id), exists(id), remove(id), list()}
  *   rt.cards.{store({number,type,expiry}) -> {id}, read(id), update(id, patch), exists(id)}  rejects on a missing field
  *   rt.orders.record({userId,email,locale,total,orderDate?,contactId,cardId,status?}) -> order {id,...}
  *   rt.orders.create({userId,email,locale,total,lines:[{quantity}]}) -> order; builds contact, card, lines
@@ -273,16 +273,21 @@ describe("checkout-order-placement", () => {
     expect(await rt.addresses.exists(full.addressId)).toBe(false);
     expect(await rt.cards.exists(full.cardId)).toBe(false);
     expect(await rt.orderLines.list(o.id)).toHaveLength(0);
-    expect(await rt.addresses.exists(full.contactId)).toBe(false);
+    // the contact's address row is gone; the contact itself is checked through the order's contact id
+    expect(await rt.addresses.exists(full.addressId)).toBe(false);
+    expect(await rt.contacts.exists(full.contactId)).toBe(false);
   });
 
   // case: SWHM3-C-0055@v1
   it("SWHM3-C-0055 no dependent record remains after order delete", async () => {
     const rt = await createCheckoutRuntime();
     const o = await rt.orders.create({ ...orderBase, lines: [{ quantity: 1 }] });
+    const full = await rt.orders.get(o.id);
     await rt.orders.remove(o.id);
     expect(await rt.addresses.list()).toHaveLength(0);
     expect(await rt.orderLines.list(o.id)).toHaveLength(0);
+    expect(await rt.contacts.exists(full.contactId)).toBe(false);
+    expect(await rt.cards.exists(full.cardId)).toBe(false);
   });
 
   // case: SWHM3-C-0056@v1
