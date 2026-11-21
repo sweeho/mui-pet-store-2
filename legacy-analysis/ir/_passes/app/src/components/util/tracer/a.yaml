@@ -1,0 +1,39 @@
+records:
+  - record_key: BATCH-REQ-0001
+    kind: requirement
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL provide a shared diagnostic trace facility that writes debug messages and exception details only when a compile-time debugging switch is on, and SHALL ship with that switch off so that no trace output is produced.
+    confidence: medium
+    confidence_basis: >
+      One clear place (a single class); the switch is a constant false and no test or config corroborates it. Not high because it is enforced in one place only.
+    risk_class: operational
+    basis: >
+      Debug.java gates every print method on the constant debuggingOn, which is false. Fits no listed capability cleanly; filed under batch-operations as the closest operational/diagnostic home.
+    plain_text: >
+      The application contains a diagnostic tracing aid for developers. It is switched off as delivered, so it produces no output in normal operation.
+    technical_note: >
+      Final class Debug with static print/println overloads (String, Exception, Throwable). Output goes to System.err (messages, prefixed ">>" for println) and System.out (throwable message), plus printStackTrace. Changing the flag requires recompilation.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/util/tracer/src/com/sun/j2ee/blueprints/util/tracer/Debug.java
+        line_start: 46
+        line_end: 58
+        excerpt: |
+          public static final boolean debuggingOn = false;
+
+          public static void print(String msg) {
+              if (debuggingOn) {
+                  System.err.print(msg);
+              }
+          }
+
+          public static void println(String msg) {
+              if (debuggingOn) {
+                  System.err.println(">>" + msg);
+              }
+          }
+    stack_metadata:
+      framework: plain-java
+findings: []
+suspected_defects: []
