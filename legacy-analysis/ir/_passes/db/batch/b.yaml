@@ -1,0 +1,252 @@
+records:
+  - record_key: BATCH-REQ-0001
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL run a catalog integrity check that reports categories with no product (C1), products with no item (C2), items whose list price is below unit cost (C3), items lacking a description for a locale of their category (C4), and items with no supplier inventory row (C5), and SHALL fail the job when any such row is found.
+    confidence: medium
+    confidence_basis: >
+      Stated in the SQL header comment and queries (one file); the script that applies exit code 4 was not read in this pass.
+    risk_class: operational
+    basis: Five checks each expected to return zero rows.
+    plain_text: >
+      A catalog health check lists empty categories, products without items, items sold below cost, items missing a description in a served language, and items the supplier does not stock; the job fails if any are found.
+    technical_note: >
+      db/batch/catalog_check.sql; header says script fails with code 4 on rows starting C1..C5. C4 comment names en_US, ja_JP, zh_CN but the query derives locales from category_details, not a literal list. Totals of categories and items are logged.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/catalog_check.sql
+        line_start: 1
+        line_end: 20
+        excerpt: |
+          -- PS_CATALOG_CHECK: catalog integrity checks. Each query must return 0 rows;
+          -- the script fails the job (code 4) when any row starts with C1 to C5.
+          SELECT 'C3' AS chk, itemid, locale FROM item_details WHERE listprice < unitcost;
+    stack_metadata:
+      batch.trigger: PS_CATALOG_CHECK
+      db.object: category, product, item, item_details, category_details, inventory
+  - record_key: BATCH-REQ-0002
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL export the previous day's purchase orders (order id, user id, date, locale, value, line-item count, order status), from yesterday 00:00 inclusive to today 00:00 exclusive, ordered by order id, as a UTF-8 comma-separated file with double-quote delimiters, named orders_YYYYMMDD.csv, for Finance.
+    confidence: medium
+    confidence_basis: >
+      Query and export parameters are explicit in one SQL file; file naming is only stated in its comment.
+    risk_class: financial
+    basis: Daily extract consumed by Finance.
+    plain_text: >
+      Every day the system produces a file of the previous day's orders for the Finance team.
+    technical_note: >
+      db/batch/order_extract.sql uses Derby SYSCS_EXPORT_QUERY with :LO_MS/:HI_MS epoch-ms bounds bound by the shell script, which renames the output.
+    interface: true
+    traces:
+      - path: legacy-source/db/batch/order_extract.sql
+        line_start: 1
+        line_end: 12
+        excerpt: |
+          -- PS_ORDER_EXTRACT: export yesterday's purchase orders for Finance.
+          WHERE p.po_date >= :LO_MS AND p.po_date < :HI_MS
+          ORDER BY p.po_id',
+          ':OUT_FILE', ',', '"', 'UTF-8');
+    stack_metadata:
+      batch.trigger: PS_ORDER_EXTRACT
+      db.object: purchase_order, order_manager, po_line_item
+  - record_key: BATCH-REQ-0003
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL report orders that are still PENDING or APPROVED more than 24 hours after being placed, oldest first, a count of orders per status, and any order whose supplier order is COMPLETED while the order itself is not COMPLETED.
+    confidence: high
+    confidence_basis: >
+      SQL comments, the shell header, and PS_STUCK_ORDER_HOURS=24 in configuration agree.
+    risk_class: operational
+    basis: Aging report with STUCK and MISMATCH rows.
+    plain_text: >
+      A daily report flags orders stuck waiting for approval or supplier invoicing for over a day, summarises orders by status, and flags orders the supplier completed but the store never closed.
+    technical_note: >
+      db/batch/order_aging.sql; :CUTOFF_MS = now minus 24h. conf/env.sh PS_STUCK_ORDER_HOURS=24. Ops are emailed when stuck orders found (Control-M). Shell header says "not COMPLETED or DENIED" whereas SQL selects only PENDING and APPROVED.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_aging.sql
+        line_start: 1
+        line_end: 14
+        excerpt: |
+          -- PS_ORDER_AGING_REPORT: orders still PENDING or APPROVED after 24 hours.
+          WHERE m.status IN ('PENDING', 'APPROVED') AND p.po_date < :CUTOFF_MS
+          WHERE s.po_status = 'COMPLETED' AND m.status <> 'COMPLETED';
+      - path: legacy-source/conf/env.sh
+        line_start: 17
+        line_end: 17
+        excerpt: |
+          PS_STUCK_ORDER_HOURS=24
+    stack_metadata:
+      batch.trigger: PS_ORDER_AGING_REPORT
+      db.object: purchase_order, order_manager, supplier_order
+  - record_key: BATCH-REQ-0004
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL report supplier inventory items whose quantity is below the configured low-stock threshold (500), lowest quantity first, with item, product and English description, plus total items tracked and units in stock.
+    confidence: high
+    confidence_basis: >
+      SQL and configuration value PS_LOW_STOCK_QTY=500 agree, shell script header confirms.
+    risk_class: operational
+    basis: Low-stock report.
+    plain_text: >
+      A report lists items whose supplier stock is below 500 units, lowest first, with overall stock totals.
+    technical_note: >
+      db/batch/inventory_report.sql; :LOW_QTY bound from PS_LOW_STOCK_QTY; description always joined on locale en_US, so items without an English description are omitted.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/inventory_report.sql
+        line_start: 1
+        line_end: 10
+        excerpt: |
+          WHERE i.quantity < :LOW_QTY
+          ORDER BY i.quantity, i.item_id;
+      - path: legacy-source/conf/env.sh
+        line_start: 18
+        line_end: 18
+        excerpt: |
+          PS_LOW_STOCK_QTY=500
+    stack_metadata:
+      batch.trigger: PS_INVENTORY_REPORT
+      db.object: inventory, item, item_details
+  - record_key: BATCH-REQ-0005
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL delete COMPLETED and DENIED orders older than the retention period (180 days) together with their supplier orders and lines, order lines, contact, address and credit card records, in a single transaction.
+    confidence: high
+    confidence_basis: >
+      SQL, shell header, and PS_ORDER_RETENTION_DAYS=180 agree.
+    risk_class: regulated
+    basis: Purge deletes personal and payment data after retention.
+    plain_text: >
+      Each week, finished or denied orders older than 180 days are permanently removed along with the customer's address, contact and card details stored for them.
+    technical_note: >
+      db/batch/order_purge.sql; autocommit off, session temp table of ids, deletes children first, COMMIT at the end. Cutoff computed by ps_midnight_ms. Runs Sunday 02:00 after extract. Shell exit 8 on failure.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 1
+        line_end: 26
+        excerpt: |
+          -- PS_ORDER_PURGE: delete COMPLETED and DENIED orders older than 180 days.
+          WHERE m.status IN ('COMPLETED', 'DENIED') AND p.po_date < :CUTOFF_MS;
+          DELETE FROM credit_card        WHERE card_id IN (SELECT card_id FROM session.purge_po);
+          COMMIT;
+      - path: legacy-source/conf/env.sh
+        line_start: 15
+        line_end: 15
+        excerpt: |
+          PS_ORDER_RETENTION_DAYS=180
+    stack_metadata:
+      batch.trigger: PS_ORDER_PURGE (weekly Sun 02:00)
+      db.object: purchase_order, order_manager, po_line_item, supplier_order, supplier_line_item, contact_info, address, credit_card
+  - record_key: BATCH-REQ-0006
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL run the order purge only after the order extract has completed.
+    confidence: medium
+    confidence_basis: >
+      Stated in SQL comment and the scheduler job chaining (not fully read); no data-level check in the SQL.
+    risk_class: financial
+    basis: Ordering guarantee between jobs.
+    plain_text: >
+      Old orders are only deleted after the daily Finance extract has run.
+    technical_note: >
+      Enforced by Control-M conditions (PS_ORDER_EXTRACT-OK), not by the SQL; header comment of order_purge.sql.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 2
+        line_end: 2
+        excerpt: |
+          -- Runs only after PS_ORDER_EXTRACT so every order has been extracted first.
+      - path: legacy-source/scheduler/control-m/PS_PETSTORE.xml
+        line_start: 64
+        line_end: 64
+        excerpt: |
+          <INCOND NAME="PS_ORDER_EXTRACT-OK" ODATE="ODAT" AND_OR="A" />
+    stack_metadata:
+      batch.trigger: Control-M
+  - record_key: BATCH-REQ-0007
+    kind: business-rule
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL take an online backup of the store database into a backup folder, and the order extract is held when the backup fails.
+    confidence: medium
+    confidence_basis: >
+      SQL call is one line; the hold-on-failure is from scheduler mail text, not fully verified.
+    risk_class: operational
+    basis: Nightly backup.
+    plain_text: >
+      The database is backed up nightly; if the backup fails the order extract does not run and operations is notified.
+    technical_note: >
+      db/batch/db_backup.sql calls SYSCS_BACKUP_DATABASE; shell script moves result to a dated folder.
+    interface: false
+    traces:
+      - path: legacy-source/db/batch/db_backup.sql
+        line_start: 1
+        line_end: 3
+        excerpt: |
+          CALL SYSCS_UTIL.SYSCS_BACKUP_DATABASE('/var/petstore/backup');
+      - path: legacy-source/scheduler/control-m/PS_PETSTORE.xml
+        line_start: 24
+        line_end: 24
+        excerpt: |
+          <DOMAIL URGENCY="U" DEST="ps-ops@example.invalid" SUBJECT="PS_DB_BACKUP failed" MESSAGE="Petstore DB backup failed, order extract is held" />
+    stack_metadata:
+      batch.trigger: PS_DB_BACKUP
+suspected_defects:
+  - capability_key: batch-operations
+    record_keys: [BATCH-REQ-0002, BATCH-REQ-0005, BATCH-REQ-0006]
+    severity: medium
+    category: other
+    title: Purge relies on job ordering only; extract covers one day
+    description: >
+      The extract exports only yesterday's orders, and the purge deletes orders older than 180 days with no check that they were ever extracted; a missed extract day means those orders are deleted unexported. The "after extract" guarantee exists only in scheduler conditions.
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 10
+        line_end: 15
+        excerpt: |
+          INSERT INTO session.purge_po
+            SELECT p.po_id, p.contact_id, p.card_id, c.address_id
+            WHERE m.status IN ('COMPLETED', 'DENIED') AND p.po_date < :CUTOFF_MS;
+  - capability_key: batch-operations
+    record_keys: [BATCH-REQ-0003]
+    severity: low
+    category: contradicts-document
+    title: Aging script header disagrees with SQL status filter
+    description: >
+      The shell header says orders not COMPLETED or DENIED, while SQL selects only PENDING and APPROVED.
+    traces:
+      - path: legacy-source/batch/ps_order_aging_report.sh
+        line_start: 3
+        line_end: 3
+        excerpt: |
+          # Lists orders not COMPLETED or DENIED after 24 hours (stuck in the OPC flow)
+      - path: legacy-source/db/batch/order_aging.sql
+        line_start: 6
+        line_end: 6
+        excerpt: |
+          WHERE m.status IN ('PENDING', 'APPROVED') AND p.po_date < :CUTOFF_MS
+  - capability_key: batch-operations
+    record_keys: [BATCH-REQ-0005]
+    severity: medium
+    category: data-corruption
+    title: Purge deletes address and card by id without checking sharing
+    description: >
+      Address and credit card rows are deleted for purged orders without checking whether another order or account references the same rows.
+    traces:
+      - path: legacy-source/db/batch/order_purge.sql
+        line_start: 22
+        line_end: 24
+        excerpt: |
+          DELETE FROM address            WHERE address_id IN (SELECT address_id FROM session.purge_po);
+          DELETE FROM credit_card        WHERE card_id IN (SELECT card_id FROM session.purge_po);
+findings: []
