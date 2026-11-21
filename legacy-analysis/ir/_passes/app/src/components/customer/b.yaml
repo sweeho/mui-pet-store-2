@@ -1,0 +1,123 @@
+records:
+  - record_key: ACCT-ENT-0001
+    kind: entity
+    capability_key: customer-accounts
+    requirement: The system SHALL represent a customer as a record identified by a user id, owning exactly one account and one profile.
+    confidence: high
+    confidence_basis: Customer bean CMP field and two CMR relationships declared in code and in the deployment descriptor.
+    risk_class: operational
+    plain_text: Every customer has a unique user id, one account and one set of preferences.
+    technical_note: CustomerEJB CMP bean, key userId, CMR fields account and profile; finder findAllCustomers.
+    interface: false
+    basis: Bean abstract accessors and ejb-jar entity/relationship declarations.
+    traces:
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/ejb/CustomerEJB.java
+        line_start: 57
+        line_end: 65
+        excerpt: |
+          public abstract String getUserId();
+          public abstract AccountLocal getAccount();
+          public abstract ProfileLocal getProfile();
+      - path: legacy-source/app/src/components/customer/src/ejb-jar.xml
+        line_start: 81
+        line_end: 87
+        excerpt: |
+          <description>EJBQL to find all Customers</description>
+    stack_metadata:
+      framework: ejb-cmp
+      ejb.bean: CustomerEJB
+  - record_key: ACCT-REQ-0001
+    kind: requirement
+    capability_key: customer-accounts
+    requirement: The system SHALL, when a customer is created, also create an account with status "active" and a profile with default preferences.
+    confidence: medium
+    confidence_basis: One clear place (ejbPostCreate); no test or doc states it explicitly.
+    risk_class: operational
+    plain_text: A new customer starts with an active account and default preferences.
+    technical_note: CustomerEJB.ejbPostCreate looks up Account and Profile homes and creates them; a naming failure raises CreateException.
+    interface: false
+    basis: ejbPostCreate creates Account(Active) and Profile(defaults).
+    traces:
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/ejb/CustomerEJB.java
+        line_start: 74
+        line_end: 89
+        excerpt: |
+          AccountLocal account = alh.create(AccountLocalHome.Active);
+          setAccount(account);
+    stack_metadata:
+      ejb.bean: CustomerEJB
+  - record_key: ACCT-ENT-0002
+    kind: entity
+    capability_key: customer-accounts
+    requirement: The system SHALL hold for each account a status of "active" or "disabled", one contact information record and one credit card record.
+    confidence: medium
+    confidence_basis: Status constants and CMP/CMR fields seen; no code in this module enforces or changes "disabled", so its effect is unseen.
+    risk_class: operational
+    plain_text: An account is either active or disabled and carries contact details and a payment card.
+    technical_note: AccountEJB CMP status; CMR contactInfo, creditCard; constants Active/Disabled in AccountLocalHome. A newly created account gets empty contact info and credit card via ejbPostCreate.
+    interface: false
+    basis: AccountEJB and AccountLocalHome.
+    traces:
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/account/ejb/AccountEJB.java
+        line_start: 159
+        line_end: 168
+        excerpt: |
+          public abstract String getStatus();
+          public abstract ContactInfoLocal getContactInfo();
+          public abstract CreditCardLocal getCreditCard();
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/account/ejb/AccountLocalHome.java
+        line_start: 48
+        line_end: 49
+        excerpt: |
+          public static final String Active = "active";
+          public static final String Disabled = "disabled";
+    stack_metadata:
+      ejb.bean: AccountEJB
+  - record_key: ACCT-REQ-0002
+    kind: requirement
+    capability_key: customer-accounts
+    requirement: The system SHALL store per customer a preferred language, favorite category, my-list preference and banner preference, defaulting to language en_US, no favorite category, my-list on and banner on.
+    confidence: high
+    confidence_basis: Defaults are constants in code and fields are in the deployment descriptor.
+    risk_class: presentational
+    plain_text: Each customer has preferences for language, favorite category, personal list and banner, which start as US English, none, on and on.
+    technical_note: ProfileEJB CMP fields; defaults in ProfileLocalHome constants. ProfileInfo is the transfer object.
+    interface: false
+    basis: ProfileLocalHome defaults and ProfileEJB fields.
+    traces:
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/profile/ejb/ProfileLocalHome.java
+        line_start: 44
+        line_end: 47
+        excerpt: |
+          DefaultPreferredLanguage = "en_US";
+          DefaultFavoriteCategory = null;
+          DefaultMyListPreference = true;
+          DefaultBannerPreference = true;
+      - path: legacy-source/app/src/components/customer/src/com/sun/j2ee/blueprints/customer/profile/ejb/ProfileEJB.java
+        line_start: 269
+        line_end: 279
+        excerpt: |
+          public abstract String getPreferredLanguage();
+          public abstract String getFavoriteCategory();
+    stack_metadata:
+      ejb.bean: ProfileEJB
+  - record_key: ACCT-REQ-0003
+    kind: requirement
+    capability_key: customer-accounts
+    requirement: The system SHALL let a new visitor sign up for an account from the sign-in page.
+    confidence: low
+    confidence_basis: Seen only in the user guide; the sign-up screen is outside this module.
+    risk_class: operational
+    plain_text: A first-time visitor can create an account from the sign-in page before buying.
+    technical_note: Documented in user guide section 2.4; implementation lies in other modules.
+    interface: false
+    basis: User guide only.
+    traces:
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        kind: document
+        anchor: "2.4 Creating a new user"
+        excerpt: |
+          Fill out the form "I would like to sign up for an account" and click Create New Account.
+    stack_metadata: {}
+findings: []
+suspected_defects: []
