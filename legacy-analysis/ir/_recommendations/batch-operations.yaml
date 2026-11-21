@@ -1,0 +1,126 @@
+recommendations:
+  - record_key: BAT-REQ-0011
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0006
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0010
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0008
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-RULE-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATC-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0009
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0012
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-RULE-0008
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-RULE-0012
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-WORKFLOW-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-BR-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-REQ-0011
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
+  - record_key: BATCH-WF-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Statement agrees with the batch scripts, scheduler export and runbook in the passes; no conflicting source seen. Several records overlap (same behaviour recorded more than once) and the SME may merge them.
