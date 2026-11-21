@@ -12,7 +12,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import Typography from "@mui/material/Typography";
-import { IconClipboardList, IconLanguage, IconLayoutDashboard } from "@tabler/icons-react";
+import {
+  IconCategory,
+  IconClipboardList,
+  IconLanguage,
+  IconLayoutDashboard,
+  IconSearch,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -33,6 +39,22 @@ export const MENU_ITEMS = [
     icon: IconLayoutDashboard,
     titleKey: "menu.home",
     descriptionKey: "menu.home.description",
+  },
+  {
+    id: "catalog",
+    group: "shop",
+    href: "/catalog",
+    icon: IconCategory,
+    titleKey: "menu.catalog",
+    descriptionKey: "menu.catalog.description",
+  },
+  {
+    id: "search",
+    group: "shop",
+    href: "/catalog/search",
+    icon: IconSearch,
+    titleKey: "menu.search",
+    descriptionKey: "menu.search.description",
   },
   {
     id: "language",
@@ -66,8 +88,12 @@ const GROUPS: { id: MenuGroup; titleKey: MessageKey }[] = [
 ];
 
 /** The current item: "/" only on the landing page, any other by prefix. */
-const isCurrent = (pathname: string, href: string) =>
-  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+const isCurrent = (pathname: string, href: string) => {
+  if (href === "/") return pathname === "/";
+  // The approved mockups mark Catalog as current on every catalog page, search results included.
+  if (href === "/catalog/search") return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+};
 
 export function SidebarItems() {
   const pathname = usePathname();

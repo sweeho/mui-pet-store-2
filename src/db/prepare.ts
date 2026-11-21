@@ -4,6 +4,7 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
 
+import { seedCatalog } from "./seed-catalog";
 import * as schema from "./schema";
 
 /** The SQLite file's URL: DATABASE_PATH (the Docker image sets one), else sqlite.db at the root. */
@@ -13,7 +14,7 @@ export function databaseUrl(): string {
   return `file:${path.resolve(/* turbopackIgnore: true */ process.cwd(), process.env.DATABASE_PATH ?? "sqlite.db")}`;
 }
 
-/** Apply the migrations in `drizzle/` and seed the two demo users when the table is empty. */
+/** Apply the migrations in `drizzle/` and seed the two demo users and the sample catalog when their tables are empty. */
 export async function prepareDatabase(url: string): Promise<void> {
   const client = createClient({ url });
   try {
@@ -27,6 +28,7 @@ export async function prepareDatabase(url: string): Promise<void> {
         { name: "Jane Smith", email: "jane@example.com" },
       ]);
     }
+    if ((await db.select().from(schema.category).limit(1)).length === 0) await seedCatalog(db);
   } finally {
     client.close();
   }

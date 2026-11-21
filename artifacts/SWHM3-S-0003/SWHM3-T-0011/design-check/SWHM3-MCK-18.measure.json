@@ -1,0 +1,162 @@
+{
+  "key": "SWHM3-MCK-18",
+  "mockup": "artifacts/SWHM3-S-0003/design/mockup-category-list-mobile.html",
+  "url": "http://127.0.0.1:3300/catalog",
+  "width": 390,
+  "at": "2026-11-21T17:44:49.948Z",
+  "pixelDifference": 0.0765,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "MUI Pet Store 2 home",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "b at 100,17"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "51,76",
+      "built": "55,87"
+    },
+    {
+      "kind": "style",
+      "text": "Catalog",
+      "prop": "position",
+      "mockup": "16,133",
+      "built": "16,150"
+    },
+    {
+      "kind": "style",
+      "text": "Browse pets by category. Names are shown in your language, A to Z.",
+      "prop": "position",
+      "mockup": "16,165",
+      "built": "16,181"
+    },
+    {
+      "kind": "style",
+      "text": "Birds Parrots, finches and other feathered friends.",
+      "prop": "position",
+      "mockup": "16,221",
+      "built": "17,247"
+    },
+    {
+      "kind": "style",
+      "text": "Birds",
+      "prop": "position",
+      "mockup": "105,234",
+      "built": "105,259"
+    },
+    {
+      "kind": "style",
+      "text": "Parrots, finches and other feathered friends.",
+      "prop": "position",
+      "mockup": "105,256",
+      "built": "105,279"
+    },
+    {
+      "kind": "style",
+      "text": "Cats Kittens and adult cats, from Manx to Persian.",
+      "prop": "position",
+      "mockup": "16,321",
+      "built": "17,346"
+    },
+    {
+      "kind": "style",
+      "text": "Cats",
+      "prop": "position",
+      "mockup": "105,334",
+      "built": "105,358"
+    },
+    {
+      "kind": "style",
+      "text": "Kittens and adult cats, from Manx to Persian.",
+      "prop": "position",
+      "mockup": "105,356",
+      "built": "105,379"
+    },
+    {
+      "kind": "style",
+      "text": "1–2",
+      "prop": "position",
+      "mockup": "16,439",
+      "built": "16,462"
+    },
+    {
+      "kind": "style",
+      "text": "Previous",
+      "prop": "position",
+      "mockup": "42,426",
+      "built": "42,448"
+    },
+    {
+      "kind": "style",
+      "text": "Next",
+      "prop": "position",
+      "mockup": "212,426",
+      "built": "212,448"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 239,867"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 293,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    }
+  ]
+}
