@@ -7,7 +7,8 @@
  * /checkout/billing (billing validation); an incomplete form shows a "Missing form data" heading.
  * Sign-in is the form at /admin (fields labelled Username and Password, button "Sign in"; plain user
  * j2ee/j2ee). Placing the order (button "Place order" on /checkout/billing, once signed in) shows a
- * heading "Order <id>" and the bill-to e-mail address, and the cart then shows "Your cart is empty".
+ * heading "Order <id>" and the bill-to e-mail address (the billing form has an "E-mail" field; the
+ * confirmation shows exactly the address entered there), and the cart then shows "Your cart is empty".
  */
 import { expect, test } from "@playwright/test";
 
@@ -38,9 +39,11 @@ test.describe("checkout-order-placement", () => {
     await page.getByRole("button", { name: /add to cart/i }).first().click();
     await fillShipping(page, true);
     await expect(page).toHaveURL(/\/checkout\/billing/);
+    const billTo = "bill.to@example.com";
+    await page.getByLabel(/^e-?mail$/i).fill(billTo);
     await page.getByRole("button", { name: /^place order$/i }).click();
     await expect(page.getByRole("heading", { name: /^order\s+\S+/i })).toBeVisible();
-    await expect(page.getByText(/[^\s@]+@[^\s@]+\.[^\s@]+/).first()).toBeVisible();
+    await expect(page.getByText(billTo, { exact: false })).toBeVisible();
     await page.goto("/cart");
     await expect(page.getByText(/your cart is empty/i)).toBeVisible();
   });
