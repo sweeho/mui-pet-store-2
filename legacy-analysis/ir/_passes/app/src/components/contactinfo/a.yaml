@@ -1,0 +1,109 @@
+records:
+  - record_key: CHK-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL store, for each order's contact, a given name, a family name, a telephone number
+      and an e-mail address, linked to exactly one postal address.
+    confidence: high
+    confidence_basis: >
+      Declared as persistent fields in the deployment descriptor and as accessors in the bean class, and
+      mirrored in the DTD; no length or format constraints are visible in this module.
+    risk_class: regulated
+    basis: Four persistent fields plus a mandatory one-to-one address relationship; DTD lists the same elements.
+    plain_text: >
+      Each order carries contact details: first name, last name, phone, e-mail, and one address.
+    technical_note: >
+      CMP 2.x entity ContactInfoEJB; cmp-fields telephone, familyName, email, givenName; CMR field address (One-to-One).
+      No validation in this component; validation lives elsewhere.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/ejb-jar.xml
+        line_start: 57
+        line_end: 72
+        excerpt: |
+          <cmp-field>
+            <description>no description</description>
+            <field-name>telephone</field-name>
+          </cmp-field>
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 59
+        line_end: 73
+        excerpt: |
+          public abstract String getFamilyName();
+          public abstract void setFamilyName(String familyName);
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: ContactInfoEJB
+  - record_key: CHK-BR-0001
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL create the contact's address record together with the contact record, either
+      copying the supplied address data or creating an empty address when none is supplied.
+    confidence: medium
+    confidence_basis: One clear place (bean create/post-create methods); no test or comment corroborates.
+    risk_class: operational
+    basis: ejbPostCreate creates an Address entity via the address home; the ContactInfo-argument variant copies the supplied address data.
+    plain_text: Saving a contact always saves its address with it.
+    technical_note: >
+      ejbPostCreate() looks up AddressLocalHome via ServiceLocator (JNDINames.ADDR_EJB) and calls create() or create(address data);
+      the (…, AddressLocal) variant links an existing address. Lookup failure raises CreateException.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 81
+        line_end: 127
+        excerpt: |
+          AddressLocal address = adh.create(contactInfo.getAddress());
+          setAddress(address);
+    stack_metadata:
+      ejb.bean: ContactInfoEJB
+      ejb.transaction: container-managed
+  - record_key: CHK-BR-0002
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL delete a contact's address when the contact is deleted.
+    confidence: high
+    confidence_basis: Cascade delete in the relationship descriptor, and the operations runbook states the purge removes contact information and addresses together.
+    risk_class: regulated
+    basis: Relationship role on the address side declares cascade-delete.
+    plain_text: Removing a contact also removes its address.
+    technical_note: ejb-relation cascade-delete on AddressEJB role; ejbRemove() in bean is empty. Used by the Sunday order purge.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/ejb-jar.xml
+        line_start: 140
+        line_end: 148
+        excerpt: |
+          <ejb-relationship-role-name>AddressEJB</ejb-relationship-role-name>
+          <multiplicity>One</multiplicity>
+          <cascade-delete />
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        kind: document
+        anchor: p1 (section 3.5 PS_ORDER_PURGE)
+        excerpt: "Deletes COMPLETED and DENIED orders older than 180 days, with their order lines, supplier orders, contact information, addresses and payment cards."
+  - record_key: CHK-INT-0001
+    kind: integration
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL exchange contact information in an XML form consisting of family name, given name,
+      address, e-mail and phone, in that order.
+    confidence: medium
+    confidence_basis: One place (DTD); who consumes it is not visible in this module.
+    risk_class: operational
+    basis: ContactInfo.dtd defines the element sequence and embeds the Address DTD.
+    plain_text: Contact details travel between systems in a fixed XML layout.
+    technical_note: ContactInfo.dtd, ELEMENT ContactInfo (FamilyName, GivenName, Address, Email, Phone). Likely used by order XML documents.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/rsrc/schemas/ContactInfo.dtd
+        line_start: 38
+        line_end: 42
+        excerpt: |
+          <!ELEMENT ContactInfo (FamilyName, GivenName, Address, Email, Phone)>
+    stack_metadata:
+      framework: DTD
+findings: []
+suspected_defects: []
