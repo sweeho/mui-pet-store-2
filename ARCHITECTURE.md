@@ -39,6 +39,27 @@ loading, error and empty states through the shared state frames.
 `getDb()` (`src/db/client.ts`) connects once per process, applies the migrations in `drizzle/` and
 seeds two demo users when the table is empty.
 
+`src/proxy.ts` runs before every request. It issues the session cookie on a first visit, refuses a
+data-changing request whose `Origin` is foreign, and holds the `PUBLIC_PATHS` list of entry points
+that need no sign-in. Every page and route takes the shopper's language from one server function in
+`src/lib/localization/`: the `?locale=` parameter, else the session's locale, else en_US. Text falls
+back to en_US when a locale has none. The root layout writes the result into `<html lang>`. Money,
+numbers and search keywords are formatted and split by the same module, through the built-in `Intl`.
+
+## Data model
+
+Entity level. Columns and constraints are in `src/db/schema.ts`, and behaviour is in
+`openspec/specs/`.
+
+- **Session**: one row per browser session, keyed by the cookie. It holds named attributes (the
+  locale is the attribute `locale`) and the controller state. Nothing about a session is kept in
+  process memory.
+- **Category → Product → Item**: the catalog keys. Each has a **details** entity with one row per
+  (entity, locale) for its name, image and description. An item's details also carry the list
+  price and unit cost for that locale, so prices are per locale, not converted.
+- **Audit record**: who, what and when for every data-changing action.
+- **User**: the template's demo table, to be replaced by customer accounts.
+
 ## Deployment
 
 One container: the `Dockerfile` builds the app with `output: "standalone"` and runs `server.js`
@@ -62,3 +83,17 @@ builds or runs the image: CI's `docker-build` job does.
 - **D5. Sign-in only if the product has it.** The shell gains a sign-in frame once, when
   authentication ships, because a frame with nothing behind it misleads users.
   (change swhm3-i-0001-bootstrap-landing-page-and, design D5)
+- **D6. One locale module.** Every capability reads the shopper's locale, parses locale codes and
+  formats money, numbers and keywords through `src/lib/localization/`. Codes use the underscore form
+  (`ja_JP`), and the BCP-47 tag is derived only for `Intl` and `<html lang>`. The legacy store had
+  three parsers that drifted. (change swhm3-i-0002-localization, design P1)
+- **D7. Sessions live in the database.** Session attributes, including the locale, are rows in the
+  `sessions` table behind an httpOnly cookie, never process memory (ARC-103). Sign-on, cart and
+  checkout extend the same session. (change swhm3-i-0002-localization, design P3)
+- **D8. Text and prices per locale, with an en_US fallback.** User-facing text comes from per-locale
+  message catalogs, and catalog text and prices from per-locale detail rows. A locale with no text
+  shows en_US, and currency is the locale's own, never converted.
+  (change swhm3-i-0002-localization, design P6, P10, P11)
+- **D9. Client-supplied state is data, never code.** State carried in a link or form is decoded as
+  JSON and validated. Objects are never deserialised from client input.
+  (change swhm3-i-0002-localization, design P9)
