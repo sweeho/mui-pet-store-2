@@ -1,0 +1,177 @@
+records:
+  - record_key: ORDAPP-INT-0001
+    kind: integration
+    capability_key: order-approval
+    requirement: The system SHALL exchange order approval/denial results as an OrderApproval XML document containing one or more Order entries, each with an OrderId and an OrderStatus.
+    confidence: high
+    confidence_basis: DTD and the Java serializer/deserializer both define the same structure; no test or caller seen in this module, so not graded on usage.
+    risk_class: operational
+    interface: true
+    basis: OrderApproval.dtd declares OrderApproval (Order+), Order (OrderId, OrderStatus); ChangedOrder.toDOM/fromDOM emit and require the same two children in order.
+    plain_text: Changes to order status are passed between systems as a message listing each order number with its new status; at least one order must be present.
+    technical_note: OrderApproval.java and ChangedOrder.java build/parse DOM; DTD public id "DTD Order Approval 1.0". OrderStatus is free text in the DTD (no enumeration). FIXME in the DTD says OrderId should be an attribute.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/rsrc/schemas/OrderApproval.dtd
+        line_start: 36
+        line_end: 40
+        excerpt: |
+          <!ELEMENT OrderApproval (Order+)>
+          <!ELEMENT Order (OrderId, OrderStatus)>
+          <!ELEMENT OrderId (#PCDATA)>
+          <!-- FIXME should be attribute -->
+          <!ELEMENT OrderStatus (#PCDATA)>
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/ChangedOrder.java
+        line_start: 74
+        line_end: 77
+        excerpt: |
+          Element root = document.createElement(XML_ORDER);
+          XMLDocumentUtils.appendChild(document, root, XML_ORDERID, orderId);
+          XMLDocumentUtils.appendChild(document, root, XML_ORDERSTATUS, orderStatus);
+    stack_metadata:
+      framework: DOM/JAXP
+      db.object: n/a
+  - record_key: ORDAPP-RULE-0002
+    kind: business-rule
+    capability_key: order-approval
+    requirement: GIVEN an incoming OrderApproval document WHEN it is parsed THEN the system SHALL validate it against the OrderApproval schema by default and SHALL reject documents whose root is not OrderApproval or whose Order lacks OrderId followed by OrderStatus.
+    confidence: medium
+    confidence_basis: Single class enforces it (fromDOM plus VALIDATING=true); validation is however only advisory, see defect.
+    risk_class: operational
+    interface: true
+    basis: fromXML defaults validating to true; fromDOM throws if element names are not as expected.
+    plain_text: An incoming order status message is checked for correct structure and refused if the structure is wrong.
+    technical_note: OrderApproval.VALIDATING=true; XMLDocumentUtils.fromXML builds a validating DocumentBuilder; fromDOM throws XMLDocumentException "OrderApproval element expected."
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/OrderApproval.java
+        line_start: 69
+        line_end: 69
+        excerpt: |
+          public static final boolean VALIDATING = true;
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/OrderApproval.java
+        line_start: 160
+        line_end: 164
+        excerpt: |
+          throw new XMLDocumentException(XML_ORDERAPPROVAL + " element expected.");
+    stack_metadata:
+      framework: DOM/JAXP
+  - record_key: SUPFUL-INT-0003
+    kind: integration
+    capability_key: supplier-fulfillment
+    requirement: The system SHALL send each supplier order as a SupplierOrder XML document carrying order id, order date (yyyy-MM-dd), a shipping address (first name, last name, street, city, state, country, zip code, email, phone) and one or more line items.
+    confidence: high
+    confidence_basis: DTD, XSD and builder class agree on the content; usage by callers not in this module.
+    risk_class: operational
+    interface: true
+    basis: TPASupplierOrderXDE builds the document; setters for order id, date, address; addLineItem.
+    plain_text: When an approved order is sent to the supplier, the message contains the order number, order date, the customer's delivery name, address, e-mail and phone, and the items ordered.
+    technical_note: TPASupplierOrderXDE in namespace http://blueprints.j2ee.sun.com/TPASupplierOrder, prefix tpaso; either DTD or XSD output chosen by xsdValidation flag. A legacy SupplierOrder.dtd (lowercase elements, no email/phone) also exists and appears superseded.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/tpa/TPASupplierOrderXDE.java
+        line_start: 78
+        line_end: 78
+        excerpt: |
+          private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/tpa/TPASupplierOrderXDE.java
+        line_start: 150
+        line_end: 163
+        excerpt: |
+          public void setShippingAddress(String firstName, String lastName, String street, String city,
+                                         String state, String country, String zipCode, String email, String phone) {
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        kind: document
+        anchor: order flow (APPROVED --> Supplier PurchaseOrderQueue)
+        excerpt: APPROVED --> Supplier (PurchaseOrderQueue) --> ships from INVENTORY --> InvoiceTopic --> OPC
+    stack_metadata:
+      framework: DOM/JAXP
+      jms.queue: jms/supplier/PurchaseOrderQueue
+  - record_key: SUPFUL-INT-0004
+    kind: integration
+    capability_key: supplier-fulfillment
+    requirement: The system SHALL return shipment results from the supplier as an Invoice XML document carrying order id, user id, order date, shipping date (yyyy-MM-dd) and one or more line items.
+    confidence: high
+    confidence_basis: DTD, XSD and TPAInvoiceXDE agree; document trace corroborates the invoice flow.
+    risk_class: financial
+    interface: true
+    basis: TPAInvoiceXDE fields and Invoice.dtd root content model.
+    plain_text: When the supplier ships goods it sends back an invoice naming the order, customer, order and shipping dates and the items shipped.
+    technical_note: TPAInvoiceXDE (namespace TPAInvoice, prefix tpai). Invoice.dtd also has locale attribute default en_US, not written by TPAInvoiceXDE. Delivered via jms/opc/InvoiceTopic per runbook.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/tpa/TPAInvoiceXDE.java
+        line_start: 58
+        line_end: 70
+        excerpt: |
+          public static final String DTD_PUBLIC_ID = "-//Sun Microsystems, Inc. - J2EE Blueprints Group//DTD TPA-Invoice 1.0//EN";
+          private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+      - path: legacy-source/app/src/components/xmldocuments/src/rsrc/schemas/Invoice.dtd
+        line_start: 39
+        line_end: 42
+        excerpt: |
+          <!ELEMENT Invoice (OrderId, UserId, OrderDate, ShippingDate, LineItem+)>
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        kind: document
+        anchor: order flow (InvoiceTopic --> OPC)
+        excerpt: ships from INVENTORY --> InvoiceTopic --> OPC
+    stack_metadata:
+      framework: DOM/JAXP
+      jms.queue: jms/opc/InvoiceTopic
+  - record_key: SUPFUL-RULE-0005
+    kind: business-rule
+    capability_key: supplier-fulfillment
+    requirement: The system SHALL describe each line item with category id, product id, item id, line number, quantity and unit price, and under XSD validation SHALL require all six, line number non-negative, quantity a positive integer and unit price a decimal of at least 0.
+    confidence: high
+    confidence_basis: Enforced by XSD, DTD (element order) and the builder utility, three places.
+    risk_class: financial
+    interface: true
+    basis: TPALineItem.xsd attribute types; TPALineItemUtils writes the same six attributes.
+    plain_text: Every item in a supplier order or invoice has product identifiers, a line number, a quantity of at least one and a price of zero or more.
+    technical_note: XSD type is named positiveDecimal but minInclusive is 0.0, so zero is allowed. Quantity written as Long.toString, price as Float.toString.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/rsrc/schemas/TPALineItem.xsd
+        line_start: 11
+        line_end: 23
+        excerpt: |
+          <xsd:attribute name="quantity" type="xsd:positiveInteger" use="required" />
+          <xsd:attribute name="unitPrice" type="positiveDecimal" use="required" />
+          <xsd:minInclusive value="0.0" />
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/tpa/TPALineItemUtils.java
+        line_start: 67
+        line_end: 74
+        excerpt: |
+          lineItemElement.setAttributeNS(XML_NAMESPACE, XML_QUANTITY, Long.toString(quantity));
+          lineItemElement.setAttributeNS(XML_NAMESPACE, XML_UNITPRICE, Float.toString(unitPrice));
+    stack_metadata:
+      framework: DOM/JAXP
+suspected_defects:
+  - capability_key: order-approval
+    record_keys: [ORDAPP-RULE-0002]
+    severity: medium
+    category: error-swallowed
+    title: Schema validation errors are logged but do not reject the document
+    description: >
+      The parser error handler's error() and warning() callbacks only print to stderr; only fatalError throws. A document that violates the DTD (non-fatal validity error) is therefore still accepted, despite validation being switched on.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/XMLDocumentUtils.java
+        line_start: 525
+        line_end: 528
+        excerpt: |
+          public void error(SAXParseException exception) {
+                        System.err.println("[Error]: " + exception.getMessage());
+                        return;
+  - capability_key: supplier-fulfillment
+    record_keys: [SUPFUL-RULE-0005]
+    severity: medium
+    category: inconsistent-rounding
+    title: Unit price carried as binary float in documents
+    description: >
+      Unit prices are accepted as float and written with Float.toString, which can produce values such as 9.989999 for a money amount, while the schema treats it as an exact decimal.
+    traces:
+      - path: legacy-source/app/src/components/xmldocuments/src/com/sun/j2ee/blueprints/xmldocuments/tpa/TPALineItemUtils.java
+        line_start: 74
+        line_end: 74
+        excerpt: |
+          lineItemElement.setAttributeNS(XML_NAMESPACE, XML_UNITPRICE, Float.toString(unitPrice));
+findings:
+  - kind: ambiguity
+    path: legacy-source/app/src/components/xmldocuments/src/rsrc/schemas/SupplierOrder.dtd
+    description: >
+      Older non-namespaced SupplierOrder/Invoice/LineItem/Mail DTDs coexist with the TPA* versions; no caller inside this module uses them. Whether any consumer still depends on them needs a human or caller analysis.
