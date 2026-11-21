@@ -119,8 +119,8 @@ records:
     interface: true
     traces:
       - path: legacy-source/app/src/components/processmanager/src/com/sun/j2ee/blueprints/processmanager/transitions/TransitionDelegateFactory.java
-        line_start: 12
-        line_end: 20
+        line_start: 51
+        line_end: 53
         excerpt: |
           td = (TransitionDelegate)Class.forName(className).newInstance();
           } catch(Exception e) {
