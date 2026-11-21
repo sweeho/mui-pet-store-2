@@ -61,7 +61,7 @@ None. `a2a_list_tickets(type="defect", created_since=sprint start)` returned no 
 - Went well: design.md P6/SD2 settled the mockup-vs-spec scope gap during planning, so the
   implementer and QA read the same residuals instead of disputing them.
 - Could improve: A11Y-001 is checked only structurally (landmarks, one h1, accessible names); no
-  automated WCAG engine runs. Raised as improvement task (see sprint thread).
+  automated WCAG engine runs. Raised as improvement task SWHM3-T-0005.
 - Could improve: QA's first design measurement ran a standalone server without `.next/static` and
   rendered no rail; a documented measurement recipe would avoid the rerun.
 - Could improve: `next dev` rewrites the human-authored `AGENTS.md`; that should be prevented or
@@ -76,5 +76,5 @@ None. `a2a_list_tickets(type="defect", created_since=sprint start)` returned no 
 | Tests executed | TDD result, E2E table | `artifacts/SWHM3-S-0001/SWHM3-T-0002/tdd-test-result.md`, `artifacts/SWHM3-S-0001/integration-test-result.md` | Satisfied | — |
 | Defects dispositioned | 0 found | `artifacts/SWHM3-S-0001/integration-defects-resolution.md` | Satisfied | — |
 | Design conformance recorded | design-check + QA measurements | `artifacts/SWHM3-S-0001/SWHM3-T-0002/design-check.md`, `artifacts/SWHM3-S-0001/qa/design/` | Satisfied | Residuals are unbuilt scope (design.md P6, SD2) |
-| Accessibility (A11Y-001) proved by test | structural Playwright checks | `e2e/accessibility.spec.ts` | Partial | No automated WCAG engine; improvement task raised |
+| Accessibility (A11Y-001) proved by test | structural Playwright checks | `e2e/accessibility.spec.ts` | Partial | No automated WCAG engine; improvement task SWHM3-T-0005 |
 | Dependency licence (CMP-001) | one new dependency, OFL-1.1 | `artifacts/SWHM3-S-0001/SWHM3-T-0002/summary.md` | Satisfied | — |
