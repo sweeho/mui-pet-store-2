@@ -29,9 +29,9 @@ async function createCustomer(page: Page, language?: string) {
 }
 
 async function signOn(page: Page, userName: string, remember = false) {
-  await page.getByLabel(/user name/i).first().fill(userName);
+  await page.getByLabel(/^user name$/i).first().fill(userName);
   await page.getByLabel(/^password$/i).fill(PASSWORD);
-  if (remember) await page.getByLabel(/remember my user name/i).check();
+  if (remember) await page.getByLabel(/^remember my user name$/i).check();
   await page.getByRole("button", { name: /sign on/i }).click();
 }
 
@@ -61,7 +61,7 @@ test.describe("customer-accounts", () => {
   // case: SWHM3-C-0139@v1
   test("SWHM3-C-0139 failed creation redirects to error page", async ({ page }) => {
     await page.goto("/signup");
-    await page.getByLabel(/user name/i).fill("a".repeat(26));
+    await page.getByLabel(/^user name$/i).fill("a".repeat(26));
     await page.getByLabel(/^password$/i).fill(PASSWORD);
     await page.getByRole("button", { name: /create account/i }).click();
     await expect(page).toHaveURL(/user-creation-error/);
@@ -99,7 +99,7 @@ test.describe("customer-accounts", () => {
   // case: SWHM3-C-0151@v1
   test("SWHM3-C-0151 unauthenticated customer screen request shows sign-on form", async ({ page }) => {
     await page.goto("/customer");
-    await expect(page.getByLabel(/user name/i).first()).toBeVisible();
+    await expect(page.getByLabel(/^user name$/i).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /sign on/i })).toBeVisible();
   });
 
