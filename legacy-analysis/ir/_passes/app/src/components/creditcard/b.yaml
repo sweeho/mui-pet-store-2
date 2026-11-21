@@ -1,0 +1,174 @@
+records:
+  - record_key: CHK-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL represent a payment card as three text attributes: card number, card type and expiry date, and SHALL persist them as one stored card record.
+    confidence: high
+    confidence_basis: >
+      Stated in the persistent bean's declared fields, the value-object class and the XML schema (three places), all agreeing.
+    risk_class: regulated
+    basis: Container-managed fields cardNumber, cardType, expiryDate; the value object and DTD have the same three fields.
+    plain_text: >
+      A payment card is recorded with its number, its type (for example the card brand) and its expiry date.
+    technical_note: >
+      CMP 2.x entity CreditCardEJB with local home/local interface; CreditCard value object carries same fields. No length, format or Luhn validation exists in this module; card number is stored as plain text.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/ejb-jar.xml
+        line_start: 57
+        line_end: 68
+        excerpt: |
+          <cmp-field>
+            <description>no description</description>
+            <field-name>expiryDate</field-name>
+          </cmp-field>
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCardEJB.java
+        line_start: 50
+        line_end: 57
+        excerpt: |
+          public abstract String getCardNumber();
+          public abstract void setCardNumber(String cardNumber);
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: CreditCardEJB
+      ejb.transaction: Required
+  - record_key: CHK-REQ-0002
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL store a payment card exactly as supplied, with no validation of number, type or expiry date at creation.
+    confidence: medium
+    confidence_basis: >
+      One clear place (ejbCreate bodies are plain assignments); absence of validation within this module only, validation may live in callers not seen in this pass.
+    risk_class: regulated
+    basis: All ejbCreate variants only copy values into the fields.
+    plain_text: >
+      Card details are saved as entered; this component itself does not check that a card is valid or unexpired.
+    technical_note: >
+      ejbCreate(String,String,String) and ejbCreate(CreditCard) assign fields; ejbCreate() creates an empty card. Validation, if any, is in the order-entry layer (checkout-order-placement).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCardEJB.java
+        line_start: 62
+        line_end: 86
+        excerpt: |
+          public Object ejbCreate(String cardNumber, String cardType,
+                                  String expiryDate) throws CreateException {
+                                    setCardNumber(cardNumber);
+    stack_metadata:
+      ejb.bean: CreditCardEJB
+  - record_key: CHK-BR-0003
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL expose the expiry month as the text before the "/" in the expiry date and the expiry year as the text after it. GIVEN the expiry date is absent or has no "/" WHEN month or year is requested THEN the month SHALL be "01" and the year SHALL be "2010".
+    confidence: high
+    confidence_basis: >
+      Explicit code in two accessors plus transaction declarations for both in the deployment descriptor; defaults are bare literals with no comment explaining them.
+    risk_class: financial
+    basis: Expiry date is held as a single MM/YYYY-style string split on the slash; defaults are literals.
+    plain_text: >
+      A card's expiry is kept as "month/year". If it is missing or not in that form, the month reads as 01 and the year as 2010.
+    technical_note: >
+      CreditCardEJB.getExpiryMonth/getExpiryYear use indexOf("/"). No trimming or numeric checking; a value with extra slashes puts the remainder in the year.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCardEJB.java
+        line_start: 88
+        line_end: 107
+        excerpt: |
+          if (slashStart != -1) return dateString.substring(0,slashStart);
+          ...
+          return "01";
+          ...
+          return "2010";
+      - path: legacy-source/app/src/components/creditcard/src/ejb-jar.xml
+        line_start: 103
+        line_end: 120
+        excerpt: |
+          <method-name>getExpiryMonth</method-name>
+    stack_metadata:
+      ejb.bean: CreditCardEJB
+      ejb.transaction: Required
+  - record_key: CHK-INT-0004
+    kind: integration
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL exchange a payment card in XML as a CreditCard element containing CardNumber, CardType and ExpiryDate in that order, and SHALL reject any other root element.
+    confidence: high
+    confidence_basis: >
+      Enforced by the DTD and by the reading code (order of siblings, root tag check); two places.
+    risk_class: operational
+    basis: toDOM writes the three children; fromDOM requires the CreditCard root and reads children sequentially; DTD fixes sequence.
+    plain_text: >
+      Card details are passed inside order documents in a fixed layout of number, type, then expiry date; anything else is rejected.
+    technical_note: >
+      CreditCard.toDOM/fromDOM with DTD public id "DTD CreditCard 1.1". Used when purchase orders are serialised to other components/systems (consumers outside this module not traced). fromDOM throws XMLDocumentException "CreditCard element expected." on wrong root.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/rsrc/schemas/CreditCard.dtd
+        line_start: 38
+        line_end: 41
+        excerpt: |
+          <!ELEMENT CreditCard (CardNumber, CardType, ExpiryDate)>
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCard.java
+        line_start: 116
+        line_end: 130
+        excerpt: |
+          throw new XMLDocumentException(XML_CREDITCARD + " element expected.");
+    stack_metadata:
+      framework: DOM XML binding
+  - record_key: CHK-REQ-0005
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL allow any caller to create, read, change and remove stored card records without an access restriction.
+    confidence: medium
+    confidence_basis: One clear declaration (unchecked method permission on all methods); callers' own authorisation not examined.
+    risk_class: regulated
+    basis: method-permission unchecked for every method of CreditCardEJB.
+    plain_text: >
+      The card store itself imposes no sign-in or role check; protection depends on the surrounding application.
+    technical_note: ejb-jar.xml method-permission unchecked, method *. Local interface only, so only in-container callers.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/ejb-jar.xml
+        line_start: 76
+        line_end: 82
+        excerpt: |
+          <method-permission>
+            <unchecked />
+    stack_metadata:
+      ejb.transaction: Required
+suspected_defects:
+  - capability_key: checkout-order-placement
+    record_keys: [CHK-ENT-0001]
+    severity: high
+    category: other
+    title: Card number stored and serialised in clear text
+    description: >
+      The full card number is a plain string field, persisted and written to XML with no masking or encryption in this module.
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCard.java
+        line_start: 108
+        line_end: 113
+  - capability_key: checkout-order-placement
+    record_keys: [CHK-ENT-0001]
+    severity: medium
+    category: other
+    title: Constructor and create argument orders differ
+    description: >
+      CreditCard(cardNumber, expiryDate, cardType) while ejbCreate(cardNumber, cardType, expiryDate); both are Strings so swapped values compile silently.
+    traces:
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCard.java
+        line_start: 68
+        line_end: 68
+      - path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCardEJB.java
+        line_start: 62
+        line_end: 63
+findings:
+  - kind: ambiguity
+    path: legacy-source/app/src/components/creditcard/src/com/sun/j2ee/blueprints/creditcard/ejb/CreditCardEJB.java
+    description: >
+      No document in legacy-analysis/sources mentions credit card rules; where card validation (number format, expiry check) occurs must be confirmed in the order-entry modules.
