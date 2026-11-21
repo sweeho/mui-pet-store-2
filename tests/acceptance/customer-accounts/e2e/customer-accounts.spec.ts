@@ -40,8 +40,8 @@ async function session(page: Page) {
 }
 
 test.describe("customer-accounts", () => {
-  // case: SWHM3-C-0129@v1
-  test("SWHM3-C-0129 sign-off discards session, keeps only locale", async ({ page }) => {
+  // case: SWHM3-C-0129@v1 "Sign-off discards session, keeps only locale"
+  test("SWHM3-C-0129 Sign-off discards session, keeps only locale", async ({ page }) => {
     const userName = await createCustomer(page, "ja_JP");
     await page.goto("/store");
     await page.getByRole("button", { name: /add to cart/i }).first().click();
@@ -50,7 +50,7 @@ test.describe("customer-accounts", () => {
     await expect.poll(async () => (await session(page)).signedOn).toBe(true);
     const before = await session(page);
     expect(before.locale).toBe("ja_JP");
-    await page.getByRole("button", { name: /sign off/i }).click();
+    await page.getByRole("banner").getByRole("button", { name: /^sign off$/i }).click();
     await expect(page.getByText(/you have signed off/i).first()).toBeVisible();
     const after = await session(page);
     expect(after.id).not.toBe(before.id);
