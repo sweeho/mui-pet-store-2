@@ -1,0 +1,286 @@
+{
+  "key": "SWHM3-MCK-1",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-landing-page.html",
+  "url": "http://localhost:3000/",
+  "width": 1440,
+  "at": "2026-11-21T15:07:29.610Z",
+  "pixelDifference": 0.0609,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Shop",
+      "mockup": "div at 12,64"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "div at 12,253"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 12,367"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin",
+      "mockup": "div at 12,405"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "style",
+      "text": "Welcome",
+      "prop": "position",
+      "mockup": "305,122",
+      "built": "297,151"
+    },
+    {
+      "kind": "style",
+      "text": "Find your next pet",
+      "prop": "position",
+      "mockup": "305,156",
+      "built": "297,185"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog in your language, keep a cart while you shop, and check out when you’re signed in.",
+      "mockup": "p at 305,202"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 305,266"
+    },
+    {
+      "kind": "missing",
+      "text": "Shop and your account",
+      "mockup": "h2 at 272,359"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog Browse fish, dogs, cats, reptiles and birds by category. Browse the catalog",
+      "mockup": "a at 272,394"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse fish, dogs, cats, reptiles and birds by category.",
+      "mockup": "span at 337,432"
+    },
+    {
+      "kind": "missing",
+      "text": "Search Find a pet by keyword from any page. Search",
+      "mockup": "a at 655,394"
+    },
+    {
+      "kind": "missing",
+      "text": "Find a pet by keyword from any page.",
+      "mockup": "span at 720,432"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart Review what you’ve picked and check out. Open your cart",
+      "mockup": "a at 1037,394"
+    },
+    {
+      "kind": "missing",
+      "text": "Review what you’ve picked and check out.",
+      "mockup": "span at 1102,432"
+    },
+    {
+      "kind": "missing",
+      "text": "Open your cart",
+      "mockup": "span at 1102,460"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in Sign in or create an account to place orders. Sign in",
+      "mockup": "a at 272,529"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in or create an account to place orders.",
+      "mockup": "span at 337,568"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile Keep your address, card and preferred language. Edit profile",
+      "mockup": "a at 655,529"
+    },
+    {
+      "kind": "missing",
+      "text": "Keep your address, card and preferred language.",
+      "mockup": "span at 720,568"
+    },
+    {
+      "kind": "missing",
+      "text": "Edit profile",
+      "mockup": "span at 720,615"
+    },
+    {
+      "kind": "missing",
+      "text": "Language Shop in English, 日本語 or 中文. Change language",
+      "mockup": "a at 1037,529"
+    },
+    {
+      "kind": "missing",
+      "text": "Shop in English, 日本語 or 中文.",
+      "mockup": "span at 1102,568"
+    },
+    {
+      "kind": "missing",
+      "text": "Change language",
+      "mockup": "span at 1102,595"
+    },
+    {
+      "kind": "missing",
+      "text": "Administration",
+      "mockup": "h2 at 272,676"
+    },
+    {
+      "kind": "missing",
+      "text": "For administrators only",
+      "mockup": "span at 394,680"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders Approve or deny pending orders.",
+      "mockup": "a at 272,712"
+    },
+    {
+      "kind": "style",
+      "text": "Approve or deny pending orders.",
+      "prop": "box",
+      "mockup": "219x17",
+      "built": "294x20"
+    },
+    {
+      "kind": "style",
+      "text": "Approve or deny pending orders.",
+      "prop": "position",
+      "mockup": "337,750",
+      "built": "717,411"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts Revenue and quantity by category.",
+      "mockup": "a at 655,712"
+    },
+    {
+      "kind": "missing",
+      "text": "Revenue and quantity by category.",
+      "mockup": "span at 720,750"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory Update supplier stock.",
+      "mockup": "a at 1037,712"
+    },
+    {
+      "kind": "missing",
+      "text": "Update supplier stock.",
+      "mockup": "span at 1102,750"
+    },
+    {
+      "kind": "extra",
+      "text": "Areas",
+      "built": "li at 12,64"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "a at 12,139"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,177"
+    },
+    {
+      "kind": "extra",
+      "text": "Welcome to MUI Pet Store 2. Pick an area below to get started.",
+      "built": "p at 297,232"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization See the languages the store supports. Localization",
+      "built": "a at 265,375"
+    },
+    {
+      "kind": "extra",
+      "text": "See the languages the store supports.",
+      "built": "span at 329,411"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration Approve or deny pending orders. Order administration",
+      "built": "a at 653,375"
+    }
+  ]
+}

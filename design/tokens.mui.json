@@ -1,54 +1,101 @@
 {
-  "$description": "The design tokens the MUI theme is built from (src/theme/theme.ts), Modernize Free's palette and type. Change the look here; a design system can replace this file.",
+  "$description": "The design tokens the MUI theme is built from (src/theme/theme.ts): the Design Reference (indigo, Inter, radius 4). Change the look here.",
   "palette": {
-    "primary": { "main": "#5D87FF", "light": "#ECF2FF", "dark": "#4570EA" },
-    "secondary": { "main": "#49BEFF", "light": "#E8F7FF", "dark": "#23afdb" },
-    "success": {
-      "main": "#13DEB9",
-      "light": "#E6FFFA",
-      "dark": "#02b3a9",
+    "primary": {
+      "main": "#4f46e5",
+      "light": "#eef2ff",
+      "dark": "#4338ca",
       "contrastText": "#ffffff"
     },
-    "info": { "main": "#539BFF", "light": "#EBF3FE", "dark": "#1682d4", "contrastText": "#ffffff" },
+    "secondary": {
+      "main": "#64748b",
+      "light": "#f8fafc",
+      "dark": "#475569",
+      "contrastText": "#ffffff"
+    },
+    "success": {
+      "main": "#16a34a",
+      "contrastText": "#ffffff"
+    },
+    "info": {
+      "main": "#0284c7",
+      "contrastText": "#ffffff"
+    },
     "error": {
-      "main": "#FA896B",
-      "light": "#FDEDE8",
-      "dark": "#f3704d",
+      "main": "#dc2626",
       "contrastText": "#ffffff"
     },
     "warning": {
-      "main": "#FFAE1F",
-      "light": "#FEF5E5",
-      "dark": "#ae8e59",
+      "main": "#d97706",
       "contrastText": "#ffffff"
     },
     "grey": {
-      "100": "#F2F6FA",
-      "200": "#EAEFF4",
-      "300": "#DFE5EF",
-      "400": "#7C8FAC",
-      "500": "#5A6A85",
-      "600": "#2A3547"
+      "100": "#f8fafc",
+      "200": "#f1f5f9",
+      "300": "#e2e8f0",
+      "400": "#94a3b8",
+      "500": "#64748b",
+      "600": "#0f172a"
     },
-    "text": { "primary": "#2A3547", "secondary": "#5A6A85" },
-    "divider": "#e5eaef"
-  },
-  "typography": {
-    "fontFamily": "'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', Helvetica, Arial, sans-serif",
-    "h1": { "fontWeight": 600, "fontSize": "2.25rem", "lineHeight": "2.75rem" },
-    "h2": { "fontWeight": 600, "fontSize": "1.875rem", "lineHeight": "2.25rem" },
-    "h3": { "fontWeight": 600, "fontSize": "1.5rem", "lineHeight": "1.75rem" },
-    "h4": { "fontWeight": 600, "fontSize": "1.3125rem", "lineHeight": "1.6rem" },
-    "h5": { "fontWeight": 600, "fontSize": "1.125rem", "lineHeight": "1.6rem" },
-    "h6": { "fontWeight": 600, "fontSize": "1rem", "lineHeight": "1.2rem" },
-    "button": { "textTransform": "none", "fontWeight": 400 },
-    "body1": { "fontSize": "0.875rem", "fontWeight": 400, "lineHeight": "1.334rem" },
-    "body2": {
-      "fontSize": "0.75rem",
-      "letterSpacing": "0rem",
-      "fontWeight": 400,
-      "lineHeight": "1rem"
+    "text": {
+      "primary": "#0f172a",
+      "secondary": "#64748b"
+    },
+    "divider": "#e2e8f0",
+    "background": {
+      "default": "#f8fafc",
+      "paper": "#ffffff"
     }
   },
-  "shape": { "borderRadius": 7 }
+  "typography": {
+    "fontFamily": "'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif",
+    "h1": {
+      "fontWeight": 700,
+      "fontSize": "2rem",
+      "lineHeight": 1.2,
+      "letterSpacing": "-0.01em"
+    },
+    "h2": {
+      "fontWeight": 600,
+      "fontSize": "1rem",
+      "lineHeight": 1.45
+    },
+    "h3": {
+      "fontWeight": 600,
+      "fontSize": "1.25rem",
+      "lineHeight": 1.3
+    },
+    "h4": {
+      "fontWeight": 700,
+      "fontSize": "1rem",
+      "lineHeight": 1.45
+    },
+    "h5": {
+      "fontWeight": 600,
+      "fontSize": "1rem",
+      "lineHeight": 1.45
+    },
+    "h6": {
+      "fontWeight": 600,
+      "fontSize": "0.875rem",
+      "lineHeight": 1.45
+    },
+    "button": {
+      "textTransform": "none",
+      "fontWeight": 500
+    },
+    "body1": {
+      "fontSize": "0.875rem",
+      "fontWeight": 400,
+      "lineHeight": 1.45
+    },
+    "body2": {
+      "fontSize": "0.75rem",
+      "fontWeight": 400,
+      "lineHeight": 1.45
+    }
+  },
+  "shape": {
+    "borderRadius": 4
+  }
 }

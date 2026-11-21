@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
 
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 
@@ -22,9 +23,9 @@ const MainWrapper = styled("div")(() => ({
 const PageWrapper = styled("div")(() => ({
   display: "flex",
   flexGrow: 1,
-  paddingBottom: "60px",
   flexDirection: "column",
   zIndex: 1,
+  minWidth: 0,
   backgroundColor: "transparent",
 }));
 
@@ -39,11 +40,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       />
       <PageWrapper>
         <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
-        <Container sx={{ paddingTop: "20px", maxWidth: "1200px" }}>
-          <Box component="main" sx={{ minHeight: "calc(100vh - 170px)" }}>
-            {children}
-          </Box>
+        <Container
+          sx={{ paddingTop: "24px", paddingBottom: "32px", maxWidth: "1200px", flexGrow: 1 }}
+        >
+          <Box component="main">{children}</Box>
         </Container>
+        <Footer />
       </PageWrapper>
     </MainWrapper>
   );

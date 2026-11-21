@@ -1,0 +1,115 @@
+{
+  "key": "SWHM3-MCK-6",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-empty-state-mobile.html",
+  "url": "http://localhost:3000/admin/orders",
+  "width": 390,
+  "at": "2026-11-21T15:07:40.696Z",
+  "pixelDifference": 0.1015,
+  "pageHeights": {
+    "mockup": 844,
+    "built": 844
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Cart",
+      "mockup": "div at 16,72"
+    },
+    {
+      "kind": "missing",
+      "text": "Home",
+      "mockup": "a at 16,73"
+    },
+    {
+      "kind": "missing",
+      "text": "Everything you’ve added this visit.",
+      "mockup": "p at 16,129"
+    },
+    {
+      "kind": "missing",
+      "text": "Your cart is empty",
+      "mockup": "h2 at 116,279"
+    },
+    {
+      "kind": "missing",
+      "text": "Add a pet from the catalog and it will show up here.",
+      "mockup": "p at 37,309"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 37,369"
+    },
+    {
+      "kind": "missing",
+      "text": "Shared empty frame — every page passes its own title, line and next step.",
+      "mockup": "p at 16,466"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,747",
+      "built": "16,811"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,747"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 306,747"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 98,781"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "a at 293,781"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "h1 at 16,81"
+    },
+    {
+      "kind": "extra",
+      "text": "Approve or deny pending orders.",
+      "built": "p at 16,119"
+    },
+    {
+      "kind": "extra",
+      "text": "No orders yet",
+      "built": "h2 at 135,281"
+    },
+    {
+      "kind": "extra",
+      "text": "Orders waiting for review will show up here.",
+      "built": "p at 53,308"
+    }
+  ]
+}

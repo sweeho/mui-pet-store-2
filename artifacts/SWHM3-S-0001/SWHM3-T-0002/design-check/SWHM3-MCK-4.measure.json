@@ -1,0 +1,100 @@
+{
+  "key": "SWHM3-MCK-4",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-site-shell-mobile.html",
+  "url": "http://localhost:3000/localization",
+  "width": 390,
+  "at": "2026-11-21T15:07:39.056Z",
+  "pixelDifference": 0.0927,
+  "pageHeights": {
+    "mockup": 844,
+    "built": 844
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 334,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Area",
+      "mockup": "div at 16,72"
+    },
+    {
+      "kind": "missing",
+      "text": "Home",
+      "mockup": "a at 16,73"
+    },
+    {
+      "kind": "missing",
+      "text": "Page title",
+      "mockup": "h1 at 16,97"
+    },
+    {
+      "kind": "missing",
+      "text": "One line that says what this page is for.",
+      "mockup": "p at 16,129"
+    },
+    {
+      "kind": "missing",
+      "text": "Primary action",
+      "mockup": "button at 16,162"
+    },
+    {
+      "kind": "missing",
+      "text": "Loading…",
+      "mockup": "div at 17,223"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,747",
+      "built": "16,811"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 167,747"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "span at 306,747"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 98,781"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "a at 293,781"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "h1 at 16,81"
+    },
+    {
+      "kind": "extra",
+      "text": "The languages the store supports.",
+      "built": "p at 16,119"
+    }
+  ]
+}

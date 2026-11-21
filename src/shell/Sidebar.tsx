@@ -12,11 +12,11 @@ import type { Theme } from "@mui/material/styles";
 
 import { SidebarItems } from "./SidebarItems";
 
-const SIDEBAR_WIDTH = "270px";
+const SIDEBAR_WIDTH = "240px";
 
 const scrollbarStyles = {
   "&::-webkit-scrollbar": { width: "7px" },
-  "&::-webkit-scrollbar-thumb": { backgroundColor: "#eff2f7", borderRadius: "15px" },
+  "&::-webkit-scrollbar-thumb": { backgroundColor: "divider", borderRadius: "15px" },
 };
 
 /** The sidebar: fixed on a large screen, a drawer the header opens on a small one. */
