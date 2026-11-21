@@ -1,0 +1,160 @@
+records:
+  - record_key: CHK-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL hold a postal address as six text fields: street line 1, street line 2, city, state, zip code and country.
+    confidence: high
+    confidence_basis: >
+      The six fields appear in the container-managed field list, the accessors and the create/copy methods (code plus declarative config). No length or format constraint is visible in this module.
+    risk_class: operational
+    basis: The persistent address bean declares exactly six container-managed fields, all strings.
+    plain_text: >
+      An address consists of two street lines, a city, a state, a zip code and a country.
+    technical_note: >
+      CMP 2.x entity AddressEJB, abstract schema Address; fields listed in ejb-jar.xml and accessors in AddressEJB.java. No validation in this component; validation lives with callers.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/address/src/ejb-jar.xml
+        line_start: 56
+        line_end: 80
+        excerpt: |
+          <abstract-schema-name>Address</abstract-schema-name>
+          <cmp-field>
+            <description>no description</description>
+            <field-name>zipCode</field-name>
+          </cmp-field>
+      - path: legacy-source/app/src/components/address/src/com/sun/j2ee/blueprints/address/ejb/AddressEJB.java
+        line_start: 53
+        line_end: 69
+        excerpt: |
+          public abstract String getStreetName1();
+          public abstract void setStreetName1(String streetName1);
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: AddressEJB
+      db.object: Address abstract schema
+  - record_key: CHK-REQ-0002
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL allow an address to be created either from the six individual values, from an existing address data object, or empty, and SHALL copy every field unchanged without validation or normalisation.
+    confidence: medium
+    confidence_basis: One clear place (the create methods); no tests or docs seen.
+    risk_class: operational
+    basis: Three ejbCreate variants copy fields verbatim; empty create sets nothing.
+    plain_text: >
+      An address can be saved as entered, with no checking or reformatting at this point.
+    technical_note: >
+      ejbCreate(6 Strings), ejbCreate(Address), ejbCreate(); all exposed via LocalHome as unchecked-permission methods.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/address/src/com/sun/j2ee/blueprints/address/ejb/AddressEJB.java
+        line_start: 73
+        line_end: 103
+        excerpt: |
+          public Object ejbCreate(String streetName1, String streetName2, String city,
+                                  String state, String zipCode, String country) throws CreateException {
+          ...
+          public Object ejbCreate() throws CreateException {
+            return null;
+          }
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: AddressEJB
+      ejb.transaction: Required
+  - record_key: CHK-REQ-0003
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL return a stored address as a plain data object containing all six fields.
+    confidence: medium
+    confidence_basis: One clear place (getData).
+    risk_class: presentational
+    basis: getData copies all six fields into a new Address value object.
+    plain_text: >
+      A saved address can be read back with all its parts.
+    technical_note: AddressEJB.getData builds a serialisable Address transfer object.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/address/src/com/sun/j2ee/blueprints/address/ejb/AddressEJB.java
+        line_start: 105
+        line_end: 114
+        excerpt: |
+          public Address getData() {
+            Address address = new Address();
+            address.setStreetName1(getStreetName1());
+    stack_metadata:
+      ejb.bean: AddressEJB
+  - record_key: CHK-BRL-0004
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The exchanged address document format SHALL require one street name, optionally a second street name, and SHALL require city, state and zip code, with country optional.
+    confidence: medium
+    confidence_basis: >
+      Stated in the DTD only; the DTD is not enforced by the bean, and its use by callers was not traced in this module. Note DTD has no separate StreetName1/2 names, only repeated StreetName.
+    risk_class: operational
+    basis: DTD content model Address (StreetName, StreetName?, City, State, ZipCode, Country?).
+    plain_text: >
+      When an address is passed between systems in document form, street, city, state and zip code are mandatory; a second street line and country are optional.
+    technical_note: Address.dtd under rsrc/schemas; used for XML (de)serialisation by other components.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/address/src/com/sun/j2ee/blueprints/address/rsrc/schemas/Address.dtd
+        line_start: 38
+        line_end: 43
+        excerpt: |
+          <!ELEMENT Address (StreetName, StreetName?, City, State, ZipCode, Country?)>
+          <!ELEMENT StreetName (#PCDATA)>
+    stack_metadata:
+      framework: XML DTD
+  - record_key: CHK-BRL-0005
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL allow any caller to create, read, update and remove addresses without a role check.
+    confidence: medium
+    confidence_basis: One clear place (ejb-jar method-permission unchecked); effective access also depends on local-only interfaces, which limits callers to the same server.
+    risk_class: regulated
+    basis: All Address methods are listed under an unchecked method-permission; the bean uses the caller's identity.
+    plain_text: >
+      The address component itself imposes no access restriction; protection comes from the callers.
+    technical_note: ejb-jar.xml method-permission unchecked; local interfaces only; all methods Required transaction.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/address/src/ejb-jar.xml
+        line_start: 87
+        line_end: 95
+        excerpt: |
+          <assembly-descriptor>
+            <method-permission>
+              <unchecked />
+              <method>
+                <ejb-name>AddressEJB</ejb-name>
+    stack_metadata:
+      ejb.transaction: Required
+  - record_key: CHK-REQ-0006
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN an order is purged WHEN it is deleted THEN its addresses SHALL be deleted with it.
+    confidence: low
+    confidence_basis: >
+      Stated only in the operations runbook; the address component contains no purge code, so enforcement is elsewhere and was not seen here.
+    risk_class: regulated
+    basis: Runbook 3.5 says the order purge removes addresses along with the order.
+    plain_text: >
+      When an old completed or denied order is purged, its addresses are removed too.
+    technical_note: Implemented by the purge batch outside this component (PS_ORDER_PURGE).
+    interface: false
+    traces:
+      - path: legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md
+        anchor: p1
+        excerpt: |
+          Deletes COMPLETED and DENIED orders older than 180 days, with their order lines, supplier orders,
+          contact information, addresses and payment cards.
+    stack_metadata:
+      batch.trigger: PS_ORDER_PURGE
+findings: []
+suspected_defects: []
