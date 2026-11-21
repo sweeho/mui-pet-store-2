@@ -1,0 +1,133 @@
+records:
+  - record_key: CHECKOUT-ORDER-PLACEMENT-REQ-0001
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL provide a unique-identifier service that, given a prefix string, returns the prefix followed by the next integer in a sequence maintained separately for that prefix.
+    confidence: medium
+    confidence_basis: >
+      One clear implementation (counter increment and concatenation) plus a session bean wrapper; no tests or documents found, and callers are outside this module so the business use (order ids) is inferred.
+    risk_class: operational
+    basis: The session bean delegates to a per-prefix counter whose next value is name + incremented number.
+    plain_text: >
+      Whenever the business needs a new reference number, the system hands out a code made of a fixed prefix and a running number that is specific to that prefix.
+    technical_note: >
+      UniqueIdGeneratorEJB.getUniqueId(prefix) calls CounterEJB.getNextValue(); result is getName()+String.valueOf(count). No separator between prefix and number.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/ejb/UniqueIdGeneratorEJB.java
+        line_start: 67
+        line_end: 69
+        excerpt: |
+          public String getUniqueId(String idPrefix) {
+              return getCounter(idPrefix).getNextValue();
+          }
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/counter/ejb/CounterEJB.java
+        line_start: 67
+        line_end: 71
+        excerpt: |
+          public String getNextValue() {
+              int count = getCounter() + 1;
+              setCounter(count);
+              return getName() + String.valueOf(count);
+          }
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: UniqueIdGeneratorEJB
+  - record_key: CHECKOUT-ORDER-PLACEMENT-BR-0001
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN no counter exists for a prefix WHEN an identifier is requested for it THEN the system SHALL create the counter starting at 0, so the first identifier issued is the prefix followed by 1.
+    confidence: high
+    confidence_basis: Enforced in two places: the generator's find-or-create logic and the counter's creation initialising to zero.
+    risk_class: operational
+    basis: Find-by-key failure leads to create; create sets the counter to 0 before the first increment.
+    plain_text: >
+      The first number issued for any new prefix is 1; new prefixes need no set-up.
+    technical_note: >
+      UniqueIdGeneratorEJB.getCounter catches FinderException and calls clh.create(name); CounterEJB.ejbCreate sets name and counter=0. Find-then-create is not atomic in this code; concurrent first use could race (see defects).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/ejb/UniqueIdGeneratorEJB.java
+        line_start: 77
+        line_end: 81
+        excerpt: |
+              try {
+                  counter = clh.findByPrimaryKey(name);
+              } catch (FinderException fe) {
+                  counter = clh.create(name);
+              }
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/counter/ejb/CounterEJB.java
+        line_start: 58
+        line_end: 62
+        excerpt: |
+          public String ejbCreate(String name) throws CreateException {
+              setName(name);
+              setCounter(0);
+              return null;
+          }
+    stack_metadata:
+      ejb.bean: CounterEJB
+  - record_key: CHECKOUT-ORDER-PLACEMENT-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL persist a counter entity identified by a unique name (the prefix) holding an integer current value, and SHALL run each operation under a container-managed transaction that is required.
+    confidence: high
+    confidence_basis: Declared in the deployment descriptor (cmp fields, primary key, transaction attribute) and matched by abstract accessors in the bean class.
+    risk_class: operational
+    basis: ejb-jar declares cmp-fields counter and name, primkey-field name, and Required transactions.
+    plain_text: >
+      The system remembers, for each prefix, the last number issued, and updates it as part of the same unit of work as the caller so numbers are not lost or repeated.
+    technical_note: >
+      CMP 2.x entity Counter, String primary key = name, counter is int (32-bit). Transaction attribute Required on methods. Local interfaces only; methods are unchecked (no role restriction).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/uidgen/src/ejb-jar.xml
+        line_start: 57
+        line_end: 65
+        excerpt: |
+          <cmp-field>
+            <description>no description</description>
+            <field-name>counter</field-name>
+          </cmp-field>
+          <cmp-field>
+            <description>no description</description>
+            <field-name>name</field-name>
+          </cmp-field>
+          <primkey-field>name</primkey-field>
+      - path: legacy-source/app/src/components/uidgen/src/ejb-jar.xml
+        line_start: 203
+        line_end: 211
+        excerpt: |
+          <container-transaction>
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: CounterEJB
+      ejb.transaction: Required
+      db.object: Counter
+findings: []
+suspected_defects:
+  - capability_key: checkout-order-placement
+    record_keys: [CHECKOUT-ORDER-PLACEMENT-BR-0001]
+    severity: low
+    category: data-corruption
+    title: Find-then-create counter is not atomic
+    description: >
+      A missing counter is created after a failed lookup with no handling of a concurrent creation; two first requests for the same prefix could collide, and the loser raises an error.
+    traces:
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/ejb/UniqueIdGeneratorEJB.java
+        line_start: 77
+        line_end: 81
+  - capability_key: checkout-order-placement
+    record_keys: [CHECKOUT-ORDER-PLACEMENT-REQ-0001]
+    severity: low
+    category: other
+    title: Counter is a 32-bit int with no overflow handling
+    description: >
+      The counter is an int incremented without bounds checking; after 2147483647 it would overflow to a negative number.
+    traces:
+      - path: legacy-source/app/src/components/uidgen/src/com/sun/j2ee/blueprints/uidgen/counter/ejb/CounterEJB.java
+        line_start: 67
+        line_end: 71
