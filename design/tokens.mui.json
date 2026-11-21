@@ -50,9 +50,9 @@
   "typography": {
     "fontFamily": "'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif",
     "h1": {
-      "fontWeight": 700,
-      "fontSize": "2rem",
-      "lineHeight": 1.2,
+      "fontWeight": 600,
+      "fontSize": "1.5rem",
+      "lineHeight": 1.25,
       "letterSpacing": "-0.01em"
     },
     "h2": {

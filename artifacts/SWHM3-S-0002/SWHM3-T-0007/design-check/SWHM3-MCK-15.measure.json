@@ -1,0 +1,39 @@
+{
+ "mockup": {
+  "h1": {
+   "text": "The store is now in English (United States)",
+   "font": "24px 600",
+   "color": "rgb(15, 23, 42)",
+   "w": 860,
+   "h": 30
+  },
+  "btn": {
+   "text": "Back to the page you were on",
+   "font": "14px 500",
+   "color": "rgb(255, 255, 255)",
+   "w": 252,
+   "h": 36
+  }
+ },
+ "built": {
+  "h1": {
+   "text": "The store is now in English (United States)",
+   "font": "24px 600",
+   "color": "rgb(15, 23, 42)",
+   "w": 878,
+   "h": 30
+  },
+  "btn": {
+   "text": "Back to the page you were on",
+   "font": "14px 500",
+   "color": "rgb(255, 255, 255)",
+   "w": 250,
+   "h": 36
+  }
+ },
+ "tool": "manual Playwright probe (design-measure.mjs not available in this workspace)",
+ "checked": [
+  "h1 font size/weight/colour/height",
+  "primary button size"
+ ]
+}

@@ -4,7 +4,7 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
 
-import { users } from "./schema";
+import * as schema from "./schema";
 
 /** The SQLite file's URL: DATABASE_PATH (the Docker image sets one), else sqlite.db at the root. */
 export function databaseUrl(): string {
@@ -17,12 +17,12 @@ export function databaseUrl(): string {
 export async function prepareDatabase(url: string): Promise<void> {
   const client = createClient({ url });
   try {
-    const db = drizzle({ client, schema: { users } });
+    const db = drizzle({ client, schema });
     await migrate(db, {
       migrationsFolder: path.join(/* turbopackIgnore: true */ process.cwd(), "drizzle"),
     });
-    if ((await db.select().from(users).limit(1)).length === 0) {
-      await db.insert(users).values([
+    if ((await db.select().from(schema.users).limit(1)).length === 0) {
+      await db.insert(schema.users).values([
         { name: "John Doe", email: "john@example.com" },
         { name: "Jane Smith", email: "jane@example.com" },
       ]);

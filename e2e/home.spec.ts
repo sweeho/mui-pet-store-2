@@ -12,10 +12,7 @@ test.describe("Landing page and navigation", () => {
 
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const main = page.getByRole("main");
-    await expect(main.getByRole("link", { name: /Localization/ })).toHaveAttribute(
-      "href",
-      /\/localization$/,
-    );
+    await expect(main.getByRole("link", { name: /Language/ })).toHaveAttribute("href", /\/locale$/);
     await expect(main.getByRole("link", { name: /Order administration/ })).toHaveAttribute(
       "href",
       /\/admin\/orders$/,
@@ -23,7 +20,7 @@ test.describe("Landing page and navigation", () => {
   });
 
   test("[SWHM3-C-0164] the rail links home from another page", async ({ page }) => {
-    await page.goto("/localization");
+    await page.goto("/locale");
 
     await page.getByRole("navigation").getByRole("link", { name: "Home" }).click();
     await expect(page).toHaveURL(/\/$/);
