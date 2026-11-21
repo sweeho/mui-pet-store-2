@@ -1,0 +1,97 @@
+recommendations:
+  - record_key: LOCAL-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Property values are explicit; de_DE offered on demo form is separate.
+  - record_key: LOCALIZATION-REQ-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Utility routines are clear but callers were not verified, so actual use needs SME confirmation.
+  - record_key: CATBR-REQ-0010
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code is clear; the null-locale NullPointerException downstream is a suspected defect for the Business Owner's defect register.
+  - record_key: LOC-BR-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Duplicates LOCALIZATION-REQ-0005 from a second pass; consider merging.
+  - record_key: LOC-REQ-0002
+    recommendation: edit
+    confidence: medium
+    reason: >
+      Describes only category and product details and disagrees with the schema record on item details; confirm against the DDL, which is the stronger source.
+    edited_requirement: The system SHALL require a name and locale for category and product details, and SHALL also require an image, description, list price and unit cost for item details.
+  - record_key: LOC-REQ-0005
+    recommendation: accept
+    confidence: low
+    reason: >
+      Only the framework demo page uses it and de_DE has no screen definitions; confirm whether production uses it.
+  - record_key: LOC-REQ-0006
+    recommendation: accept
+    confidence: low
+    reason: >
+      Code is clear, but the event mapping names a missing class so the action may never run; confirm what production does.
+  - record_key: LOC-REQ-0008
+    recommendation: accept
+    confidence: medium
+    reason: >
+      One clear implementation; the only configured mapping targets another exception class, so the production behaviour is the generic failure.
+  - record_key: LOC-REQ-0009
+    recommendation: accept
+    confidence: low
+    reason: >
+      Behaviour is clear but it deserialises untrusted data; confirm the code behaviour and take the risk to the defect register.
+  - record_key: LOC-REQ-0011
+    recommendation: accept
+    confidence: medium
+    reason: >
+      One implementation in TemplateServlet; read the code, no document conflict.
+  - record_key: LOCALIZATION-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code is clear; the dead variant branch and lost country are suspected defects for the Business Owner.
+  - record_key: LOCALIZATION-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      DDL constraints in both variants agree with the header comment.
+  - record_key: LOCALIZATION-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Web and EJB actions agree; only the demo page was found as a caller.
+  - record_key: LOCALIZATION-RULE-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      One clear parsing routine; the variant handling was only partly read.
+  - record_key: LOCALIZATION-RULE-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Two passes read the same code and agree.
+  - record_key: NOTIF-BR-0006
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Locale is unused in the mailer, but localization may occur upstream; confirm.
+  - record_key: SHOP-REQ-0006
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Single locale field on the cart bean passed to the catalog.
+  - record_key: LOC-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Filter code and web.xml mapping agree.
+  - record_key: LOCALIZATION-RULE-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      Code and web.xml default_locale agree.
