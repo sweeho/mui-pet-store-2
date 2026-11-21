@@ -111,7 +111,14 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
             "&:focus-within": { borderColor: "primary.main" },
           }}
         >
-          <IconSearch size={18} stroke={1.7} aria-hidden />
+          <IconButton
+            type="submit"
+            size="small"
+            aria-label={t("header.search")}
+            sx={{ p: 0, color: "inherit" }}
+          >
+            <IconSearch size={18} stroke={1.7} aria-hidden />
+          </IconButton>
           <Box
             component="input"
             type="search"

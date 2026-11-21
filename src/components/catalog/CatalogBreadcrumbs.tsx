@@ -23,10 +23,10 @@ export function CatalogBreadcrumbs({ trail }: { trail: Crumb[] }) {
         "& .MuiBreadcrumbs-separator": { mx: 0.75 },
       }}
     >
-      {trail.map((crumb) =>
+      {trail.map((crumb, i) =>
         crumb.href ? (
           <MuiLink
-            key={crumb.label}
+            key={i}
             component={Link}
             href={crumb.href}
             underline="hover"
@@ -36,7 +36,7 @@ export function CatalogBreadcrumbs({ trail }: { trail: Crumb[] }) {
           </MuiLink>
         ) : (
           <Typography
-            key={crumb.label}
+            key={i}
             aria-current="page"
             sx={{ fontSize: "inherit", fontWeight: 500, color: "text.primary" }}
           >

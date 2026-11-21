@@ -9,6 +9,10 @@ import { parseKeywords, parseLocaleCode } from "./localization/locale";
 /** The default page size (R-0008, R-0165, R-0166) and the largest a caller may ask for (API-104). */
 export const DEFAULT_PAGE_SIZE = 2;
 export const MAX_PAGE_SIZE = 50;
+const MAX_START = 1_000_000_000;
+/** A search looks at the first 200 characters of a query and its first 10 distinct keywords. */
+const MAX_QUERY_LENGTH = 200;
+const MAX_KEYWORDS = 10;
 
 export type TextDetail = { name: string; description?: string; image?: string };
 export type ItemDetailInput = {
@@ -103,7 +107,8 @@ function checkItemDetails(details: Record<string, ItemDetailInput>) {
 function windowOf(page: PageOptions, pageSize: number) {
   const size = Math.min(MAX_PAGE_SIZE, Math.max(1, Math.floor(page.size ?? pageSize)));
   const start = Math.floor(page.start ?? 0);
-  return { size, start, valid: Number.isFinite(start) && start >= 0 };
+  // A start beyond any real catalog is an empty page, not a database error.
+  return { size, start, valid: Number.isSafeInteger(start) && start >= 0 && start <= MAX_START };
 }
 
 const emptyPage = <T>(hasPrevious = false): Page<T> => ({ items: [], hasNext: false, hasPrevious });
@@ -351,11 +356,12 @@ export function createCatalog(opts: CatalogOptions = {}) {
       const w = windowOf(page, pageSize);
       const keywords = [
         ...new Set(
-          parseKeywords(query ?? "", page.locale)
+          parseKeywords((query ?? "").slice(0, MAX_QUERY_LENGTH), page.locale)
             .map((k) => k.toLowerCase())
             .filter(Boolean),
         ),
       ];
+      keywords.length = Math.min(keywords.length, MAX_KEYWORDS);
       if (!w.valid || keywords.length === 0) return Promise.resolve(emptyPage());
       const matches = or(
         ...keywords.flatMap((k) => {

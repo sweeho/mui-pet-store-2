@@ -22,7 +22,7 @@ export async function getCatalogContext() {
 /** `?start=`: a whole number of zero or more; anything else is the first page. */
 export function parseStart(value: string | string[] | undefined): number {
   const n = Number(Array.isArray(value) ? value[0] : value);
-  return Number.isInteger(n) && n > 0 ? n : 0;
+  return Number.isSafeInteger(n) && n > 0 ? n : 0;
 }
 
 /** An item is named for its product and its first attribute: "Large Angelfish". */

@@ -46,18 +46,24 @@ export function Pager({
     "&.Mui-disabled": { color: "grey.400" },
   };
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
-      <Typography
-        role="status"
-        aria-label={t("catalog.range", {
-          label,
-          from: String(start + 1),
-          to: String(start + count),
-        })}
-        color="text.secondary"
-        sx={{ fontSize: "0.75rem", mr: "auto" }}
-      >
-        <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+    <Box
+      component="nav"
+      aria-label={label}
+      sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}
+    >
+      <Typography role="status" color="text.secondary" sx={{ fontSize: "0.75rem", mr: "auto" }}>
+        <Box
+          component="span"
+          sx={{
+            // Visible beside the range on a wide screen; read out, not shown, on a small one.
+            position: { xs: "absolute", sm: "static" },
+            width: { xs: "1px", sm: "auto" },
+            height: { xs: "1px", sm: "auto" },
+            overflow: { xs: "hidden", sm: "visible" },
+            clipPath: { xs: "inset(50%)", sm: "none" },
+            whiteSpace: "nowrap",
+          }}
+        >
           {label}{" "}
         </Box>
         {String(start + 1)}–{String(start + count)}

@@ -3,8 +3,8 @@
   "mockup": "artifacts/SWHM3-S-0003/design/mockup-search-results-no-matches-mobile.html",
   "url": "http://127.0.0.1:3300/catalog/search?q=unicorn",
   "width": 390,
-  "at": "2026-11-21T17:45:06.348Z",
-  "pixelDifference": 0.1298,
+  "at": "2026-11-21T17:46:14.121Z",
+  "pixelDifference": 0.1461,
   "pageHeights": {
     "mockup": 900,
     "built": 900
@@ -96,16 +96,9 @@
     {
       "kind": "style",
       "text": "Browse the catalog",
-      "prop": "box",
-      "mockup": "324x44",
-      "built": "181x44"
-    },
-    {
-      "kind": "style",
-      "text": "Browse the catalog",
       "prop": "position",
       "mockup": "33,450",
-      "built": "105,496"
+      "built": "41,496"
     },
     {
       "kind": "missing",
