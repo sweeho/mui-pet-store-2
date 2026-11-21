@@ -24,6 +24,15 @@ test.describe("accessibility", () => {
     await expectAccessibleStructure(page);
   });
 
+  test("language page and confirmation", async ({ page }) => {
+    await page.goto("/locale");
+    await expect(page.getByRole("radio")).toHaveCount(4);
+    await expectAccessibleStructure(page);
+    await page.getByRole("button", { name: "Change language" }).click();
+    await expect(page).toHaveURL(/\/locale\/changed/);
+    await expectAccessibleStructure(page);
+  });
+
   test("empty frame", async ({ page }) => {
     await page.goto("/admin/orders");
     await expectAccessibleStructure(page);
@@ -32,7 +41,7 @@ test.describe("accessibility", () => {
 
   test("error frame announces itself and offers Try again", async ({ page }) => {
     await page.route("**/api/locales", (route) => route.fulfill({ status: 500, body: "{}" }));
-    await page.goto("/localization");
+    await page.goto("/locale");
     await expect(page.getByRole("alert")).toBeVisible();
     await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
     await expectAccessibleStructure(page);
@@ -40,7 +49,7 @@ test.describe("accessibility", () => {
 
   test("loading frame announces a status", async ({ page }) => {
     await page.route("**/api/locales", () => undefined); // never answers
-    await page.goto("/localization");
+    await page.goto("/locale");
     await expect(page.getByRole("status")).toBeVisible();
     await expectAccessibleStructure(page);
   });
