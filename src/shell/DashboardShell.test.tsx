@@ -17,6 +17,6 @@ describe("DashboardShell", () => {
     );
     expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(screen.getByRole("main")).toHaveTextContent("content here");
-    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
+    expect(screen.queryByRole("contentinfo")).toBeInTheDocument();
   });
 });
