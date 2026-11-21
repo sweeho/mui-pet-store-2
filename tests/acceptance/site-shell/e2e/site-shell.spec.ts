@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const rootPath = (baseURL: string | undefined) =>
   new URL(baseURL ?? "http://localhost").pathname.replace(/\/$/, "") + "/";
@@ -26,19 +26,29 @@ async function primaryHrefs(page: Page, baseURL: string | undefined): Promise<st
   return hrefs;
 }
 
-// The cases name no marker, so accept any common one: a test id, a data-state, a status/alert role or its wording.
+// The cases name no marker: accept a test id or data-state, or a status/alert role, but only inside the
+// main landmark (never the route announcer, nav or header) and only for the shell's own frame.
 const emptyFrame = (page: Page) =>
   page
+    .getByRole("main")
     .locator('[data-testid="empty-frame"], [data-state="empty"]')
-    .or(page.getByRole("status").filter({ hasText: /no |nothing|empty|yet/i }))
-    .or(page.getByText(/no .{0,40}(found|yet|available|to show)|nothing (to show|here)|(is|are) empty/i))
+    .or(
+      page
+        .getByRole("main")
+        .getByRole("status")
+        .filter({ hasText: /^\s*(no |nothing|empty)/i }),
+    )
     .first();
 const errorFrame = (page: Page) =>
   page
+    .getByRole("main")
     .locator('[data-testid="error-frame"], [data-state="error"]')
-    .or(page.getByRole("alert"))
-    .or(page.getByText(/something went wrong|failed to load|could not load|error/i))
+    .or(page.getByRole("main").getByRole("alert"))
     .first();
+
+/** A signature of the frame element, so every page can be shown to use the same one. */
+const frameSignature = (loc: Locator) =>
+  loc.evaluate((el) => `${el.getAttribute("data-testid") ?? ""}|${el.getAttribute("data-state") ?? ""}|${el.getAttribute("role") ?? ""}`);
 
 /** Watch the page's own /api requests, so only pages that load data are judged. */
 const trackApi = (page: Page) => {
@@ -122,6 +132,7 @@ test.describe("site-shell", () => {
     );
     const seen = trackApi(page);
     let exercised = 0;
+    const signatures = new Set<string>();
     for (const href of hrefs) {
       seen.count = 0;
       await page.goto(href);
@@ -129,8 +140,11 @@ test.describe("site-shell", () => {
       if (seen.count === 0) continue; // page has no data request, so no empty state to judge
       exercised++;
       await expect(emptyFrame(page)).toBeVisible();
+      signatures.add(await frameSignature(emptyFrame(page)));
     }
     expect(exercised).toBeGreaterThan(0);
+    // one shared frame: every page renders the same kind of element
+    expect(signatures.size).toBe(1);
   });
 
   // case: SWHM3-C-0167@v1
@@ -144,6 +158,7 @@ test.describe("site-shell", () => {
     );
     const seen = trackApi(page);
     let exercised = 0;
+    const signatures = new Set<string>();
     for (const href of hrefs) {
       failing = true;
       seen.count = 0;
@@ -152,12 +167,15 @@ test.describe("site-shell", () => {
       if (seen.count === 0) continue; // page has no data request, so no failure to judge
       exercised++;
       await expect(errorFrame(page)).toBeVisible();
-      const retry = page.getByRole("button", { name: /retry|try again/i }).first();
+      signatures.add(await frameSignature(errorFrame(page)));
+      const retry = page.getByRole("main").getByRole("button", { name: /retry|try again/i }).first();
       await expect(retry).toBeVisible();
       failing = false;
       await retry.click();
       await expect(errorFrame(page)).toBeHidden();
     }
     expect(exercised).toBeGreaterThan(0);
+    // one shared frame: every page renders the same kind of element
+    expect(signatures.size).toBe(1);
   });
 });
