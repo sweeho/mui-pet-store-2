@@ -1,0 +1,497 @@
+records:
+  - record_key: CATALOG-ENT-0001
+    kind: entity
+    capability_key: catalog-browsing
+    requirement: >
+      The system SHALL store the catalog as category, product and item, each keyed by a short identifier (max 10 characters), where every product belongs to exactly one category and every item to exactly one product.
+    confidence: high
+    confidence_basis: >
+      Primary and foreign keys appear in both the Oracle and the Cloudscape DDL files (two places, identical structure).
+    risk_class: operational
+    basis: Primary keys on catid/productid/itemid and foreign keys product->category, item->product.
+    plain_text: >
+      Pets are organised as categories, products within a category, and individual sellable items within a product.
+    technical_note: >
+      Tables CATEGORY, PRODUCT, ITEM with FK constraints fk_product_1, fk_item_1; indexes ix_product_catid, ix_item_productid. Oracle uses varchar2(10), Cloudscape char(10).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 30
+        line_end: 34
+        excerpt: |
+          CREATE TABLE product (
+            productid varchar2(10) not null,
+            catid varchar2(10) not null,
+            constraint pk_product primary key (productid),
+            constraint fk_product_1 foreign key (catid) references category (catid));
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 49
+        line_end: 53
+        excerpt: |
+          CREATE TABLE item (
+            itemid varchar2(10) not null,
+            productid varchar2(10) not null,
+            constraint pk_item primary key (itemid),
+            constraint fk_item_1 foreign key (productid) references product (productid));
+    stack_metadata:
+      db.object: CATEGORY, PRODUCT, ITEM
+  - record_key: LOCALIZATION-ENT-0001
+    kind: entity
+    capability_key: localization
+    requirement: >
+      The system SHALL hold the name, image and description of categories, products and items per locale, with at most one row per (entity, locale), and SHALL require a name for category and product details and an image, description, list price and unit cost for item details.
+    confidence: high
+    confidence_basis: >
+      Composite primary keys and NOT NULL constraints in both DDL variants, plus the DDL header comment saying text is in the *_DETAILS tables.
+    risk_class: operational
+    basis: Composite keys (catid, locale), (productid, locale), (itemid, locale).
+    plain_text: >
+      Each category, product and item has its own name, picture, description and price per language/region, one entry per language.
+    technical_note: >
+      CATEGORY_DETAILS, PRODUCT_DETAILS, ITEM_DETAILS. Item attributes attr1..attr5 (varchar 80) are optional. Prices are per locale, so the same item may be priced differently per locale.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 19
+        line_end: 26
+        excerpt: |
+          CREATE TABLE category_details (
+            catid varchar2(10) not null,
+            name varchar2(80) not null,
+            image varchar2(255),
+            descn varchar2(255),
+            locale varchar2(10) not null,
+            constraint pk_category_details primary key (catid, locale),
+            constraint fk_category_details_1 foreign key (catid) references category (catid));
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 57
+        line_end: 70
+        excerpt: |
+          CREATE TABLE item_details (
+            itemid varchar2(10) not null,
+            listprice decimal(10,2) not null,
+            unitcost decimal(10,2) not null,
+            locale varchar2(10) not null,
+            image varchar2(255) not null,
+            descn varchar2(255) not null,
+            attr1 varchar2(80),
+            attr2 varchar2(80),
+            attr3 varchar2(80),
+            attr4 varchar2(80),
+            attr5 varchar2(80),
+            constraint pk_item_details primary key (itemid, locale),
+            constraint fk_item_details_1 foreign key (itemid) references item (itemid));
+    stack_metadata:
+      db.object: CATEGORY_DETAILS, PRODUCT_DETAILS, ITEM_DETAILS
+  - record_key: CATALOG-BR-0001
+    kind: business-rule
+    capability_key: catalog-browsing
+    requirement: >
+      The system SHALL NOT enforce at database level that an item's list price is at or above its unit cost, and sample data MAY contain an item priced below cost.
+    confidence: medium
+    confidence_basis: >
+      Stated explicitly in a DDL comment, but it documents an absence of a constraint, so it is read from one place only.
+    risk_class: financial
+    basis: DDL comment states no price check exists and cites item EST-26 in ja_JP priced below cost.
+    plain_text: >
+      Nothing stops an item from being priced below what the supplier charges; a periodic catalog check reports such cases.
+    technical_note: >
+      No CHECK on ITEM_DETAILS. Detection is by batch catalog check (db/batch/catalog_check.sql / ps_catalog_check.sh).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 230
+        line_end: 231
+        excerpt: |
+          -- Business checks the schema cannot express as keys. No price check on ITEM_DETAILS:
+          -- the shipped sample data has an item priced below cost (EST-26, ja_JP), see batch/ps_catalog_check.sh.
+    stack_metadata:
+      db.object: ITEM_DETAILS
+  - record_key: ACCOUNTS-ENT-0001
+    kind: entity
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL store a customer as a unique user name linked one-to-one to a sign-on credential, an account (status, contact information, payment card) and a profile (preferred language, optional favorite category, my-list preference, banner preference).
+    confidence: high
+    confidence_basis: >
+      Keys, foreign keys and NOT NULLs consistent in both DDL files and the DDL comments naming the source CMP beans.
+    risk_class: regulated
+    basis: CUSTOMER.user_id references SIGNON_USER.username; account_id and profile_id are mandatory FKs.
+    plain_text: >
+      A registered shopper has a unique user name, a password, an account with status, contact details and a payment card, and personal storefront preferences.
+    technical_note: >
+      Tables SIGNON_USER, CUSTOMER, ACCOUNT, PROFILE, CONTACT_INFO, ADDRESS, CREDIT_CARD, derived from CMP beans (no shipped DDL; DDL reconstructed from ejb-jar cmp-fields).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 114
+        line_end: 142
+        excerpt: |
+          CREATE TABLE account (
+            account_id varchar2(40) not null,
+            status varchar2(20) not null,
+            contact_id varchar2(40) not null,
+            card_id varchar2(40) not null,
+            constraint pk_account primary key (account_id),
+            constraint fk_account_1 foreign key (contact_id) references contact_info (contact_id),
+            constraint fk_account_2 foreign key (card_id) references credit_card (card_id));
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 135
+        line_end: 142
+        excerpt: |
+          CREATE TABLE customer (
+            user_id varchar2(50) not null,
+            account_id varchar2(40) not null,
+            profile_id varchar2(40) not null,
+            constraint pk_customer primary key (user_id),
+            constraint fk_customer_1 foreign key (user_id) references signon_user (username),
+            constraint fk_customer_2 foreign key (account_id) references account (account_id),
+            constraint fk_customer_3 foreign key (profile_id) references profile (profile_id));
+    stack_metadata:
+      db.object: CUSTOMER, ACCOUNT, PROFILE, SIGNON_USER
+  - record_key: ACCOUNTS-BR-0001
+    kind: business-rule
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL allow only one sign-on record per user name (user name is the unique key, max 50 characters, password max 50 characters, both mandatory).
+    confidence: high
+    confidence_basis: >
+      Primary key in both DDL files; the same duplicate-detection capability is described in the capability summary.
+    risk_class: regulated
+    basis: pk_signon_user on username.
+    plain_text: >
+      A user name can be registered only once.
+    technical_note: >
+      Duplicate detection is ultimately backed by pk_signon_user. UserEJB (signon).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 74
+        line_end: 77
+        excerpt: |
+          CREATE TABLE signon_user (
+            username varchar2(50) not null,
+            password varchar2(50) not null,
+            constraint pk_signon_user primary key (username));
+    stack_metadata:
+      db.object: SIGNON_USER
+  - record_key: ACCOUNTS-BR-0002
+    kind: business-rule
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL store the sign-on password as plain text and the payment card number in clear text.
+    confidence: medium
+    confidence_basis: >
+      Stated in DDL comments for both columns; the DDL is itself reconstructed, so actual storage code was not read in this pass.
+    risk_class: regulated
+    basis: DDL comments "PASSWORD is plain text" and "CARDNUMBER is stored in clear".
+    plain_text: >
+      Passwords and card numbers are kept unprotected in the database.
+    technical_note: >
+      SIGNON_USER.password varchar(50); CREDIT_CARD.card_number varchar(40). No hashing or encryption column.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 72
+        line_end: 72
+        excerpt: |
+          -- SIGNON_USER: Sign-on credentials. One row per user name. PASSWORD is plain text.
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 103
+        line_end: 103
+        excerpt: |
+          -- CREDIT_CARD: Payment card. CARDNUMBER is stored in clear. EXPIRYDATE is text such as 04/04.
+    stack_metadata:
+      db.object: SIGNON_USER, CREDIT_CARD
+  - record_key: ACCOUNTS-ENT-0002
+    kind: entity
+    capability_key: customer-accounts
+    requirement: >
+      The system SHALL record contact information (family name, given name, telephone, e-mail, address) with all of those fields mandatory, and an address with street line 1, city, state, zip code and country mandatory and street line 2 optional.
+    confidence: high
+    confidence_basis: >
+      NOT NULL constraints in both DDL variants.
+    risk_class: regulated
+    basis: NOT NULL columns on CONTACT_INFO and ADDRESS.
+    plain_text: >
+      Every contact needs a name, phone, e-mail and a postal address (second street line optional).
+    technical_note: >
+      CONTACT_INFO and ADDRESS are shared by accounts, purchase orders and supplier orders. Card expiry is free text (varchar 10, e.g. 04/04), not a date type.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 81
+        line_end: 101
+        excerpt: |
+          CREATE TABLE address (
+            address_id varchar2(40) not null,
+            street_name1 varchar2(80) not null,
+            street_name2 varchar2(80),
+            city varchar2(80) not null,
+            state varchar2(40) not null,
+            zip_code varchar2(20) not null,
+            country varchar2(40) not null,
+            constraint pk_address primary key (address_id));
+          
+          -- CONTACT_INFO: Name, e-mail, telephone and address of a person.
+          -- Source: CMP bean ContactInfoEJB (contactinfo)
+          CREATE TABLE contact_info (
+            contact_id varchar2(40) not null,
+            family_name varchar2(80) not null,
+            given_name varchar2(80) not null,
+            telephone varchar2(40) not null,
+            email varchar2(120) not null,
+            address_id varchar2(40) not null,
+            constraint pk_contact_info primary key (contact_id),
+            constraint fk_contact_info_1 foreign key (address_id) references address (address_id));
+    stack_metadata:
+      db.object: ADDRESS, CONTACT_INFO
+  - record_key: CHECKOUT-ENT-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL persist a purchase order with a unique order id, user id, e-mail, creation time in epoch milliseconds, locale, total value (12,2), a contact and a payment card, plus order lines keyed by (order id, line number) each carrying category, product, item, quantity, unit price and quantity shipped.
+    confidence: high
+    confidence_basis: >
+      Keys, FKs and NOT NULLs in both DDL files plus DDL comments citing CMP beans.
+    risk_class: financial
+    basis: purchase_order and po_line_item definitions.
+    plain_text: >
+      Every order records who ordered, when, in which locale, the total, where it goes and how it is paid, and one line per item with quantity and price.
+    technical_note: >
+      PURCHASE_ORDER, PO_LINE_ITEM (PurchaseOrderEJB / LineItemEJB). PO_DATE is number(19) epoch ms. po_user_id and po_email_id have no FK to customer. po_line_item item/product/category ids have no FK to catalog. Indexes ix_po_user, ix_po_date. Convenience view v_order_status joins PURCHASE_ORDER and ORDER_MANAGER.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 146
+        line_end: 171
+        excerpt: |
+          CREATE TABLE purchase_order (
+            po_id varchar2(40) not null,
+            po_user_id varchar2(50) not null,
+            po_email_id varchar2(120) not null,
+            po_date number(19) not null,
+            po_locale varchar2(10) not null,
+            po_value number(12,2) not null,
+            contact_id varchar2(40) not null,
+            card_id varchar2(40) not null,
+            constraint pk_purchase_order primary key (po_id),
+            constraint fk_purchase_order_1 foreign key (contact_id) references contact_info (contact_id),
+            constraint fk_purchase_order_2 foreign key (card_id) references credit_card (card_id));
+    stack_metadata:
+      db.object: PURCHASE_ORDER, PO_LINE_ITEM, v_order_status
+  - record_key: CHECKOUT-BR-0001
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL reject an order line whose quantity is not greater than zero.
+    confidence: high
+    confidence_basis: >
+      CHECK constraint in both DDL variants; checkout validation code was not examined in this pass.
+    risk_class: financial
+    basis: ck_po_line_qty.
+    plain_text: >
+      An order line must be for at least one unit.
+    technical_note: >
+      ALTER TABLE po_line_item ADD CONSTRAINT ck_po_line_qty CHECK (quantity > 0).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 232
+        line_end: 232
+        excerpt: |
+          ALTER TABLE po_line_item ADD CONSTRAINT ck_po_line_qty CHECK (quantity > 0);
+    stack_metadata:
+      db.object: PO_LINE_ITEM
+  - record_key: FULFILL-BR-0001
+    kind: business-rule
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL NOT allow the quantity shipped on a line to exceed the quantity ordered.
+    confidence: high
+    confidence_basis: >
+      CHECK constraint present in both DDL variants, and the column comment says quantity shipped is updated on supplier invoice.
+    risk_class: operational
+    basis: ck_po_line_shipped.
+    plain_text: >
+      You cannot ship more of an item than was ordered.
+    technical_note: >
+      CHECK (quantity_shipped <= quantity) on PO_LINE_ITEM only. SUPPLIER_LINE_ITEM has the same columns but NO equivalent check (see suspected defect).
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 233
+        line_end: 233
+        excerpt: |
+          ALTER TABLE po_line_item ADD CONSTRAINT ck_po_line_shipped CHECK (quantity_shipped <= quantity);
+    stack_metadata:
+      db.object: PO_LINE_ITEM
+  - record_key: APPROVAL-BR-0001
+    kind: business-rule
+    capability_key: order-approval
+    requirement: >
+      The system SHALL keep one process-manager record per order whose status is only ever PENDING, APPROVED, DENIED or COMPLETED.
+    confidence: high
+    confidence_basis: >
+      CHECK constraint in both DDL variants, a status index, and the table comment listing the same four values.
+    risk_class: operational
+    basis: ck_order_manager_status and table comment.
+    plain_text: >
+      An order is always in one of four states: pending, approved, denied or completed.
+    technical_note: >
+      ORDER_MANAGER (ManagerEJB, processmanager); index ix_order_manager_status. Order id has no FK to PURCHASE_ORDER (joined only in the view). Allowed transitions are not in the DDL.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 175
+        line_end: 178
+        excerpt: |
+          CREATE TABLE order_manager (
+            order_id varchar2(40) not null,
+            status varchar2(20) not null,
+            constraint pk_order_manager primary key (order_id));
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 234
+        line_end: 234
+        excerpt: |
+          ALTER TABLE order_manager ADD CONSTRAINT ck_order_manager_status CHECK (status in ('PENDING','APPROVED','DENIED','COMPLETED'));
+    stack_metadata:
+      db.object: ORDER_MANAGER
+  - record_key: FULFILL-ENT-0001
+    kind: entity
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL keep supplier orders (id, date, status PENDING or COMPLETED, contact) with supplier lines keyed by (order id, line number), and a supplier inventory with one quantity per item that is never negative.
+    confidence: high
+    confidence_basis: >
+      Keys and CHECK constraints in both DDL variants.
+    risk_class: operational
+    basis: supplier_order, supplier_line_item, inventory definitions and checks.
+    plain_text: >
+      The supplier tracks its own orders as pending or completed and its stock per item, which can never go below zero.
+    technical_note: >
+      SUPPLIER_ORDER, SUPPLIER_LINE_ITEM, INVENTORY (SupplierOrderEJB, InventoryEJB). ck_supplier_order_status, ck_inventory_qty. INVENTORY.item_id has no FK to ITEM.
+    interface: true
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 235
+        line_end: 236
+        excerpt: |
+          ALTER TABLE supplier_order ADD CONSTRAINT ck_supplier_order_status CHECK (po_status in ('PENDING','COMPLETED'));
+          ALTER TABLE inventory ADD CONSTRAINT ck_inventory_qty CHECK (quantity >= 0);
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 182
+        line_end: 188
+        excerpt: |
+          CREATE TABLE supplier_order (
+            po_id varchar2(40) not null,
+            po_date number(19) not null,
+            po_status varchar2(20) not null,
+            contact_id varchar2(40) not null,
+            constraint pk_supplier_order primary key (po_id),
+            constraint fk_supplier_order_1 foreign key (contact_id) references contact_info (contact_id));
+    stack_metadata:
+      db.object: SUPPLIER_ORDER, SUPPLIER_LINE_ITEM, INVENTORY
+  - record_key: FULFILL-ENT-0002
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL generate order and purchase-order identifiers from a named persistent counter (name unique, integer value).
+    confidence: medium
+    confidence_basis: >
+      One table definition and its comment; generator code not read in this pass.
+    risk_class: operational
+    basis: COUNTER table comment.
+    plain_text: >
+      Order numbers come from a stored running counter.
+    technical_note: >
+      COUNTER table used by UniqueIdGeneratorEJB (CounterEJB, uidgen). Filed under checkout because no listed capability covers id generation.
+    interface: false
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 211
+        line_end: 216
+        excerpt: |
+          -- COUNTER: Named sequence used by UniqueIdGeneratorEJB for order and PO identifiers.
+          -- Source: CMP bean CounterEJB (uidgen)
+          CREATE TABLE counter (
+            name varchar2(40) not null,
+            counter integer not null,
+            constraint pk_counter primary key (name));
+    stack_metadata:
+      db.object: COUNTER
+  - record_key: BATCH-ENT-0001
+    kind: entity
+    capability_key: batch-operations
+    requirement: >
+      The system SHALL index purchase orders by user and date, and orders by status, to support the batch jobs, and SHALL expose a view giving one row per order with its user, date, value and OPC status.
+    confidence: medium
+    confidence_basis: >
+      Single DDL location (identical in both variants); the batch scripts that use these were not read in this pass.
+    risk_class: operational
+    basis: Indexes and v_order_status view.
+    plain_text: >
+      Operations can list every order with its current status, and order lookups by customer, date and status are optimised.
+    technical_note: >
+      ix_po_user, ix_po_date, ix_order_manager_status, view v_order_status (inner join, so orders without a manager row are invisible).
+    interface: true
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 218
+        line_end: 228
+        excerpt: |
+          -- Indexes on foreign keys and the columns the batch jobs filter by.
+          CREATE INDEX ix_product_catid ON product (catid);
+          CREATE INDEX ix_item_productid ON item (productid);
+          CREATE INDEX ix_po_user ON purchase_order (po_user_id);
+          CREATE INDEX ix_po_date ON purchase_order (po_date);
+          CREATE INDEX ix_order_manager_status ON order_manager (status);
+          
+          -- Order status view used by operations: one row per order with its OPC status and value.
+          CREATE VIEW v_order_status AS
+            SELECT p.po_id, p.po_user_id, p.po_date, p.po_value, m.status
+            FROM purchase_order p JOIN order_manager m ON m.order_id = p.po_id;
+    stack_metadata:
+      db.object: v_order_status
+suspected_defects:
+  - capability_key: customer-accounts
+    record_keys: [ACCOUNTS-BR-0002]
+    severity: high
+    category: data-corruption
+    title: Passwords and card numbers stored unprotected
+    description: >
+      The schema stores passwords as plain text and card numbers in clear, per its own comments.
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 103
+        line_end: 103
+  - capability_key: supplier-fulfillment
+    record_keys: [FULFILL-ENT-0001, FULFILL-BR-0001]
+    severity: low
+    category: other
+    title: No shipped-quantity check on supplier lines
+    description: >
+      PO_LINE_ITEM has a check that quantity shipped does not exceed quantity; SUPPLIER_LINE_ITEM has the same columns and no such check.
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 192
+        line_end: 202
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 233
+        line_end: 233
+  - capability_key: catalog-browsing
+    record_keys: [CATALOG-BR-0001]
+    severity: medium
+    category: other
+    title: Items can be priced below cost
+    description: >
+      Sample data holds EST-26 (ja_JP) priced below unit cost and no constraint prevents it.
+    traces:
+      - path: legacy-source/db/schema/petstore_oracle.sql
+        line_start: 230
+        line_end: 231
+findings:
+  - kind: ambiguity
+    path: legacy-source/db/schema/petstore_oracle.sql
+    description: >
+      The DDL header says the CMP-bean tables are reconstructed (the original ships no DDL), so column names/sizes come from ejb-jar cmp-fields, not an authoritative script. Oracle and Cloudscape files differ only in types (varchar2/char). Confirm against the live database.
