@@ -51,7 +51,7 @@ test.describe("customer-accounts", () => {
     const before = await session(page);
     expect(before.locale).toBe("ja_JP");
     await page.getByRole("button", { name: /sign off/i }).click();
-    await expect(page.getByText(/you have signed off/i)).toBeVisible();
+    await expect(page.getByText(/you have signed off/i).first()).toBeVisible();
     const after = await session(page);
     expect(after.id).not.toBe(before.id);
     expect(after.attributes).toEqual(["locale"]);
@@ -136,12 +136,17 @@ test.describe("customer-accounts", () => {
     await page.getByLabel(/^telephone$/i).fill("555");
     await page.getByRole("button", { name: /save profile/i }).click();
     await expect(page.getByText(/profile saved/i)).toHaveCount(0);
-    // the refusal names the missing field: a message that mentions the postal code
-    // together with a refusal word (a bare field label does not match)
-    const word = "required|missing|blank|empty|enter|must|invalid|cannot|cannot be";
+    // the refusal names the missing field: the message says the postal code itself is
+    // required / missing / blank (a bare label or a hint does not match)
+    const refused = "required|missing|blank|empty|cannot be (blank|empty)|must be (entered|provided|filled)";
     await expect(
       page
-        .getByText(new RegExp(`postal code.*(${word})|(${word}).*postal code`, "i"))
+        .getByText(
+          new RegExp(
+            `postal code\\b[^.]*\\b(${refused})|\\b(${refused})\\b[^.]*postal code`,
+            "i",
+          ),
+        )
         .first(),
     ).toBeVisible();
   });
@@ -152,8 +157,9 @@ test.describe("customer-accounts", () => {
     await page.goto("/signin");
     await signOn(page, userName, true);
     await expect.poll(async () => (await session(page)).signedOn).toBe(true);
-    const names = (await page.context().cookies()).map((c) => c.name);
-    expect(names).toContain("bp_signon");
+    const cookie = (await page.context().cookies()).find((c) => c.name === "bp_signon");
+    expect(cookie).toBeDefined();
+    expect(decodeURIComponent(cookie!.value)).toContain(userName);
   });
 
   // case: SWHM3-C-0161@v1
