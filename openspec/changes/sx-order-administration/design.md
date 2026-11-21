@@ -1,0 +1,16 @@
+## Legacy implementation notes
+
+- Entry point: the `/AdminRequestProcessor` servlet, constrained in `web.xml` to role `administrator` with FORM login (`login.jsp`, `j_security_check`). Transport guarantee is NONE. `index.jsp` carries hidden `currentScreen` fields; `manageorders` builds a JNLP (main class PetStoreAdminClient, proxy HttpPostPetStoreProxy, server, port, session id); `logout` forwards to `logout.jsp`. After the logout forward there is no return, so the manageorders check is also evaluated (harmless). Null `currentScreen` returns an empty response.
+- Data endpoint: `/ApplRequestProcessor` is NOT in the security constraint; it only checks `getSession(false) != null`, not role. Session timeout is a bare literal of 54 minutes in `web.xml`; no rationale found.
+- Dispatch is `processRequest` on XML `Type`: GETORDERS, UPDATESTATUS, REVENUE, ORDERS. Errors travel in a 200 XML body as an Error element and include exception messages.
+- Orders: `ApplRequestProcessor.getOrders` -> `AdminRequestBD.getOrdersByStatus` -> `OPCAdminFacadeEJB.getOrdersByStatus` -> process manager `findOrdersByStatus` (EJB-QL `WHERE a.status = ?1`, no paging), then loads each PurchaseOrder. Date is M/D/YYYY without padding via deprecated Date getters, not locale aware. Any finder failure aborts the list with OPCAdminFacadeException.
+- Charts: `getChartInfo` iterates purchase orders from `findPOBetweenDates`; "REVENUE" gives quantity x unit price, any other value gives quantity. Revenue accumulates in single-precision Float. The element `TotalSales` holds quantity for ORDERS requests. Client dates are split on "/" into the deprecated Date constructor; malformed dates are unhandled. Client defaults 1/1/2001 to 12/31/2002.
+- Client (DataSource): loads all four statuses on open/refresh; pending orders in an editable pane, others read-only; refresh warns when approval-table rows were changed but not committed (RefreshWarningDialog).
+
+## Legacy defects for the Business Owner
+
+- Data endpoint not covered by the administrator constraint (high).
+- Login page pre-fills jps_admin / admin; no TLS required (high).
+- Failed order/chart queries return null (empty body) (medium).
+- Revenue summed in Float (low).
+- The passes disagree on whether order-listing facade is `interface: true`; treated as the screen record ORD-APPR-REQ-0010 per the input.
