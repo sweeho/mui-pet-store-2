@@ -1,0 +1,163 @@
+records:
+  - record_key: CHECKOUT-REQ-0001
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL resolve named platform resources (EJB local and remote homes, JMS queues, topics and their connection factories, data sources) through a single lookup component rather than by each caller.
+    confidence: medium
+    confidence_basis: >
+      One clear implementation per tier (web and ejb) with matching method sets; no tests or config seen, and no capability in the closed list fits infrastructure lookup.
+    risk_class: operational
+    basis: >
+      Shared lookup utility used by the order flow; filed under the closest capability because no listed key covers cross-cutting infrastructure.
+    plain_text: >
+      The application finds its shared services (databases, message queues, business components) by name through one common helper.
+    technical_note: >
+      Two ServiceLocator classes (web and ejb packages) wrap javax.naming.InitialContext.lookup.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 106
+        line_end: 121
+        excerpt: |
+          public EJBLocalHome getLocalHome(String jndiHomeName) throws ServiceLocatorException {
+                EJBLocalHome home = null;
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/ejb/ServiceLocator.java
+        line_start: 83
+        line_end: 93
+        excerpt: |
+          public EJBLocalHome getLocalHome(String jndiHomeName) throws ServiceLocatorException {
+    stack_metadata:
+      framework: J2EE JNDI
+  - record_key: CHECKOUT-REQ-0002
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The web-tier locator SHALL be a singleton that caches looked-up EJB homes, JMS factories, queues, topics and data sources by name for reuse, while URL, boolean and string environment entries are looked up each time.
+    confidence: medium
+    confidence_basis: >
+      Clearly visible in one class; the ejb-tier variant has no cache, which is a difference rather than corroboration.
+    risk_class: operational
+    basis: >
+      Cache is a synchronized HashMap keyed by JNDI name; env-entry getters bypass it.
+    plain_text: >
+      In the web application, once a shared service has been found it is remembered and reused; simple settings are looked up fresh each time.
+    technical_note: >
+      web/ServiceLocator uses Collections.synchronizedMap(new HashMap()); containsKey/get/put is not atomic, so concurrent first lookups may both hit JNDI (benign). Cache never invalidated, so a rebound resource is not seen.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 69
+        line_end: 96
+        excerpt: |
+          private InitialContext ic;
+              private Map cache; //used to hold references to EJBHomes/JMS Resources for re-use
+
+              private static ServiceLocator me;
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 261
+        line_end: 272
+        excerpt: |
+          public URL getUrl(String envName) throws ServiceLocatorException {
+                URL url = null;
+                try {
+                  url = (URL)ic.lookup(envName);
+    stack_metadata:
+      framework: J2EE JNDI
+  - record_key: CHECKOUT-REQ-0003
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The ejb-tier locator SHALL be instantiated per caller and perform a fresh lookup on every call, without caching.
+    confidence: medium
+    confidence_basis: >
+      One clear place; public constructor and no cache field. A static field 'me' is declared but unused.
+    risk_class: operational
+    basis: Public constructor, no cache map.
+    plain_text: >
+      In the business tier, each request for a shared service looks it up again.
+    technical_note: >
+      ejb/ServiceLocator has a public constructor and an unused static 'me'.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/ejb/ServiceLocator.java
+        line_start: 62
+        line_end: 74
+        excerpt: |
+          private InitialContext ic;
+
+              private static ServiceLocator me;
+
+              public ServiceLocator() throws ServiceLocatorException  {
+    stack_metadata:
+      framework: J2EE JNDI
+  - record_key: CHECKOUT-BR-0001
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN any lookup fails for any reason WHEN a resource is requested THEN the system SHALL raise a single ServiceLocatorException wrapping the cause.
+    confidence: high
+    confidence_basis: >
+      Same wrapping pattern repeated in every method of both classes.
+    risk_class: operational
+    basis: Every getter catches NamingException and Exception and rethrows wrapped.
+    plain_text: >
+      Any failure to find a shared service is reported to the caller as one kind of error.
+    technical_note: >
+      Remote home lookups are narrowed with PortableRemoteObject.narrow. getBoolean unboxes the result; a null would NPE inside no try, but ClassCast/NamingException are wrapped.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 129
+        line_end: 147
+        excerpt: |
+          public EJBHome getRemoteHome(String jndiHomeName, Class className) throws ServiceLocatorException {
+                EJBHome home = null;
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/ejb/ServiceLocator.java
+        line_start: 217
+        line_end: 227
+        excerpt: |
+          public boolean getBoolean(String envName) throws ServiceLocatorException {
+    stack_metadata:
+      framework: J2EE JNDI
+  - record_key: CHECKOUT-REQ-0004
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN the web locator fails to initialise at class load WHEN the failure occurs THEN the system SHALL print it to standard error and leave getInstance returning null.
+    confidence: medium
+    confidence_basis: One clear place in the static initialiser.
+    risk_class: operational
+    basis: Static block catches ServiceLocatorException and only prints.
+    plain_text: >
+      If the helper cannot start, the problem is only written to the error log and later use fails.
+    technical_note: Callers get a NullPointerException on getInstance().x.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 74
+        line_end: 81
+        excerpt: |
+          static {
+                try {
+                  me = new ServiceLocator();
+                } catch(ServiceLocatorException se) {
+                  System.err.println(se);
+                  se.printStackTrace(System.err);
+                }
+              }
+    stack_metadata:
+      framework: J2EE JNDI
+findings: []
+suspected_defects:
+  - capability_key: checkout-order-placement
+    record_keys: [CHECKOUT-REQ-0004]
+    severity: low
+    category: error-swallowed
+    title: Locator initialisation failure is swallowed
+    description: >
+      The static initialiser only prints the error, leaving a null singleton that fails later with a NullPointerException.
+    traces:
+      - path: legacy-source/app/src/components/servicelocator/src/com/sun/j2ee/blueprints/servicelocator/web/ServiceLocator.java
+        line_start: 74
+        line_end: 81
