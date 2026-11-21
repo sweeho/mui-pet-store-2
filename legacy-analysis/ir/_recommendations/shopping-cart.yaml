@@ -1,0 +1,66 @@
+recommendations:
+  - record_key: SHOPPING-CART-REQ-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      The bean field, constructor and the stateful declaration in ejb-jar.xml agree, and both passes state it.
+  - record_key: SHOPPING-CART-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes read the same put calls; the quantity is not validated at add time, which the Business Owner should confirm as a legacy defect.
+  - record_key: SHOP-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      The code and the user guide agree on the default quantity of 1.
+  - record_key: SHOP-BR-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      cart.put overwrites. The web tier may check for existence first and that code was not seen, so confirm what production does.
+  - record_key: SHOPPING-CART-REQ-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      deleteItem is a plain remove, silent for absent items; both passes agree.
+  - record_key: SHOPPING-CART-REQ-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      The bean code removes at zero or less. Combined with the non-numeric rule, text input removes the line.
+  - record_key: CART-REQ-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      The action dispatch is clear in the web tier; the pass A and B wordings differ slightly but describe the same three operations.
+  - record_key: CART-REQ-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      The NumberFormatException catch yields 0, and the bean removes at zero. Confirm that silently dropping the line is intended.
+  - record_key: SHOPPING-CART-REQ-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      getCount returns the map size, so it counts distinct items; empty is a separate bean method.
+  - record_key: SHOPPING-CART-REQ-0006
+    recommendation: accept
+    confidence: medium
+    reason: >
+      The code reads catalog data per line. The locale part is recorded under localization, not here.
+  - record_key: SHOP-BR-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      The catch block omits the line and prints to stdout only. The log requirement is a reasonable reading; the item stays in the map.
+  - record_key: SHOPPING-CART-REQ-0007
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Two parallel double-arithmetic implementations agree. Rounding is absent, so the Business Owner should decide the target rounding. Checkout accumulates in float, a possible conflict.
+  - record_key: SHOP-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      CartItem fields and the line total derivation agree across the bean and the model.
