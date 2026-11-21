@@ -1,0 +1,169 @@
+records:
+  - record_key: CHECKOUT-ENTITY-0001
+    kind: entity
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL hold a contact record consisting of given name, family name, telephone and e-mail, with no validation or mandatory-field rule applied at this level.
+    confidence: high
+    confidence_basis: >
+      Declared as persistent fields in the deployment descriptor and as accessors in the bean class (two places). No validation seen; callers not in this module.
+    risk_class: regulated
+    basis: Persistent fields telephone, familyName, email, givenName are declared; accessors are abstract and carry no checks.
+    plain_text: A customer contact consists of a first name, last name, phone number and e-mail address.
+    technical_note: Container-managed entity ContactInfoEJB (local interface only), CMP 2.x fields. Personal data.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/ejb-jar.xml
+        line_start: 57
+        line_end: 72
+        excerpt: |
+          <cmp-field>
+            <description>no description</description>
+            <field-name>telephone</field-name>
+          </cmp-field>
+          <cmp-field>
+            <description>no description</description>
+            <field-name>familyName</field-name>
+          </cmp-field>
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 59
+        line_end: 69
+        excerpt: |
+          public abstract String getFamilyName();
+          public abstract void setFamilyName(String familyName);
+          public abstract String getGivenName();
+    stack_metadata:
+      framework: EJB 2.0 CMP entity
+      ejb.bean: ContactInfoEJB
+  - record_key: CHECKOUT-BR-0002
+    kind: business-rule
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL associate each contact record with exactly one address, and SHALL delete that address when the contact record is deleted.
+    confidence: high
+    confidence_basis: Relationship with multiplicity One and cascade-delete in the descriptor, plus the address being created in post-create code.
+    risk_class: operational
+    basis: One-to-one relationship; cascade-delete on the address side. Every create path assigns an address.
+    plain_text: Every contact has one address, and removing the contact also removes its address.
+    technical_note: CMR field address between ContactInfoEJB and AddressEJB; cascade-delete in ejb-jar.xml. ejbRemove itself is empty.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/ejb-jar.xml
+        line_start: 127
+        line_end: 147
+        excerpt: |
+          <multiplicity>One</multiplicity>
+          <cmr-field>
+            <cmr-field-name>address</cmr-field-name>
+          </cmr-field>
+          ...
+          <cascade-delete />
+    stack_metadata:
+      framework: EJB 2.0 CMP entity
+      ejb.bean: ContactInfoEJB
+  - record_key: CHECKOUT-REQ-0003
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN a contact is created from a contact-data object, WHEN creation completes, THEN the system SHALL create a new address copied from the supplied address data; GIVEN no address is supplied (default create), THEN the system SHALL create an empty address; GIVEN an existing address is supplied, THEN the system SHALL link that address rather than create a new one.
+    confidence: medium
+    confidence_basis: Three create variants read directly in one class; which are called by checkout is outside this module.
+    risk_class: operational
+    basis: Post-create variants create or link the address.
+    plain_text: When a contact is saved with its address details, a new address is stored with it; a contact can also be created blank or linked to an address that already exists.
+    technical_note: ejbPostCreate() looks up ejb/Address via ServiceLocator and calls adh.create(); ejbPostCreate(ContactInfo) calls adh.create(contactInfo.getAddress()); ejbPostCreate(fields..., AddressLocal) sets the passed address.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 109
+        line_end: 127
+        excerpt: |
+          public Object ejbCreate(ContactInfo contactInfo) throws CreateException {
+            setGivenName(contactInfo.getGivenName());
+          ...
+            AddressLocal address = adh.create(contactInfo.getAddress());
+            setAddress(address);
+    stack_metadata:
+      framework: EJB 2.0 CMP entity
+      ejb.bean: ContactInfoEJB
+      ejb.transaction: container-managed (no trans-attribute seen in this excerpt)
+  - record_key: CHECKOUT-REQ-0004
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      GIVEN the address service cannot be located during contact creation, WHEN the contact is created, THEN the system SHALL fail the creation with an error stating the address lookup failed.
+    confidence: medium
+    confidence_basis: Explicit catch and CreateException in two places in one class.
+    risk_class: operational
+    basis: ServiceLocatorException is translated to CreateException.
+    plain_text: If the address cannot be stored when a contact is created, the contact is not created and an error is reported.
+    technical_note: Message "ContactInfoEJB error: ServiceLocator exception looking up address". Original exception is not chained.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 88
+        line_end: 90
+        excerpt: |
+          } catch (ServiceLocatorException ne) {
+            throw new CreateException("ContactInfoEJB error: ServiceLocator exception looking up address");
+          }
+    stack_metadata:
+      framework: EJB 2.0 CMP entity
+  - record_key: CHECKOUT-REQ-0005
+    kind: integration
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL represent contact data in exchanged documents as ContactInfo with FamilyName, GivenName, Address, Email and Phone, in that order.
+    confidence: medium
+    confidence_basis: One DTD defines it; no consumer seen in this module.
+    risk_class: operational
+    basis: DTD element sequence, embedding the Address DTD.
+    plain_text: When contact details are exchanged as a document, they follow a fixed layout of last name, first name, address, e-mail and phone.
+    technical_note: ContactInfo.dtd; the Address DTD is included by parameter entity. Note the DTD uses Phone while the bean field is telephone.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/rsrc/schemas/ContactInfo.dtd
+        line_start: 38
+        line_end: 46
+        excerpt: |
+          <!ELEMENT ContactInfo (FamilyName, GivenName, Address, Email, Phone)>
+    stack_metadata:
+      framework: DTD
+  - record_key: CHECKOUT-REQ-0006
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL allow any caller to read and modify contact fields without role restriction.
+    confidence: medium
+    confidence_basis: Method permissions are marked unchecked in the descriptor; only the first setter was read in detail.
+    risk_class: regulated
+    basis: Assembly descriptor method-permission with unchecked; security identity uses caller identity.
+    plain_text: Contact details are not protected by any role check at this level; protection depends on the calling application.
+    technical_note: ejb-jar.xml assembly-descriptor method-permission unchecked on the local interface.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/ejb-jar.xml
+        line_start: 151
+        line_end: 160
+        excerpt: |
+          <method-permission>
+            <unchecked />
+            <method>
+              <ejb-name>ContactInfoEJB</ejb-name>
+              <method-intf>Local</method-intf>
+              <method-name>setFamilyName</method-name>
+    stack_metadata:
+      framework: EJB 2.0 CMP entity
+findings: []
+suspected_defects:
+  - capability_key: checkout-order-placement
+    record_keys: [CHECKOUT-REQ-0003]
+    severity: low
+    category: other
+    title: Fields-plus-address create variant never creates an address and accepts a null address
+    description: >
+      The create variant taking separate fields and an address links the supplied address without a null check; the default variant creates an empty address while this one does not.
+    traces:
+      - path: legacy-source/app/src/components/contactinfo/src/com/sun/j2ee/blueprints/contactinfo/ejb/ContactInfoEJB.java
+        line_start: 103
+        line_end: 107
