@@ -1,0 +1,325 @@
+schemaVersion: 1
+program:
+  key: petstore-legacy
+  title: Java Pet Store 1.3.2 legacy extraction
+  source: extraction
+  generator: vortex-spec-extraction
+  sourceRef: vortex/legacy-spec/sx-0001
+capabilities:
+  - slug: localization
+    title: "Localization"
+    order: 1
+    dependsOn: []
+    priority: 0
+    change:
+      dir: openspec/changes/sx-localization
+      specCapabilities:
+        - localization
+    canvas:
+      problem: "The storefront serves shoppers in several languages; locale choice, parsing, per-locale catalog text, request encoding and number/currency formatting are spread over several legacy modules."
+      solution: "Build one locale capability: supported locales and default, locale code parsing, session locale selection and change, fallback to the default, per-locale text and prices, request encoding and locale-aware formatting."
+      userStories:
+        - "As a shopper, I want to choose my language, so that the store shows text and prices in it."
+        - "As an operator, I want unsupported locales to fall back to the default, so that no screen is left blank."
+      acceptanceCriteria:
+        - "Supported locales and default — Default session locale: a new session without a chosen locale uses the default locale"
+        - "Locale code parsing — Valid and malformed codes: a locale string is split into language and country as specified"
+        - "Change session locale — Shopper picks a locale: later screens render in the chosen locale"
+        - "Screen locale selection and fallback — No screen for the locale: the default-locale screen is shown"
+        - "Locale formatting of currency and numbers — Price shown: amounts use the locale format with the specified fraction digits"
+      outOfScope:
+        - "E-mail localization (owned by customer-notifications)"
+        - "Adding locales beyond those the legacy store configures"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+      screens:
+        - "Locale selection form: a form offering US English (en_US), German (de_DE), Japanese (ja_JP) and Simplified Chinese (zh_CN) that submits the selected code as \"locale\" (LOC-REQ-0005)"
+    evidence:
+      irRefs: [LOCAL-REQ-0001, LOCALIZATION-REQ-0005, CATBR-REQ-0010, LOC-BR-0004, LOC-REQ-0002, LOC-REQ-0005, LOC-REQ-0006, LOC-REQ-0008, LOC-REQ-0009, LOC-REQ-0011, LOCALIZATION-BR-0001, LOCALIZATION-ENT-0001, LOCALIZATION-REQ-0001, LOCALIZATION-RULE-0002, LOCALIZATION-RULE-0004, NOTIF-BR-0006, SHOP-REQ-0006, LOC-REQ-0001, LOCALIZATION-RULE-0003]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: catalog-browsing
+    title: "Catalog browsing and search"
+    order: 2
+    dependsOn: [localization]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-catalog-browsing
+      specCapabilities:
+        - catalog-browsing
+    canvas:
+      problem: "Shoppers need to find pets by category, product and item, in their language, with paging and keyword search."
+      solution: "Build the read-only catalog: category, product and item lists and detail in the shopper locale, name ordering, offset paging with next/previous, keyword item search and the configurable page size."
+      userStories:
+        - "As a shopper, I want to browse categories, products and items, so that I can find a pet to buy."
+        - "As a shopper, I want to search by keyword, so that I can jump straight to matching items."
+      acceptanceCriteria:
+        - "Locale-specific browsing — Category viewed in a locale: names, images and descriptions come from that locale"
+        - "Offset paging with next and previous — Long product list: pages of the configured size with next and previous"
+        - "Keyword item search — Keyword given: items matching the keyword are listed"
+        - "Empty search query — Blank keyword: the specified empty result is returned"
+        - "Unknown identifier yields no result — Unknown category, product or item id: no result rather than a failure"
+      outOfScope:
+        - "Price-versus-cost validation (the legacy catalog has none)"
+        - "Catalog maintenance screens"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [CATALOG-REQ-0001, CATB-REQ-0001, CATBRW-REQ-0001, CAT-REQ-0003, CATALOG-BR-0001, catalog-browsing-REQ-0006, BATCH-RULE-0010, CAT-BR-0007, CAT-ENT-0001, CAT-WF-0006, CATALOG-ENT-0001, CATBR-BR-0002, CATBR-BR-0009, CATBR-REQ-0011, LOC-BR-0010, catalog-browsing-REQ-0001, catalog-browsing-REQ-0002, catalog-browsing-REQ-0003, catalog-browsing-REQ-0004, catalog-browsing-REQ-0005, catalog-browsing-REQ-0007]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: customer-accounts
+    title: "Customer accounts and sign-on"
+    order: 3
+    dependsOn: [localization]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-customer-accounts
+      specCapabilities:
+        - customer-accounts
+    canvas:
+      problem: "Customers need accounts, sign-on and profile management so orders can be tied to a person and preferences kept."
+      solution: "Build account creation with duplicate detection, sign-on and sign-off, session and inactivity timeouts, return to the requested page, the remember-user-name cookie and profile editing. Legacy plain-text password and card storage are flagged defects, not behaviour to copy."
+      userStories:
+        - "As a visitor, I want to create an account, so that I can place orders."
+        - "As a customer, I want to sign on and off, so that my account stays protected."
+        - "As a customer, I want to edit my profile, so that my preferences and contact details stay current."
+      acceptanceCriteria:
+        - "Authentication by exact password match — Wrong password: sign-on is refused and the error screen is shown"
+        - "Unique sign-on record per user name — Existing user name: account creation is rejected as duplicate"
+        - "Sign-on required for customer pages — Anonymous request to a protected page: shopper is sent to sign-on, then returned to the page"
+        - "Signed-on session ends after 15 minutes — Inactivity: the customer is signed off"
+        - "Profile mandatory fields — Missing field: profile save is rejected"
+      outOfScope:
+        - "Password hashing and card tokenisation are rebuild decisions, not extracted behaviour"
+        - "Customer listing for administrators beyond the recovered record"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [CUSTOMER-ACCOUNTS-REQUIREMENT-0008, CUSTOMER-ACCOUNTS-RULE-0007, ACCT-REQ-0003, CUST-REQ-0006, CUST-RULE-0001, CUSTAC-REQ-0001, CUSTOMER-ACCOUNTS-ENTITY-0003, CUSTOMER-ACCOUNTS-RULE-0006, ACC-ENT-0001, ACC-ENT-0002, ACCOUNTS-BR-0001, ACCOUNTS-BR-0002, ACCOUNTS-ENT-0001, ACCOUNTS-ENT-0002, CUST-REQ-0001, CUST-REQ-0002, CUST-REQ-0003, CUST-REQ-0005, CUSTACC-ENT-0004, CUSTOMER-ACCOUNTS-ENT-0001, CUSTOMER-ACCOUNTS-ENTITY-0001, CUSTOMER-ACCOUNTS-REQ-0001, CUSTOMER-ACCOUNTS-REQ-0004, ACC-ENT-0004, CUST-REQ-0004, CUST-REQ-0007, CUSTACC-ENT-0003, CUSTOMER-ACCOUNTS-BUSINESS-RULE-0002, CUSTOMER-ACCOUNTS-BUSINESS-RULE-0004, CUSTOMER-ACCOUNTS-BUSINESS-RULE-0006, CUSTOMER-ACCOUNTS-BUSINESS-RULE-0007, CUSTOMER-ACCOUNTS-ENTITY-0002, CUSTOMER-ACCOUNTS-ENTITY-0005, CUSTOMER-ACCOUNTS-REQ-0002, CUSTOMER-ACCOUNTS-REQ-0003, CUSTOMER-ACCOUNTS-REQ-0005]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: shopping-cart
+    title: "Shopping cart"
+    order: 4
+    dependsOn: [catalog-browsing]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-shopping-cart
+      specCapabilities:
+        - shopping-cart
+    canvas:
+      problem: "Shoppers collect items before purchase; the cart must keep quantities and subtotal correct per session."
+      solution: "Build a per-shopper session cart with add, remove, update, count, empty, line presentation and subtotal."
+      userStories:
+        - "As a shopper, I want to add and remove items, so that I control what I buy."
+        - "As a shopper, I want to update quantities, so that the subtotal reflects my intent."
+      acceptanceCriteria:
+        - "Add item with default quantity — No quantity given: the item is added with the default quantity"
+        - "Re-adding an item replaces its quantity — Item added twice: the quantity is replaced, not summed"
+        - "Update quantity — Zero quantity: the line is removed"
+        - "Non-numeric quantity counts as zero — Text entered: the line is removed"
+        - "Cart subtotal — Two lines: subtotal is the sum of quantity times unit cost"
+      outOfScope:
+        - "Persisting carts beyond the session"
+        - "Checkout (checkout-order-placement)"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [SHOPPING-CART-REQ-0001, CART-REQ-0001, SHOP-REQ-0002, SHOP-BR-0001, SHOPPING-CART-REQ-0003, SHOPPING-CART-REQ-0004, CART-REQ-0002, SHOPPING-CART-REQ-0005, SHOPPING-CART-REQ-0006, SHOP-BR-0003, SHOPPING-CART-REQ-0007, SHOP-ENT-0001]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: checkout-order-placement
+    title: "Checkout and order placement"
+    order: 5
+    dependsOn: [shopping-cart, customer-accounts]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-checkout-order-placement
+      specCapabilities:
+        - checkout-order-placement
+    canvas:
+      problem: "A signed-on shopper must turn a cart into a purchase order with valid address and card data, and hand it to order processing."
+      solution: "Build checkout: shipping and billing validation, purchase order with contact, card and lines, unique identifiers from named counters, and hand-off to the Order Processing Center."
+      userStories:
+        - "As a customer, I want to enter shipping and card details, so that I can pay for my cart."
+        - "As the business, I want each order to get a unique id and reach order processing, so that it is fulfilled."
+      acceptanceCriteria:
+        - "Order line quantity positive — Quantity zero or less: the order line is rejected"
+        - "Credit card mandatory fields — Missing card field: the card is rejected"
+        - "Address and contact mandatory fields — Missing address field: the order is rejected"
+        - "Unique identifier per prefix — Two orders placed: identifiers are distinct, generated atomically"
+        - "Placed order sent to OPC — Order placed: it is queued to order processing and stored as PENDING"
+      outOfScope:
+        - "Approval decisions (order-approval)"
+        - "Payment authorisation (the legacy store performs none)"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [CHECKOUT-ORDER-PLACEMENT-ENTITY-0001, CHK-REQ-0006, CHK-BR-0005, CHK-BR-0010, CHECKOUT-BR-0004, CHK-ENT-0010, CHK-REQ-0001, CHECKOUT-BR-0001, CHECKOUT-BR-0003, CHECKOUT-ENT-0001, CHECKOUT-INT-0004, CHECKOUT-REQ-0002, CHECKOUT-REQ-0006, CHK-BR-0002, CHK-BRL-0005, CHK-ENT-0001, CHK-ENT-0007, CHK-REQ-0005, CHKOUT-ENT-0003, CHECKOUT-ORDER-PLACEMENT-BR-0002, CHECKOUT-ORDER-PLACEMENT-ENT-0003, CHECKOUT-ORDER-PLACEMENT-REQ-0001, CHECKOUT-ORDER-PLACEMENT-REQ-0004, CHECKOUT-REQ-0001, CHECKOUT-REQ-0003, CHECKOUT-REQ-0004, CHECKOUT-REQ-0005, CHK-BR-0001, CHK-BR-0003, CHK-BR-0004, CHK-INT-0001, CHK-REQ-0002, CHK-REQ-0003, CHKORD-REQ-0001, FULFILL-ENT-0002, ORD-APPR-REQ-0003]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: order-approval
+    title: "Order approval"
+    order: 6
+    dependsOn: [checkout-order-placement]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-order-approval
+      specCapabilities:
+        - order-approval
+    canvas:
+      problem: "Received orders must be approved automatically within locale limits or held for an administrator, with a clear status lifecycle."
+      solution: "Build the order status lifecycle, locale-based auto-approval, administrator decisions on pending orders, notice batches and the OrderApproval exchange document."
+      userStories:
+        - "As the business, I want small orders approved automatically, so that fulfilment is fast."
+        - "As an administrator, I want to approve or deny pending orders, so that large orders are reviewed."
+      acceptanceCriteria:
+        - "Automatic approval by locale limit — US order under 500 or Japan order under 50000: approved automatically"
+        - "No automatic limit for other locales — Other locale: order stays PENDING"
+        - "Decisions apply only to pending orders — Decision on a non-pending order: ignored"
+        - "Accepted decision updates status and queues notice — Approve or deny: status changes and a customer notice is queued"
+        - "Order status set and lifecycle — Status values are PENDING, APPROVED, DENIED, COMPLETED"
+      outOfScope:
+        - "Fulfilment (supplier-fulfillment)"
+        - "Resolving the disputed boundary at exactly 500 without a decision from the business"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [ORDAPP-RULE-0001, ORDAPP-WF-0001, ORDA-RULE-0007, ORDAPP-DOC-0001, ORD-APPR-REQ-0004, ORD-APPR-REQ-0005, ORDAPP-REQ-0001, ORDER-ADMIN-REQ-0005, ORDER-ADMIN-REQ-0006, ORDER-APPROVAL-BR-0002, APP-ENT-0008, APPROVAL-BR-0001, ORDAPP-REQ-0002, ORDAPP-RULE-0002, ORDER-APPROVAL-BUSINESS-RULE-0001, ORDER-APPROVAL-WF-0001, ORDAPP-ENT-0001, ORDAPP-INT-0001]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: supplier-fulfillment
+    title: "Supplier fulfillment and inventory"
+    order: 7
+    dependsOn: [order-approval]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-supplier-fulfillment
+      specCapabilities:
+        - supplier-fulfillment
+    canvas:
+      problem: "Approved orders must become supplier purchase orders that are shipped from stock and invoiced back."
+      solution: "Build supplier order creation, all-or-nothing line shipment from inventory, order completion, invoices, reprocessing of pending orders and the exchange documents."
+      userStories:
+        - "As the business, I want approved orders sent to the supplier, so that goods ship."
+        - "As the supplier, I want to ship lines from stock and invoice, so that orders complete."
+      acceptanceCriteria:
+        - "All-or-nothing line shipment — Insufficient stock for a line: the line is not shipped"
+        - "Order completion — All lines shipped: the order is COMPLETED"
+        - "Invoice receipt updates shipped quantities — Invoice received: shipped quantities are updated"
+        - "Shipped not above ordered — Shipped exceeding ordered: refused"
+        - "Supplier order status set — Status values are PENDING and COMPLETED"
+      outOfScope:
+        - "Order approval decisions"
+        - "Notification e-mails (customer-notifications)"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [SUPP-RULE-0001, SUPPLIER-FULFILLMENT-WORKFLOW-0012, supplier-fulfillment-REQ-0002, SUP-BR-0004, SUPFUL-INT-0004, SUPFUL-RULE-0005, SUPPLIER-FULFILLMENT-RULE-0002, SUPPLIER-FULFILLMENT-RULE-0005, SUPPLIER-FULFILLMENT-RULE-0009, supplier-fulfillment-ENT-0001, FULFILL-BR-0001, FULFILL-ENT-0001, SUP-ENT-0009, SUP-REQ-0006, SUPFUL-REQ-0008, SUPFUL-REQ-0009, SUPFUL-REQ-0010, SUPP-REQ-0002, SUPP-REQ-0003, SUPPLIER-FULFILLMENT-ENTITY-0001, SUPPLIER-FULFILLMENT-ENTITY-0002, SUPPLIER-FULFILLMENT-ENTITY-0011, SUPPLIER-FULFILLMENT-REQ-0005, SUPPLIER-FULFILLMENT-RULE-0003, SUPPLIER-FULFILLMENT-RULE-0004, SUPPLIER-FULFILLMENT-RULE-0008, SUPPLIER-REQ-0002, supplier-fulfillment-REQ-0004, SUPFUL-INT-0003, SUPFUL-REQ-0001, SUPP-ENT-0001, SUPPLIER-FULFILLMENT-WF-0001, supplier-fulfillment-REQ-0003]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: customer-notifications
+    title: "Customer notifications"
+    order: 8
+    dependsOn: [order-approval]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-customer-notifications
+      specCapabilities:
+        - customer-notifications
+    canvas:
+      problem: "Customers must learn the outcome and progress of their orders by e-mail."
+      solution: "Build queue-based HTML order-status mail: approval or denial, shipment, completion, with switches, locale-specific subjects and bodies and defined failure handling."
+      userStories:
+        - "As a customer, I want an e-mail when my order is approved, denied, shipped or completed, so that I know its status."
+      acceptanceCriteria:
+        - "Order-status mail enablement — Mail switch off: no mail is sent"
+        - "Shipped mail switches off by default — Default configuration: shipped mail is not sent"
+        - "HTML mail delivery — Mail sent: delivered as HTML"
+        - "Undeliverable mail discarded — Delivery fails: mail is discarded"
+        - "Malformed message rollback — Malformed queue message: consumption is rolled back"
+      outOfScope:
+        - "Localizing mail body (the mailer itself does not localize)"
+        - "Other channels such as SMS"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [NOTIF-RULE-0003, CUSTN-RULE-0002, CUSTNO-REQ-0001, CUSTNOT-ENT-0007, CUSTNOTIF-BR-0003, CUSTNOTIF-REQ-0004, NOTIF-BR-0001, NOTIF-ENT-0001, NOTIF-REQ-0001, NOTIF-RULE-0001, NOTIF-RULE-0002, ORD-APPR-REQ-0009, NOTIF-INT-0001, NOTIF-WF-0001]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: order-administration
+    title: "Order administration"
+    order: 9
+    dependsOn: [order-approval]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-order-administration
+      specCapabilities:
+        - order-administration
+    canvas:
+      problem: "Administrators need to see orders by status, decide on them and view sales charts."
+      solution: "Build the administrator-only management client: sign-on with session expiry, order list by status, batch decisions and sales charts, with the XML message contract to the order processing server."
+      userStories:
+        - "As an administrator, I want to list orders by status, so that I can find those to act on."
+        - "As an administrator, I want sales charts, so that I can follow sales."
+      acceptanceCriteria:
+        - "Administrator-only access — Non-administrator: access refused"
+        - "Admin session expiry — Inactive session: it expires"
+        - "Orders listing by status for administrators — Status chosen: orders with id, user, date, value and status are listed"
+        - "Sales charts — Charts requested: sales are aggregated and drawn"
+        - "Client XML message contract — Client request: it follows the specified XML contract"
+      outOfScope:
+        - "Approval rules themselves (order-approval)"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+      screens:
+        - "Order list by status: lists orders of a chosen status, showing for each the order id, user id, order date (month/day/year), order value and status (ORD-APPR-REQ-0010)"
+    evidence:
+      irRefs: [ORDER-ADMIN-REQ-0001, ORDER-ADMIN-REQ-0002, ORDER-ADMIN-WF-0003, ORD-APPR-REQ-0010, ORDER-ADMIN-REQ-0004, ORDAPP-REQ-0003, ORD-APPR-REQ-0011, ORDER-ADMIN-REQ-0007, ORDER-ADMIN-INT-0008]
+      reviewedBy: null
+      reviewedAt: null
+  - slug: batch-operations
+    title: "Batch operations and reporting"
+    order: 10
+    dependsOn: [checkout-order-placement, order-approval, supplier-fulfillment]
+    priority: 0
+    change:
+      dir: openspec/changes/sx-batch-operations
+      specCapabilities:
+        - batch-operations
+    canvas:
+      problem: "Operations rely on nightly and weekly jobs for backup, Finance extract, reporting, integrity checks and purge."
+      solution: "Build the batch chain: nightly backup, Finance order extract for D-1, aging and low-stock reports, catalog check, weekly purge after extract, shared logging, exit codes and failure notification."
+      userStories:
+        - "As Finance, I want a nightly order extract, so that I can reconcile sales."
+        - "As an operator, I want reports on stuck orders and low stock, so that I can intervene."
+      acceptanceCriteria:
+        - "Nightly Finance extract — Nightly run: orders of day D-1 are written to the dated file in the specified layout"
+        - "Purge of finished orders — Sunday run: finished orders are purged after the extract"
+        - "Nightly chain ordering — Chain runs: jobs run in the specified order"
+        - "Job logging and exit codes — Job fails: nonzero exit and logged"
+        - "Daily low-stock report — Daily run: low-stock items are reported"
+      outOfScope:
+        - "Interactive administration (order-administration)"
+      risksAssumptions: []
+      techStack: []
+      affectedCode: []
+    evidence:
+      irRefs: [BAT-REQ-0011, BATCH-BR-0006, BATCH-REQ-0010, BATCH-BR-0004, BATCH-BR-0005, BATCH-REQ-0003, BATCH-REQ-0004, BATCH-REQ-0008, BATCH-RULE-0004, BATC-REQ-0001, BATCH-BR-0001, BATCH-BR-0003, BATCH-BR-0007, BATCH-ENT-0001, BATCH-REQ-0006, BATCH-REQ-0007, BATCH-REQ-0009, BATCH-REQ-0012, BATCH-RULE-0008, BATCH-RULE-0012, BATCH-WORKFLOW-0001, BATCH-BR-0002, BATCH-REQ-0001, BATCH-REQ-0002, BATCH-REQ-0005, BATCH-REQ-0011, BATCH-WF-0001]
+      reviewedBy: null
+      reviewedAt: null
+artifacts:
+  openapi: api/openapi.yaml
+  erd: architecture/erd.mermaid
+  schema: architecture/schema.sql
+  agents: architecture/rebuild-guidance.md
