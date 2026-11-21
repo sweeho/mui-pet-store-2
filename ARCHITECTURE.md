@@ -39,9 +39,13 @@ loading, error and empty states through the shared state frames.
 `getDb()` (`src/db/client.ts`) connects once per process, applies the migrations in `drizzle/` and
 seeds two demo users and the sample catalog (en_US, ja_JP, zh_CN) when their tables are empty.
 
-`src/proxy.ts` runs before every request. It issues the session cookie on a first visit, refuses a
-data-changing request whose `Origin` is foreign, and holds the `PUBLIC_PATHS` list of entry points
-that need no sign-in. Every page and route takes the shopper's language from one server function in
+`src/proxy.ts` runs before every request. It issues the shopper session cookie on a first visit,
+refuses a data-changing request whose `Origin` is foreign, and is the one sign-in gate: an entry point
+not on its `PUBLIC_PATHS` list needs a signed-on customer. A signed-out page request gets the sign-in
+screen and returns to the page after sign-on; an API request gets 401. Sign-on is Auth.js with a user
+name and password; its session is an encrypted token cookie checked on the server on every request
+(15 min idle, 8 h maximum, and a session version on the sign-on record that sign-off and a change of
+rights increment), so no sign-on state is kept on the server. Every page and route takes the shopper's language from one server function in
 `src/lib/localization/`: the `?locale=` parameter, else the session's locale, else en_US. Text falls
 back to en_US when a locale has none. The root layout writes the result into `<html lang>`. Money,
 numbers and search keywords are formatted and split by the same module, through the built-in `Intl`.
@@ -51,15 +55,19 @@ numbers and search keywords are formatted and split by the same module, through 
 Entity level. Columns and constraints are in `src/db/schema.ts`, and behaviour is in
 `openspec/specs/`.
 
-- **Session**: one row per browser session, keyed by the cookie. It holds named attributes (the
-  locale is the attribute `locale`) and the controller state. Nothing about a session is kept in
-  process memory.
+- **Session**: the anonymous shopper session, one row per browser, keyed by the `sid` cookie. It
+  holds named attributes (the locale is the attribute `locale`; `userName` and `signedOn` while a
+  customer is signed on) and the controller state. Nothing about a session is kept in process
+  memory. Sign-off replaces it with one that keeps only the locale.
+- **Customer**: keyed by user name, with exactly one **sign-on record** (password hash, session
+  version), one **account** (status active or disabled, one contact record, one payment card) and
+  one **profile** (preferred language, favourite category, my-list and banner switches).
 - **Category → Product → Item**: the catalog keys. Each has a **details** entity with one row per
   (entity, locale) for its name, image and description. An item's details also carry the list
   price and unit cost for that locale, so prices are per locale, not converted. An item has no
   name of its own: it shows its product's name. Catalog reads go through `src/lib/catalog-browsing.ts`.
 - **Audit record**: who, what and when for every data-changing action.
-- **User**: the template's demo table, to be replaced by customer accounts.
+- **User**: the template's demo table, not used by the store.
 
 ## Deployment
 
@@ -104,3 +112,9 @@ builds or runs the image: CI's `docker-build` job does.
   controller, screen resolver and fragment cache exist only to meet the legacy-derived acceptance
   contract; pages and later capabilities use App Router routing and never route through them.
   (change swhm3-i-0003-catalog-browsing-and-search, design P1, P10)
+- **D11. Customer sign-on is Auth.js with a user name and password, and a stateless session.**
+  Passwords are scrypt hashes on the sign-on record. The session is Auth.js's encrypted token
+  cookie; the server ends one by incrementing the record's session version (sign-off, password
+  change, account disabled). Later capabilities read the signed-on customer through the library's
+  one server function, never the token. Amends system design D2 (draft v2, D7, awaiting approval).
+  (change swhm3-i-0004-customer-accounts-and-sign, design P1, P2)
