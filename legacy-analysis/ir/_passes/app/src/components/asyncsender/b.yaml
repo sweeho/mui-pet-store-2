@@ -1,0 +1,180 @@
+records:
+  - record_key: CUSTNOTIF-INT-0001
+    kind: integration
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL accept a text message and place it as a single text message on a configured
+      asynchronous queue, so that the message is delivered later by a separate consumer.
+    confidence: high
+    confidence_basis: >
+      The send logic is in the bean class and the queue and connection factory resources are declared
+      in the deployment descriptor (code plus config). The consumer and the message content are not in
+      this module, so which e-mail it feeds is inferred from the capability, not read.
+    risk_class: operational
+    basis: >
+      sendAMessage opens a queue connection, creates a sender on the AsyncSender queue, wraps the string
+      in a text message and sends it.
+    plain_text: >
+      When another part of the shop wants something sent in the background, such as a customer e-mail,
+      it hands the text to this service, which queues it for later delivery.
+    technical_note: >
+      Stateless session bean AsyncSenderEJB.sendAMessage(String). Looks up jms/QueueConnectionFactory and
+      jms/AsyncSenderQueue through ServiceLocator in ejbCreate. Fits customer-notifications as the
+      closest capability; the module itself does not name e-mail.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 68
+        line_end: 90
+        excerpt: |
+          public void sendAMessage(String msg)  {
+            QueueSession session = null;
+            QueueConnection qConnect = null;
+            QueueSender qSender = null;
+            try {
+              qConnect = qFactory.createQueueConnection();
+              session = qConnect.createQueueSession(true,0);
+              qSender = session.createSender(q);
+              TextMessage jmsMsg = session.createTextMessage();
+              jmsMsg.setText(msg);
+              qSender.send(jmsMsg);
+      - path: legacy-source/app/src/components/asyncsender/src/ejb-jar.xml
+        line_start: 58
+        line_end: 67
+        excerpt: |
+          <resource-ref>
+            <res-ref-name>jms/QueueConnectionFactory</res-ref-name>
+            <res-type>javax.jms.QueueConnectionFactory</res-type>
+          </resource-ref>
+          <resource-env-ref>
+            <resource-env-ref-name>jms/AsyncSenderQueue</resource-env-ref-name>
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: AsyncSenderEJB
+      jms.queue: jms/AsyncSenderQueue
+  - record_key: CUSTNOTIF-REQ-0002
+    kind: requirement
+    capability_key: customer-notifications
+    requirement: >
+      GIVEN the queue cannot be reached or the send fails WHEN a message is submitted THEN the system
+      SHALL signal failure to the caller and release the queue connection.
+    confidence: medium
+    confidence_basis: >
+      One clear place: the catch and finally blocks of the send method. No test or document seen.
+    risk_class: operational
+    basis: >
+      Any exception is logged to standard error and rethrown as a system exception; the finally block
+      closes the connection and ignores a close failure.
+    plain_text: >
+      If a background message cannot be queued, the requester is told it failed rather than being
+      silently ignored.
+    technical_note: >
+      catch(Exception) prints stack trace and throws EJBException("askMDBToSendAMessage: Error!").
+      Close errors are swallowed. Message text mentions an MDB though this is not one.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 80
+        line_end: 89
+        excerpt: |
+          }catch  (Exception e) {
+            e.printStackTrace();
+            throw new EJBException("askMDBToSendAMessage: Error!",e);
+          } finally {
+            try {
+                      if( qConnect != null ) {
+                qConnect.close();
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: AsyncSenderEJB
+  - record_key: CUSTNOTIF-BR-0003
+    kind: business-rule
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL send each queued message within a transaction that joins the caller's
+      transaction, so the message is only released if the caller's work commits.
+    confidence: medium
+    confidence_basis: >
+      The Required attribute is declared once in the deployment descriptor. The session is created as
+      transacted in code, but under a container-managed transaction that flag is normally ignored, so
+      the real effect depends on the server.
+    risk_class: operational
+    basis: >
+      container-transaction trans-attribute Required on sendAMessage; createQueueSession(true,0).
+    plain_text: >
+      A background message is only really sent if the business step that asked for it completes
+      successfully.
+    technical_note: >
+      ejb-jar.xml container-transaction Required; JMS session created with transacted=true.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/ejb-jar.xml
+        line_start: 122
+        line_end: 132
+        excerpt: |
+          <container-transaction>
+            <method>
+              <ejb-name>AsyncSenderEJB</ejb-name>
+              <method-intf>Local</method-intf>
+              <method-name>sendAMessage</method-name>
+          <trans-attribute>Required</trans-attribute>
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 75
+        line_end: 75
+        excerpt: |
+          session = qConnect.createQueueSession(true,0);
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.transaction: Required
+  - record_key: CUSTNOTIF-REQ-0004
+    kind: requirement
+    capability_key: customer-notifications
+    requirement: >
+      The system SHALL allow the send operation to be called by any caller inside the application
+      without a role check.
+    confidence: medium
+    confidence_basis: >
+      Declared once, as an unchecked method permission; the bean is only exposed through a local
+      interface, so reach is limited to the same server.
+    risk_class: operational
+    basis: >
+      method-permission unchecked covers sendAMessage and create; the bean uses the caller's identity.
+    plain_text: >
+      Any part of the shop may ask for a background message to be sent; no particular role is needed.
+    technical_note: >
+      ejb-jar.xml method-permission unchecked, security-identity use-caller-identity, local interface only.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/ejb-jar.xml
+        line_start: 54
+        line_end: 57
+        excerpt: |
+          <security-identity>
+            <description></description>
+            <use-caller-identity></use-caller-identity>
+          </security-identity>
+      - path: legacy-source/app/src/components/asyncsender/src/ejb-jar.xml
+        line_start: 71
+        line_end: 73
+        excerpt: |
+          <method-permission>
+            <unchecked />
+            <method>
+    stack_metadata:
+      framework: EJB 2.0
+      ejb.bean: AsyncSenderEJB
+suspected_defects:
+  - capability_key: customer-notifications
+    record_keys: [CUSTNOTIF-REQ-0002]
+    severity: low
+    category: error-swallowed
+    title: Failure to close the queue connection is ignored
+    description: >
+      The close in the finally block catches and discards any exception; the stack trace of a send
+      failure goes to standard error rather than a log. The error text also refers to an MDB, which
+      this is not.
+    traces:
+      - path: legacy-source/app/src/components/asyncsender/src/com/sun/j2ee/blueprints/asyncsender/ejb/AsyncSenderEJB.java
+        line_start: 80
+        line_end: 88
+findings: []
