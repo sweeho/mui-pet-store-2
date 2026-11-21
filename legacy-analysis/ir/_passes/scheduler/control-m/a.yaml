@@ -1,0 +1,434 @@
+{
+ "records": [
+  {
+   "record_key": "BATCH-WF-0001",
+   "kind": "workflow",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL run a nightly batch chain in which the database backup starts at 01:00 every day, the order extract starts no earlier than 01:30 and only after the backup has succeeded, and the aging report, inventory report and purge each start only after the order extract has succeeded.",
+   "plain_text": "Every night the store backs up its database first. Only when the backup has worked does the order export for Finance run, and only after the export do the stuck-order report, the low-stock report and the weekly clean-up run.",
+   "confidence": "high",
+   "confidence_basis": "Control-M start times and in/out conditions in the schedule, plus the runbook table and chain diagram describing the same order.",
+   "risk_class": "operational",
+   "basis": "Job conditions PS_DB_BACKUP-OK and PS_ORDER_EXTRACT-OK gate successors; TIMEFROM gives earliest start.",
+   "technical_note": "INCOND/OUTCOND chain; the extract job deletes the PS_DB_BACKUP-OK condition after consuming it.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 15,
+     "line_end": 26,
+     "excerpt": "    <JOB JOBISN=\"1\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"DATABASE\" JOBNAME=\"PS_DB_BACKUP\"\n         DESCRIPTION=\"Online backup of PetStoreDB, keep 7 days\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_db_backup.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\" CRITICAL=\"1\"\n         TIMEFROM=\"0100\" WEEKDAYS=\"ALL\" DAYSCAL=\"PS_CAL\" MAXRERUN=\"2\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <OUTCOND NAME=\"PS_DB_BACKUP-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n      <ON STMT=\"*\" CODE=\"NOTOK\">\n        <DOMAIL URGENCY=\"U\" DEST=\"ps-ops@example.invalid\" SUBJECT=\"PS_DB_BACKUP failed\" MESSAGE=\"Petstore DB backup failed, order extract is held\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 28,
+     "line_end": 41,
+     "excerpt": "    <JOB JOBISN=\"2\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_EXTRACT\"\n         DESCRIPTION=\"Export yesterday purchase orders to orders_YYYYMMDD.csv for Finance\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_extract.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AB\"\n         TIMEFROM=\"0130\" WEEKDAYS=\"ALL\" MAXRERUN=\"1\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_DB_BACKUP-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_DB_BACKUP-OK\" ODATE=\"ODAT\" SIGN=\"-\" />\n      <OUTCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n      <ON STMT=\"*\" CODE=\"NOTOK\">\n        <DOMAIL URGENCY=\"R\" DEST=\"ps-finance@example.invalid\" SUBJECT=\"PS_ORDER_EXTRACT failed\" MESSAGE=\"Order extract for Finance not produced\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 43,
+     "line_end": 55,
+     "excerpt": "    <JOB JOBISN=\"3\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_AGING_REPORT\"\n         DESCRIPTION=\"Orders stuck PENDING or APPROVED for more than 24 hours\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_aging_report.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AC\"\n         TIMEFROM=\"0145\" WEEKDAYS=\"ALL\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_ORDER_AGING_REPORT-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n      <ON STMT=\"*\" CODE=\"COMPSTAT=4\">\n        <DOMAIL URGENCY=\"R\" DEST=\"ps-ops@example.invalid\" SUBJECT=\"Petstore stuck orders found\" MESSAGE=\"See /var/petstore/extract/order_aging_YYYYMMDD.txt\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 2. Batch schedule",
+     "excerpt": "01:00 PS_DB_BACKUP --> 01:30 PS_ORDER_EXTRACT --+--> 01:45 PS_ORDER_AGING_REPORT"
+    }
+   ],
+   "interface": false,
+   "stack_metadata": {
+    "framework": "Control-M",
+    "batch.trigger": "TIMEFROM + INCOND"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0002",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL take an online backup of the order database daily at 01:00, keep backups for 7 days and delete older ones; the job is critical and SHALL be rerun up to 2 times on failure.",
+   "plain_text": "A full copy of the store's database is made every night at 1 AM and kept for a week. If the copy fails it is retried twice.",
+   "confidence": "high",
+   "confidence_basis": "Schedule defines time, criticality and MAXRERUN; runbook states 7-day retention and the 10-minute rerun spacing. Retention logic itself lives in the script, not seen here.",
+   "risk_class": "operational",
+   "basis": "Job PS_DB_BACKUP (CRITICAL=1, MAXRERUN=2, daily); description says keep 7 days.",
+   "technical_note": "ps_db_backup.sh calls SYSCS_UTIL.SYSCS_BACKUP_DATABASE; script not in this shard. Rerun interval is not in the XML, only the runbook.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 15,
+     "line_end": 21,
+     "excerpt": "    <JOB JOBISN=\"1\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"DATABASE\" JOBNAME=\"PS_DB_BACKUP\"\n         DESCRIPTION=\"Online backup of PetStoreDB, keep 7 days\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_db_backup.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\" CRITICAL=\"1\"\n         TIMEFROM=\"0100\" WEEKDAYS=\"ALL\" DAYSCAL=\"PS_CAL\" MAXRERUN=\"2\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.1 PS_DB_BACKUP",
+     "excerpt": "Backups older than 7 days are deleted. Critical job: up to 2 reruns 10 minutes apart."
+    }
+   ],
+   "interface": false,
+   "stack_metadata": {
+    "db.object": "PetStoreDB",
+    "batch.trigger": "TIMEFROM=0100 WEEKDAYS=ALL"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0003",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL export the previous day's purchase orders each night at 01:30, after a successful backup, to a CSV file for Finance, and SHALL be rerun once on failure.",
+   "plain_text": "Each night a file of yesterday's orders is produced for the Finance department.",
+   "confidence": "high",
+   "confidence_basis": "Schedule job and runbook section agree on timing, dependency and purpose.",
+   "risk_class": "financial",
+   "basis": "Job PS_ORDER_EXTRACT, description 'Export yesterday purchase orders to orders_YYYYMMDD.csv for Finance'.",
+   "technical_note": "MAXRERUN=1 in schedule; runbook is silent on reruns of the extract. File layout is defined in db/batch/order_extract.sql (not in this shard).",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 28,
+     "line_end": 34,
+     "excerpt": "    <JOB JOBISN=\"2\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_EXTRACT\"\n         DESCRIPTION=\"Export yesterday purchase orders to orders_YYYYMMDD.csv for Finance\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_extract.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AB\"\n         TIMEFROM=\"0130\" WEEKDAYS=\"ALL\" MAXRERUN=\"1\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.2 PS_ORDER_EXTRACT",
+     "excerpt": "Exports yesterday's purchase orders (00:00 to 24:00 server time) to /var/petstore/extract/orders_YYYYMMDD.csv for Finance"
+    }
+   ],
+   "interface": true,
+   "stack_metadata": {
+    "batch.trigger": "INCOND PS_DB_BACKUP-OK"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0004",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The order extract file SHALL have no header row, SHALL contain per order the columns order number, user name, order time in epoch milliseconds, locale, order total, line count and status, and SHALL end with a trailer line TRAILER,YYYYMMDD,<row count>.",
+   "plain_text": "The Finance file lists each order with its number, customer, time, locale, total, number of lines and status, and ends with a control line giving the date and the number of orders.",
+   "confidence": "medium",
+   "confidence_basis": "Layout is stated only in the runbook; the generating SQL is outside this shard, so it is not verified against code.",
+   "risk_class": "financial",
+   "basis": "Runbook column table and trailer description.",
+   "technical_note": "Finance consumes the file; format must be kept. Order value is in the locale's currency.",
+   "traces": [
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.2 PS_ORDER_EXTRACT",
+     "excerpt": "No header row. The last line is a trailer TRAILER,YYYYMMDD,<row count>."
+    },
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 28,
+     "line_end": 29,
+     "excerpt": "    <JOB JOBISN=\"2\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_EXTRACT\"\n         DESCRIPTION=\"Export yesterday purchase orders to orders_YYYYMMDD.csv for Finance\"\n"
+    }
+   ],
+   "interface": true
+  },
+  {
+   "record_key": "BATCH-REQ-0005",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL, when the order extract fails, send an e-mail to the Finance mailbox stating that the extract was not produced.",
+   "plain_text": "If the Finance export fails, Finance is told by e-mail.",
+   "confidence": "high",
+   "confidence_basis": "Declared in schedule and confirmed by runbook.",
+   "risk_class": "operational",
+   "basis": "ON NOTOK DOMAIL to ps-finance with urgency R.",
+   "technical_note": "Recipient addresses are placeholder .invalid domains in the export.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 38,
+     "line_end": 40,
+     "excerpt": "      <ON STMT=\"*\" CODE=\"NOTOK\">\n        <DOMAIL URGENCY=\"R\" DEST=\"ps-finance@example.invalid\" SUBJECT=\"PS_ORDER_EXTRACT failed\" MESSAGE=\"Order extract for Finance not produced\" />\n      </ON>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.2 PS_ORDER_EXTRACT",
+     "excerpt": "Failure mails ps-finance."
+    }
+   ],
+   "interface": true
+  },
+  {
+   "record_key": "BATCH-REQ-0006",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL list orders still PENDING or APPROVED after 24 hours, and orders the supplier has invoiced but the order processing has not completed, in a daily aging report file, and SHALL e-mail operations when any are listed.",
+   "plain_text": "Each night a report names orders that have been stuck for more than a day, and the operations team is e-mailed if there are any.",
+   "confidence": "high",
+   "confidence_basis": "Schedule description, completion-status handler and runbook all agree; the report query is not in this shard.",
+   "risk_class": "operational",
+   "basis": "Job PS_ORDER_AGING_REPORT at 01:45 after extract; ON COMPSTAT=4 sends mail.",
+   "technical_note": "Exit code 4 means 'items found'. Runbook also covers invoiced-but-not-completed orders, which the schedule description does not mention.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 43,
+     "line_end": 55,
+     "excerpt": "    <JOB JOBISN=\"3\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_AGING_REPORT\"\n         DESCRIPTION=\"Orders stuck PENDING or APPROVED for more than 24 hours\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_aging_report.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AC\"\n         TIMEFROM=\"0145\" WEEKDAYS=\"ALL\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_ORDER_AGING_REPORT-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n      <ON STMT=\"*\" CODE=\"COMPSTAT=4\">\n        <DOMAIL URGENCY=\"R\" DEST=\"ps-ops@example.invalid\" SUBJECT=\"Petstore stuck orders found\" MESSAGE=\"See /var/petstore/extract/order_aging_YYYYMMDD.txt\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.3 PS_ORDER_AGING_REPORT",
+     "excerpt": "Lists orders that are still PENDING or APPROVED after 24 hours"
+    }
+   ],
+   "interface": false,
+   "stack_metadata": {
+    "batch.trigger": "INCOND PS_ORDER_EXTRACT-OK"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0007",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL produce a daily report of supplier items with stock below 500 units, after the order extract has succeeded.",
+   "plain_text": "Every night a list of supplier items running low (under 500 units) is produced.",
+   "confidence": "medium",
+   "confidence_basis": "Threshold appears in a job description and the runbook; the actual comparison is in the script, not visible here.",
+   "risk_class": "operational",
+   "basis": "Job PS_INVENTORY_REPORT description 'Supplier items with stock below 500 units'.",
+   "technical_note": "Defined as a Command task. No failure notification is configured.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 57,
+     "line_end": 66,
+     "excerpt": "    <JOB JOBISN=\"4\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"INVENTORY\" JOBNAME=\"PS_INVENTORY_REPORT\"\n         DESCRIPTION=\"Supplier items with stock below 500 units\"\n         TASKTYPE=\"Command\"\n         CMDLINE=\"/opt/petstore/batch/ps_inventory_report.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AC\"\n         TIMEFROM=\"0150\" WEEKDAYS=\"ALL\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_INVENTORY_REPORT-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.4 PS_INVENTORY_REPORT",
+     "excerpt": "Lists supplier items with stock below 500 units"
+    }
+   ],
+   "interface": false
+  },
+  {
+   "record_key": "BATCH-REQ-0008",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL, on Sundays only, after the order extract has succeeded, delete COMPLETED and DENIED orders older than 180 days together with their lines, supplier orders, contact information, addresses and payment cards, and SHALL NOT delete PENDING or APPROVED orders.",
+   "plain_text": "Once a week, on Sunday, finished or refused orders older than about six months are removed with their related details, but only after they were exported. Orders still open are never removed.",
+   "confidence": "high",
+   "confidence_basis": "Schedule (weekday and description), runbook, and dependency on the extract all agree. The 180 day value is a description literal; the delete SQL is not in this shard.",
+   "risk_class": "regulated",
+   "basis": "Job PS_ORDER_PURGE WEEKDAYS=0, INCOND PS_ORDER_EXTRACT-OK; runbook lists the deleted entities.",
+   "technical_note": "Deletes personal and payment-card data, so it touches data retention. No failure notification is configured for this job.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 68,
+     "line_end": 77,
+     "excerpt": "    <JOB JOBISN=\"5\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_PURGE\"\n         DESCRIPTION=\"Delete COMPLETED and DENIED orders older than 180 days (Sundays)\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_purge.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AD\"\n         TIMEFROM=\"0200\" WEEKDAYS=\"0\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_ORDER_PURGE-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.5 PS_ORDER_PURGE",
+     "excerpt": "Deletes COMPLETED and DENIED orders older than 180 days"
+    }
+   ],
+   "interface": false,
+   "stack_metadata": {
+    "batch.trigger": "WEEKDAYS=0"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0009",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL run a catalog integrity check daily at 06:00, covering categories without products, products without items, items priced below cost, items missing a description in a served locale and items the supplier does not stock, and SHALL e-mail the catalog mailbox when a check finds rows.",
+   "plain_text": "Every morning before the shop opens the product catalog is checked for gaps and bad prices, and the catalog team is e-mailed if problems are found.",
+   "confidence": "high",
+   "confidence_basis": "Schedule and runbook agree on time and notification; checks C1-C5 are described only in the runbook (SQL not visible here).",
+   "risk_class": "operational",
+   "basis": "Job PS_CATALOG_CHECK, CRITICAL=1, ON COMPSTAT=4 mail with urgency U.",
+   "technical_note": "Exit code 4 means rows found. Critical flag is not mentioned by the runbook.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 79,
+     "line_end": 90,
+     "excerpt": "    <JOB JOBISN=\"6\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"CATALOG\" JOBNAME=\"PS_CATALOG_CHECK\"\n         DESCRIPTION=\"Catalog integrity check before the store opens; first load when empty\"\n         TASKTYPE=\"Command\"\n         CMDLINE=\"/opt/petstore/batch/ps_catalog_check.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\" CRITICAL=\"1\"\n         TIMEFROM=\"0600\" WEEKDAYS=\"ALL\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <OUTCOND NAME=\"PS_CATALOG_CHECK-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n      <ON STMT=\"*\" CODE=\"COMPSTAT=4\">\n        <DOMAIL URGENCY=\"U\" DEST=\"ps-catalog@example.invalid\" SUBJECT=\"Petstore catalog integrity check failed\" MESSAGE=\"See /var/petstore/log/catalog_check.log\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.6 PS_CATALOG_CHECK",
+     "excerpt": "Runs catalog checks C1 to C5"
+    }
+   ],
+   "interface": false,
+   "stack_metadata": {
+    "batch.trigger": "TIMEFROM=0600"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0010",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "GIVEN the catalog tables do not exist WHEN the catalog check runs THEN the system SHALL request the storefront's populate function without forcing a reload to load the sample catalog, and then check again.",
+   "plain_text": "If the shop has no catalog at all on first start, the nightly check loads the sample catalog and re-checks it.",
+   "confidence": "low",
+   "confidence_basis": "Only the schedule description ('first load when empty') and the runbook mention this; the script is not visible.",
+   "risk_class": "operational",
+   "basis": "Job description and runbook text.",
+   "technical_note": "Calls http://ps-app01:8000/petstore/Populate?forcefully=false from ps_catalog_check.sh.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 79,
+     "line_end": 82,
+     "excerpt": "    <JOB JOBISN=\"6\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"CATALOG\" JOBNAME=\"PS_CATALOG_CHECK\"\n         DESCRIPTION=\"Catalog integrity check before the store opens; first load when empty\"\n         TASKTYPE=\"Command\"\n         CMDLINE=\"/opt/petstore/batch/ps_catalog_check.sh\"\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.6 PS_CATALOG_CHECK",
+     "excerpt": "it calls http://ps-app01:8000/petstore/Populate?forcefully=false to load the sample data, then checks again"
+    }
+   ],
+   "interface": true
+  },
+  {
+   "record_key": "BATCH-REQ-0011",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL check every 10 minutes, all day from 00:00 to 23:59, that the storefront, order processing, supplier and admin web modules answer HTTP 200, and SHALL e-mail operations when any does not.",
+   "plain_text": "Every ten minutes the system checks that all four web applications are up, and operations is e-mailed if one is down.",
+   "confidence": "high",
+   "confidence_basis": "Cyclic job definition with interval and failure mail, and runbook description, agree.",
+   "risk_class": "operational",
+   "basis": "Job PS_HEALTH_CHECK CYCLIC Interval 10 minutes, TIMEFROM 0000 TIMETO 2359, ON NOTOK mail.",
+   "technical_note": "Exit code 8 on any non-200 response. Mail is sent on every failing cycle, so repeated alerts are possible.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 96,
+     "line_end": 106,
+     "excerpt": "    <JOB JOBISN=\"1\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"HEALTH\" JOBNAME=\"PS_HEALTH_CHECK\"\n         DESCRIPTION=\"HTTP check of the storefront, OPC, supplier and admin web modules\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_health_check.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\"\n         TIMEFROM=\"0000\" WEEKDAYS=\"ALL\" TIMETO=\"2359\" CYCLIC=\"1\" CYCLIC_TYPE=\"Interval\" INTERVAL=\"00010M\" IND_CYCLIC=\"START\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <ON STMT=\"*\" CODE=\"NOTOK\">\n        <DOMAIL URGENCY=\"R\" DEST=\"ps-ops@example.invalid\" SUBJECT=\"Petstore web module down\" MESSAGE=\"See /var/petstore/log/batch.log\" />\n      </ON>\n    </JOB>\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.7 PS_HEALTH_CHECK",
+     "excerpt": "Exit code 8 when any does not answer HTTP 200"
+    }
+   ],
+   "interface": true,
+   "stack_metadata": {
+    "batch.trigger": "CYCLIC Interval 00010M"
+   }
+  },
+  {
+   "record_key": "BATCH-REQ-0012",
+   "kind": "requirement",
+   "capability_key": "batch-operations",
+   "requirement": "The system SHALL run all batch jobs under the application service account on the single application node, from the batch script directory.",
+   "plain_text": "All scheduled jobs run on the one application server under the service user.",
+   "confidence": "medium",
+   "confidence_basis": "Run-as, node and script location are repeated in every job.",
+   "risk_class": "operational",
+   "basis": "RUN_AS=tomcat, NODEID=ps-app01, MEMLIB=/opt/petstore/batch on all jobs.",
+   "technical_note": "Folder in datacenter DC_PS_PRD; calendar PS_CAL referenced by the backup job is not defined in the export.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 12,
+     "line_end": 21,
+     "excerpt": "  <FOLDER DATACENTER=\"DC_PS_PRD\" VERSION=\"919\" PLATFORM=\"UNIX\" FOLDER_NAME=\"PS_PETSTORE_DAILY\"\n          FOLDER_ORDER_METHOD=\"SYSTEM\" REAL_FOLDER_ID=\"2001\" TYPE=\"1\" USED_BY_CODE=\"0\">\n\n    <JOB JOBISN=\"1\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"DATABASE\" JOBNAME=\"PS_DB_BACKUP\"\n         DESCRIPTION=\"Online backup of PetStoreDB, keep 7 days\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_db_backup.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\" CRITICAL=\"1\"\n         TIMEFROM=\"0100\" WEEKDAYS=\"ALL\" DAYSCAL=\"PS_CAL\" MAXRERUN=\"2\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n"
+    },
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 96,
+     "line_end": 102,
+     "excerpt": "    <JOB JOBISN=\"1\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"HEALTH\" JOBNAME=\"PS_HEALTH_CHECK\"\n         DESCRIPTION=\"HTTP check of the storefront, OPC, supplier and admin web modules\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_health_check.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AA\"\n         TIMEFROM=\"0000\" WEEKDAYS=\"ALL\" TIMETO=\"2359\" CYCLIC=\"1\" CYCLIC_TYPE=\"Interval\" INTERVAL=\"00010M\" IND_CYCLIC=\"START\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n"
+    }
+   ],
+   "interface": false
+  }
+ ],
+ "findings": [
+  {
+   "kind": "ambiguity",
+   "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+   "description": "Job PS_DB_BACKUP refers to calendar PS_CAL (DAYSCAL), which is not defined in this export. Cannot tell whether holidays suppress the backup."
+  }
+ ],
+ "suspected_defects": [
+  {
+   "capability_key": "batch-operations",
+   "record_keys": [
+    "BATCH-REQ-0008"
+   ],
+   "severity": "medium",
+   "category": "other",
+   "title": "Order purge has no failure notification",
+   "description": "Unlike most other jobs, PS_ORDER_PURGE (and PS_INVENTORY_REPORT) define no ON handler, so a failure is silent. The purge deletes regulated data.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 68,
+     "line_end": 77,
+     "excerpt": "    <JOB JOBISN=\"5\" APPLICATION=\"PETSTORE\" SUB_APPLICATION=\"ORDERS\" JOBNAME=\"PS_ORDER_PURGE\"\n         DESCRIPTION=\"Delete COMPLETED and DENIED orders older than 180 days (Sundays)\"\n         TASKTYPE=\"Job\"\n         MEMLIB=\"/opt/petstore/batch\" MEMNAME=\"ps_order_purge.sh\"\n         RUN_AS=\"tomcat\" NODEID=\"ps-app01\" PRIORITY=\"AD\"\n         TIMEFROM=\"0200\" WEEKDAYS=\"0\"\n         CREATED_BY=\"ps_ops\" CREATION_DATE=\"20031014\" CHANGE_DATE=\"20260915\">\n      <INCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_ORDER_PURGE-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n    </JOB>\n"
+    }
+   ]
+  },
+  {
+   "capability_key": "batch-operations",
+   "record_keys": [
+    "BATCH-WF-0001",
+    "BATCH-REQ-0003"
+   ],
+   "severity": "low",
+   "category": "other",
+   "title": "Extract consumes and deletes the backup condition",
+   "description": "PS_ORDER_EXTRACT deletes PS_DB_BACKUP-OK after consuming it, so a manual rerun of the extract after a success waits for a backup that already ran.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 35,
+     "line_end": 37,
+     "excerpt": "      <INCOND NAME=\"PS_DB_BACKUP-OK\" ODATE=\"ODAT\" AND_OR=\"A\" />\n      <OUTCOND NAME=\"PS_DB_BACKUP-OK\" ODATE=\"ODAT\" SIGN=\"-\" />\n      <OUTCOND NAME=\"PS_ORDER_EXTRACT-OK\" ODATE=\"ODAT\" SIGN=\"+\" />\n"
+    }
+   ]
+  },
+  {
+   "capability_key": "batch-operations",
+   "record_keys": [
+    "BATCH-REQ-0002",
+    "BATCH-REQ-0003"
+   ],
+   "severity": "low",
+   "category": "contradicts-document",
+   "title": "Rerun settings differ between schedule and runbook",
+   "description": "Schedule gives the order extract 1 rerun; runbook describes reruns only for the backup. Runbook says backup reruns are 10 minutes apart but the XML defines no interval.",
+   "traces": [
+    {
+     "path": "legacy-source/scheduler/control-m/PS_PETSTORE.xml",
+     "line_start": 33,
+     "line_end": 33,
+     "excerpt": "         TIMEFROM=\"0130\" WEEKDAYS=\"ALL\" MAXRERUN=\"1\"\n"
+    },
+    {
+     "kind": "document",
+     "path": "legacy-analysis/sources/pdf/petstore-operations-runbook/extracted.md",
+     "anchor": "p1 / 3.1 PS_DB_BACKUP",
+     "excerpt": "up to 2 reruns 10 minutes apart"
+    }
+   ]
+  }
+ ]
+}
