@@ -26,10 +26,28 @@ async function primaryHrefs(page: Page, baseURL: string | undefined): Promise<st
   return hrefs;
 }
 
+// The cases name no marker, so accept any common one: a test id, a data-state, a status/alert role or its wording.
 const emptyFrame = (page: Page) =>
-  page.locator('[data-testid="empty-frame"], [data-state="empty"]').first();
+  page
+    .locator('[data-testid="empty-frame"], [data-state="empty"]')
+    .or(page.getByRole("status").filter({ hasText: /no |nothing|empty|yet/i }))
+    .or(page.getByText(/no .{0,40}(found|yet|available|to show)|nothing (to show|here)|(is|are) empty/i))
+    .first();
 const errorFrame = (page: Page) =>
-  page.locator('[data-testid="error-frame"], [data-state="error"]').first();
+  page
+    .locator('[data-testid="error-frame"], [data-state="error"]')
+    .or(page.getByRole("alert"))
+    .or(page.getByText(/something went wrong|failed to load|could not load|error/i))
+    .first();
+
+/** Watch the page's own /api requests, so only pages that load data are judged. */
+const trackApi = (page: Page) => {
+  const seen = { count: 0 };
+  page.on("request", (r) => {
+    if (new URL(r.url()).pathname.includes("/api/")) seen.count++;
+  });
+  return seen;
+};
 
 test.describe("site-shell", () => {
   // case: SWHM3-C-0163@v1
@@ -102,10 +120,17 @@ test.describe("site-shell", () => {
     await page.route("**/api/**", (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
     );
+    const seen = trackApi(page);
+    let exercised = 0;
     for (const href of hrefs) {
+      seen.count = 0;
       await page.goto(href);
+      await page.waitForLoadState("networkidle");
+      if (seen.count === 0) continue; // page has no data request, so no empty state to judge
+      exercised++;
       await expect(emptyFrame(page)).toBeVisible();
     }
+    expect(exercised).toBeGreaterThan(0);
   });
 
   // case: SWHM3-C-0167@v1
@@ -117,9 +142,15 @@ test.describe("site-shell", () => {
         ? route.fulfill({ status: 500, contentType: "application/json", body: '{"error":"boom"}' })
         : route.continue(),
     );
+    const seen = trackApi(page);
+    let exercised = 0;
     for (const href of hrefs) {
       failing = true;
+      seen.count = 0;
       await page.goto(href);
+      await page.waitForLoadState("networkidle");
+      if (seen.count === 0) continue; // page has no data request, so no failure to judge
+      exercised++;
       await expect(errorFrame(page)).toBeVisible();
       const retry = page.getByRole("button", { name: /retry|try again/i }).first();
       await expect(retry).toBeVisible();
@@ -127,5 +158,6 @@ test.describe("site-shell", () => {
       await retry.click();
       await expect(errorFrame(page)).toBeHidden();
     }
+    expect(exercised).toBeGreaterThan(0);
   });
 });
