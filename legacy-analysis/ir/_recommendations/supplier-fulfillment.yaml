@@ -1,0 +1,142 @@
+recommendations:
+  - record_key: SUPP-RULE-0001
+    recommendation: accept
+    confidence: low
+    reason: >
+      The status constants are clear but no transition code enforces the progression here, and the database check allows only PENDING or COMPLETED. Conflicting sources; Business Owner should confirm which set is true in production.
+  - record_key: SUPPLIER-FULFILLMENT-WORKFLOW-0012
+    recommendation: accept
+    confidence: low
+    reason: >
+      Single low-confidence pass; a setup utility rather than business behaviour. Confirm whether it is reachable in production before building.
+  - record_key: supplier-fulfillment-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code reads the same in both passes; note the absence of validation overlaps the line-item defect noted on FULFILL-BR-0001.
+  - record_key: SUP-BR-0004
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree on matching by item id and exact equality. Over-shipment leaving the order incomplete, and duplicate item ids being double-incremented, are suspected legacy defects: confirm what the code does; the Business Owner decides in the defect register.
+  - record_key: SUPFUL-RULE-0005
+    recommendation: accept
+    confidence: high
+    reason: >
+      Schema is explicit; a zero unit price is permitted although the type is named positiveDecimal. Confirm intent with the Business Owner.
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0002
+    recommendation: accept
+    confidence: high
+    reason: >
+      Facade loop and runbook agree and no partial-shipment path exists.
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code is clear; the hard-coded user id and addressee look like a legacy defect. Confirm what the code does; the Business Owner decides whether to carry it over.
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0009
+    recommendation: accept
+    confidence: high
+    reason: >
+      Configuration and page check agree. The user guide calls this user a stock clerk, so the role name conflicts with a document; the conflict goes to Intent for the Business Owner.
+  - record_key: supplier-fulfillment-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree. Legacy stores price as binary floating point while the database uses number(12,2); the rebuild should use exact decimals.
+  - record_key: FULFILL-BR-0001
+    recommendation: edit
+    confidence: medium
+    reason: >
+      The CHECK exists only on the purchase-order line table; the supplier line table has none and the line-item code validates nothing. Recommend confirming what the code does for supplier lines; whether the rule should span both is the Business Owner's call.
+    edited_requirement: >
+      The system SHALL NOT allow the quantity shipped on a purchase-order line to exceed the quantity ordered; the equivalent supplier line rule is unconfirmed.
+  - record_key: FULFILL-ENT-0001
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Constraint evidence from one pass says never negative, while another DDL export has no such check (see SUP-ENT-0009). Conflicting sources; Business Owner to confirm.
+  - record_key: SUP-REQ-0006
+    recommendation: accept
+    confidence: high
+    reason: >
+      Schema and code agree. The document carries credit card data; flag for the security review.
+  - record_key: SUPFUL-REQ-0008
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code-level behaviour, single source; low risk.
+  - record_key: SUPFUL-REQ-0009
+    recommendation: edit
+    confidence: low
+    reason: >
+      Implementation mechanism rather than business behaviour; configuration shows XSD validation off for both documents.
+    edited_requirement: >
+      The system SHALL produce and validate supplier documents against a DTD, with XSD validation available but off by default.
+  - record_key: SUPFUL-REQ-0010
+    recommendation: reject
+    confidence: medium
+    reason: >
+      Reflection-based plumbing internal to the legacy stack; no business rule survives into a rebuild.
+  - record_key: SUPP-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes agree; the literal 0 is the initial shipped quantity, which the code leaves undocumented.
+  - record_key: SUPP-REQ-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      Finder is explicit in both passes.
+  - record_key: SUPPLIER-FULFILLMENT-ENTITY-0011
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Both passes agree; the reduce operation does not itself guard against a negative result, so callers must.
+  - record_key: SUPPLIER-FULFILLMENT-REQ-0005
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Overlaps SUPFUL-INT-0003, which gives the detailed shape; keep both or merge at review.
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0003
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code path is explicit (a missing record yields not available).
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0004
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code agrees; the order-side status SHIPPED_PART is a separate order-approval concern.
+  - record_key: SUPPLIER-FULFILLMENT-RULE-0008
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Code is clear; a non-numeric entry raises an unhandled error in legacy, which the rebuild should reject cleanly.
+  - record_key: SUPPLIER-REQ-0002
+    recommendation: accept
+    confidence: medium
+    reason: >
+      Duplicates supplier-fulfillment-REQ-0002 in part; both passes agree.
+  - record_key: supplier-fulfillment-REQ-0004
+    recommendation: edit
+    confidence: medium
+    reason: >
+      Legacy leaves it open, which conflicts with the rule that permission is checked on the server; rebuild should require sign-in. Business Owner to confirm.
+    edited_requirement: >
+      The system SHALL run each line item accessor within a transaction; legacy applied no role check, which the rebuild should not carry over.
+  - record_key: SUPP-ENT-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree.
+  - record_key: SUPPLIER-FULFILLMENT-WF-0001
+    recommendation: accept
+    confidence: high
+    reason: >
+      Several passes and the runbook agree. Shared with order-approval; keep it here as the supplier-side trigger.
+  - record_key: supplier-fulfillment-REQ-0003
+    recommendation: accept
+    confidence: high
+    reason: >
+      Both passes agree.
