@@ -1,0 +1,151 @@
+# Vortex project configuration.
+#
+# Two things live here, and both feed an agent's composed prompt directly.
+
+# This project has CONSOLIDATED its agent instructions: AGENTS.md is the single authored manual,
+# and CLAUDE.md / GEMINI.md are symlinks to it.
+instructions:
+  source: AGENTS.md
+
+# Project command contract (tier 2): how THIS project installs, builds, tests and validates
+# itself. Slots not listed fall through to the `ts-nextjs-mui` stack defaults in the Vortex
+# bundle. The resolved table reaches every agent's prompt under `## Project commands`.
+commands:
+  install: { command: npm ci }
+  build:
+    command: npm run build
+    notes: >-
+      `next build`, with standalone output for the Docker image. It writes only ignored files
+      (`.next/`, `next-env.d.ts`).
+  start:
+    command: npm run dev
+    notes: >-
+      Next.js dev server on :3000. Playwright uses :3100 and the acceptance suite :3101, so they
+      never collide. The SQLite file is sqlite.db at the project root, created and seeded on first use.
+  check-types:
+    command: npm run typecheck
+    notes: >-
+      `next typegen && tsc --noEmit`. typegen writes `next-env.d.ts` and the route types, which a
+      fresh clone does not have.
+  check-lint: { command: npm run lint }
+  check-format:
+    command: npm run format:check
+    notes: Prettier, the repository's own configuration. `npm run format` fixes it.
+  check-versions:
+    command: node .vortex/check-versions.mjs
+    notes: >-
+      stack.versions.yaml is the one place versions are declared; this fails when package.json,
+      the lockfile, the Dockerfile or a CI file disagrees. Change a version there and in what
+      follows from it, in one change.
+  package:
+    command: docker build -t mui-pet-store-2 .
+    notes: >-
+      The production image. Needs Docker, which an agent workspace does not have: CI's
+      docker-build job runs it. Never try to run it in a workspace.
+  test-unit:
+    command: npm test
+    notes: >-
+      Jest through next/jest. Component tests run in jsdom; a route or database test starts with a
+      `@jest-environment node` comment. The run uses a fresh SQLite file (src/db/test-setup.ts), never sqlite.db.
+  test-e2e:
+    command: npm run test:e2e
+    notes: >-
+      Playwright against `next dev` on :3100. Do NOT retry or try to install a browser when
+      Chromium is missing.
+  test-mutation:
+    command: npx stryker run
+    notes: >-
+      Stryker with the Jest runner; the report is reports/mutation/mutation.json. Slow by nature.
+      Run it as `timeout 600 npx stryker run > /tmp/stryker.log 2>&1; echo $?`.
+  test-smoke:
+    command: npm run test:smoke
+    notes: One spec (e2e/smoke.spec.ts) — the app loads, the API and a database route answer.
+  verify:
+    command: node .vortex/check-versions.mjs && npm run verify
+    notes: The browser-free core gate — lint + format + typecheck + unit. Safe in any environment.
+  verify-full:
+    command: node .vortex/check-versions.mjs && npm run verify:full
+    notes: >-
+      `verify` plus the E2E tier. Prefer this: every environment this template targets (agent
+      workspace containers, CI, local dev) ships a Chromium.
+  test-perf:
+    command: npm run test:proving
+    notes: >-
+      Proving tests (tests/proving/*.proving.spec.ts, Playwright's request fixture, no browser):
+      each measures the BUILT server named by PROVING_BASE_URL (default http://127.0.0.1:3000;
+      start it with `npm run build` and `node .next/standalone/server.js`) and reports the value to
+      Vortex as JUnit properties (nfr_key, nfr_value, nfr_unit). Vortex owns the targets: a proving
+      test never asserts one. CI runs it in the non-gating `proving` job.
+  extra:
+    doc-links:
+      command: node scripts/check-doc-links.mjs
+      description: Fail on a relative markdown link whose target file is missing.
+    db-generate:
+      command: npm run db:generate
+      description: Regenerate the drizzle migrations in drizzle/ from src/db/schema.ts
+    db-studio:
+      command: npm run db:studio
+      description: Open drizzle studio against the local sqlite.db
+
+# Spec-driven development (OpenSpec). `openspec/` ships with the template, on the platform's
+# `vortex` schema.
+specDriven:
+  enabled: true
+
+# Which CI job runs each command slot. A requirement proved by `command:<slot>` reads that job's
+# result in the official CI run at a commit (the Architecture and requirements module). A slot
+# with no entry reads "no evidence"; Vortex never guesses a job from a command string.
+ci:
+  slotJobs:
+    install: build-and-test
+    check-versions: build-and-test
+    check-types: build-and-test
+    check-lint: build-and-test
+    check-format: build-and-test
+    test-unit: build-and-test
+    build: build-and-test
+    test-e2e: build-and-test
+    package: docker-build
+    test-perf: proving
+
+# Test traceability: the platform runs this command for a ticket's red and green runs and reads
+# the one JUnit report it writes. Jest and Playwright each write their own report; the command
+# merges them.
+testEvidence:
+  command: >-
+    mkdir -p .vortex-results && rm -f .vortex-results/*.xml;
+    JEST_JUNIT_OUTPUT_FILE=.vortex-results/unit.xml npx jest --reporters=jest-junit; u=$?;
+    PLAYWRIGHT_JUNIT_OUTPUT_NAME=.vortex-results/e2e.xml npx playwright test --reporter=junit; e=$?;
+    { echo '<?xml version="1.0" encoding="UTF-8"?>'; echo '<testsuites>';
+    cat .vortex-results/unit.xml .vortex-results/e2e.xml 2>/dev/null | sed -e '/<?xml/d' -e 's#</\{0,1\}testsuites[^>]*>##g';
+    echo '</testsuites>'; } > .vortex-results/junit.xml;
+    [ $u -eq 0 ] && [ $e -eq 0 ]
+  junitPath: .vortex-results/junit.xml
+  testGlobs: ["src/**/*.test.ts", "src/**/*.test.tsx", "e2e/**/*.spec.ts"]
+  configFiles:
+    [
+      "jest.config.mjs",
+      "jest.acceptance.config.mjs",
+      "jest.setup.ts",
+      "playwright.config.ts",
+      "playwright.acceptance.config.ts",
+      "stryker.config.json",
+    ]
+  redScaffoldGlobs: ["src/db/schema.ts", "drizzle/**"]
+  timeoutSeconds: 900
+  # How a ticket's locked acceptance tests run at green ({files} is replaced by the files).
+  acceptance:
+    suites:
+      - kind: unit
+        command: JEST_JUNIT_OUTPUT_FILE=.vortex-results/acceptance/junit.xml npm run test:acceptance -- {files} --reporters=default --reporters=jest-junit
+        junitPath: .vortex-results/acceptance/junit.xml
+        testGlobs: ["tests/acceptance/**/*.test.ts", "tests/acceptance/**/*.test.tsx"]
+      - kind: browser
+        command: npm run test:acceptance:e2e -- {files}
+        junitPath: .vortex-results/acceptance/e2e-junit.xml
+        testGlobs: ["tests/acceptance/**/e2e/**/*.spec.ts"]
+  # The CI job that runs each level officially (.github/workflows/ci.yml).
+  ciJobs:
+    unit: build-and-test
+    integration: build-and-test
+    e2e: build-and-test

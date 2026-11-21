@@ -1,0 +1,59 @@
+# The same CI on GitLab. Created by Vortex from the Next.js, MUI and Modernize stack template.
+# Certified on GitHub; this file is checked but not yet proven on GitLab.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+# The Helm add-on's check, when the project was created with it.
+include:
+  - local: .gitlab/ci/helm.yml
+    rules:
+      - exists:
+          - .gitlab/ci/helm.yml
+
+default:
+  image: node:22.22.3-bookworm-slim@sha256:e21fc383b50d5347dc7a9f1cae45b8f4e2f0d39f7ade28e4eef7d2934522b752
+  interruptible: true
+
+build-and-test:
+  script:
+    - npm ci
+    - node .vortex/check-versions.mjs
+    - node scripts/check-doc-links.mjs
+    - npm run typecheck
+    - npm run lint
+    - npm run format:check
+    - JEST_JUNIT_OUTPUT_FILE=.vortex-results/unit.xml npm test -- --reporters=default --reporters=jest-junit
+    - npm run build
+    - npx playwright install --with-deps chromium
+    - PLAYWRIGHT_JUNIT_OUTPUT_NAME=.vortex-results/e2e.xml npm run test:e2e -- --reporter=list,junit
+    - JEST_JUNIT_OUTPUT_FILE=.vortex-results/acceptance/junit.xml npm run test:acceptance -- --reporters=default --reporters=jest-junit || true
+    - npm run test:acceptance:e2e || true
+  artifacts:
+    name: vortex-test-results
+    when: always
+    paths:
+      - .vortex-results/
+
+tdd-verify:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^vortex\/sprint\//
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - npm ci
+    - sh .vortex/tdd-verify.sh "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" "JEST_JUNIT_OUTPUT_FILE=.vortex-results/junit.xml npm test -- --reporters=default --reporters=jest-junit" ".vortex-results/junit.xml"
+  artifacts:
+    name: vortex-tdd-replay
+    when: always
+    paths:
+      - vortex-replay/
+
+docker-build:
+  image: docker:27@sha256:aa3df78ecf320f5fafdce71c659f1629e96e9de0968305fe1de670e0ca9176ce
+  services:
+    - docker:27-dind@sha256:aa3df78ecf320f5fafdce71c659f1629e96e9de0968305fe1de670e0ca9176ce
+  script:
+    - docker build -t app:ci .

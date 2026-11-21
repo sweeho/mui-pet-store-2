@@ -1,0 +1,31 @@
+# The declared versions of this project's stack (Vortex PRD 110 FR-GP-30, FR-GP-31). Created from
+# the Next.js, MUI and Modernize stack template. Change a version here and in every file that
+# follows from it, in one change: `npm run check-versions` fails when they disagree.
+template: ts-nextjs-mui-modernize@1.1.0
+options:
+  database: sqlite
+  helm: "off"
+components:
+  node: 22.22.3
+  node-image: node:22.22.3-bookworm-slim@sha256:e21fc383b50d5347dc7a9f1cae45b8f4e2f0d39f7ade28e4eef7d2934522b752
+  npm: 10.9.8
+  typescript: 5.9.3
+  next: 16.4.6
+  react: 19.2.9
+  react-dom: 19.2.9
+  "@mui/material": 7.3.11
+  "@mui/material-nextjs": 7.3.10
+  # The admin shell's edition: free-<Modernize Free commit>, or pro-<Modernize Pro version>.
+  modernize: free-948e484
+  "@emotion/react": 11.14.0
+  "@emotion/styled": 11.14.1
+  drizzle-orm: 0.45.2
+  drizzle-kit: 0.31.10
+  "@libsql/client": 0.17.4
+  jest: 30.5.2
+  "@playwright/test": 1.60.0
+  "@stryker-mutator/core": 9.6.1
+  "@stryker-mutator/jest-runner": 9.6.1
+  eslint: 9.39.5
+  eslint-config-next: 16.4.6
+  prettier: 3.6.2

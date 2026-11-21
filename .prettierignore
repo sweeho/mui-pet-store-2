@@ -1,0 +1,22 @@
+# Generated: drizzle-kit writes the migrations, npm the lockfile.
+drizzle/
+package-lock.json
+# Written by Vortex, not by hand: the OpenSpec schema it customises, the changes and specs its
+# planning and archive steps commit, and the agents' ticket and sprint records. A format check
+# over them fails a sprint on files no agent on it may edit.
+openspec/schemas/
+openspec/changes/
+openspec/specs/
+artifacts/
+# The skills Vortex writes into an agent's clone. Git excludes them through .git/info/exclude,
+# which Prettier does not read, so `verify` in the agent's own clone would check them.
+.claude/skills/
+# Written by Vortex before a sprint starts, and landed by Spec Intake: the acceptance suite the
+# Test Author writes and a person locks (no sprint agent may edit it), the PRD Vortex distils,
+# and the legacy evidence and build manifest Spec Extraction publishes.
+tests/acceptance/
+design/prd/
+api/openapi.yaml
+architecture/
+build/manifest.yaml
+legacy-analysis/

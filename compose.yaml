@@ -1,0 +1,13 @@
+# Runs the production image locally: `docker compose up --build`, then http://localhost:3000.
+# The SQLite file lives in the `data` volume, so it survives a rebuild.
+services:
+  app:
+    build: .
+    image: mui-pet-store-2:local
+    ports:
+      - "3000:3000"
+    volumes:
+      - data:/app/data
+
+volumes:
+  data: {}

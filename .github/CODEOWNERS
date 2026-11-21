@@ -1,0 +1,10 @@
+# Created by Vortex from the stack template. The owner is the forge account the project was
+# created with; change it to your team.
+/tests/acceptance/** @sweeho
+/stack.versions.yaml @sweeho
+/.vortex/ @sweeho
+/package.json @sweeho
+/package-lock.json @sweeho
+/Dockerfile @sweeho
+/.github/ @sweeho
+/.gitlab-ci.yml @sweeho

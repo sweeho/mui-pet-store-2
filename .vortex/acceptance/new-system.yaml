@@ -1,0 +1,4 @@
+# How the acceptance suite reaches the application (Vortex setup step new-system-binding).
+baseUrl: http://localhost:3101
+start: npx next dev --port 3101
+ready: /

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Next.js: the build, and the type files `next typegen`, `next dev` and `next build` write
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Tests and reports
+/coverage/
+/reports/
+/.stryker-tmp/
+/playwright-report/
+/test-results/
+/blob-report/
+/.vortex-results/
+/.vortex-scan/
+/vortex-replay/
+
+# Local environment
+.env
+.env*.local
+.DS_Store
+
+# The SQLite database, created and seeded on first use (src/db/client.ts). The migrations in
+# drizzle/ ARE committed.
+sqlite.db
+sqlite.db-journal
+sqlite.db-wal
+sqlite.db-shm

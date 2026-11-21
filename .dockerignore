@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+coverage
+reports
+.stryker-tmp
+playwright-report
+test-results
+.vortex-results
+.vortex-scan
+sqlite.db*
+.env*

@@ -1,0 +1,14 @@
+# The scanners Vortex runs on this project (plan 118 PD16, PRD 110 FR-GP-21). Each needs no
+# running target, and each is in the agent image. A scanner that is not installed would leave the
+# scan verdict failed, so this list names only what the image carries.
+scanners:
+  - name: osv-scanner
+    kind: sca
+    command: mkdir -p .vortex-scan && osv-scanner scan source --recursive --format sarif --output .vortex-scan/osv.sarif . || test -s .vortex-scan/osv.sarif
+    report: .vortex-scan/osv.sarif
+    maxSeconds: 900
+  - name: gitleaks
+    kind: secrets
+    command: mkdir -p .vortex-scan && gitleaks detect --no-banner --report-format sarif --report-path .vortex-scan/gitleaks.sarif || test -s .vortex-scan/gitleaks.sarif
+    report: .vortex-scan/gitleaks.sarif
+    maxSeconds: 600
