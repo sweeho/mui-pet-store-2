@@ -1,0 +1,213 @@
+records:
+  - record_key: CATB-REQ-0001
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL list categories, the products of a category and the items of a product in the shopper's locale, returning only rows that have a description for that locale.
+    confidence: high
+    confidence_basis: Locale filter appears in every statement in the SQL config and the locale is passed in every DAO method; the user guide describes browsing. Not graded further because only the cloudscape variant was read closely.
+    risk_class: presentational
+    basis: Every GET_* statement filters on locale of the details table.
+    plain_text: Shoppers see categories, products and items in their own language, and only content that exists in that language.
+    technical_note: GenericCatalogDAO passes locale.toString() as the first parameter; SQL in CatalogDAOSQL.xml joins category/product/item with their *_details tables.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 242
+        line_end: 246
+        excerpt: |
+          String[] parameterValues = new String[] { locale.toString(), categoryID };
+          if (TRACE) {
+            printSQLStatement(sqlStatements, XML_GET_PRODUCTS, parameterValues);
+          }
+          statement = buildSQLStatement(connection, sqlStatements, XML_GET_PRODUCTS, parameterValues);
+      - path: legacy-source/app/src/apps/petstore/src/docroot/CatalogDAOSQL.xml
+        line_start: 85
+        line_end: 90
+        excerpt: |
+          <SQLStatement method="GET_PRODUCTS">
+              <SQLFragment parameterNb="2">
+                  select a.productid, name, descn
+                      from (product a join product_details b on a.productid=b.productid)
+                      where locale = ? and a.catid = ? order by name
+              </SQLFragment>
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1 section 2.2 Browsing and searching
+        excerpt: Select a category to list its products, a product to list its items, and an item to see its detail.
+    stack_metadata:
+      framework: EJB 2.x stateless session bean
+      ejb.bean: CatalogEJB
+      db.object: category, category_details, product, product_details, item, item_details
+  - record_key: CATB-REQ-0002
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL order categories and products by name within a locale; items of a product are returned in no specified order.
+    confidence: medium
+    confidence_basis: One clear place (SQL config); GET_ITEMS has no order clause, so item order is database-dependent, which was inferred from absence.
+    risk_class: presentational
+    basis: GET_CATEGORIES and GET_PRODUCTS end with order by name; GET_ITEMS and SEARCH_ITEMS have none.
+    plain_text: Categories and products appear alphabetically by name; items appear in whatever order the database returns.
+    technical_note: See CatalogDAOSQL.xml cloudscape section.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/apps/petstore/src/docroot/CatalogDAOSQL.xml
+        line_start: 71
+        line_end: 77
+        excerpt: |
+          <SQLStatement method="GET_CATEGORIES">
+              <SQLFragment parameterNb="1">
+                  select a.catid, name, descn
+                      from (category a join category_details b on a.catid=b.catid) 
+                      where locale = ?  order by name
+              </SQLFragment>
+  - record_key: CATB-REQ-0003
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL return lists in pages defined by a start offset and a count, flagging whether more rows follow, and SHALL return an empty page when start is negative or beyond the last row.
+    confidence: high
+    confidence_basis: Identical paging logic repeated in five DAO methods, plus the user guide describes Next and Previous.
+    risk_class: operational
+    basis: absolute(start+1) then loop while next() and --count > 0; Page carries hasNext.
+    plain_text: Long lists are shown a few rows at a time with Next and Previous; asking for a page past the end shows nothing.
+    technical_note: The page size comes from the caller, not from this module. The user guide says 2 rows at a time; that value is not in this component.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 248
+        line_end: 258
+        excerpt: |
+          if (start >= 0 && resultSet.absolute(start + 1)) {
+            boolean hasNext = false;
+            List products = new ArrayList();
+            do {
+              products.add(new Product(resultSet.getString(1).trim(),
+                                       resultSet.getString(2),
+                                       resultSet.getString(3)));
+            } while ((hasNext = resultSet.next()) && (--count > 0));
+            return new Page(products, start, hasNext);
+          }
+          return Page.EMPTY_PAGE;
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1 section 2.2 Browsing and searching
+        excerpt: Lists show 2 rows at a time with Next and Previous.
+  - record_key: CATB-REQ-0004
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL search items by splitting the query on whitespace into a distinct set of keywords and returning items whose product name, category id or item description contains ANY keyword, case-insensitively, within the locale.
+    confidence: high
+    confidence_basis: Code and SQL config agree, and the user guide states the same rule.
+    risk_class: operational
+    basis: HashSet of tokens, three LIKE parameters per keyword OR-ed together, lower() on columns.
+    plain_text: Typing one or more words finds every item whose name, category or description contains at least one of the words, ignoring capitals.
+    technical_note: Keywords are wrapped in % and passed as bind parameters. The keyword itself is not lower-cased in Java; the match is case-insensitive only if the query is already lower case (see defect).
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 345
+        line_end: 365
+        excerpt: |
+          Collection keywordSet = new HashSet();
+          StringTokenizer tokenizer = new StringTokenizer(searchQuery);
+          while (tokenizer.hasMoreTokens()) {
+            keywordSet.add(tokenizer.nextToken());
+          }
+          if (keywordSet.isEmpty()) {
+            return Page.EMPTY_PAGE;
+          }
+      - path: legacy-source/app/src/apps/petstore/src/docroot/CatalogDAOSQL.xml
+        line_start: 119
+        line_end: 122
+        excerpt: |
+          where b.locale = ? and ((lower(name) like ? or lower(catid) like ? or lower(b.descn) like ?)
+          or (lower(name) like ? or lower(catid) like ? or lower(b.descn) like ?)
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1 section 2.2 Browsing and searching
+        excerpt: Search is not case-sensitive. It matches the product name, the category and the item description, and shows items that match any of the words.
+  - record_key: CATB-REQ-0005
+    kind: business-rule
+    capability_key: catalog-browsing
+    requirement: GIVEN a search query containing no keywords (empty or whitespace only) WHEN a search is made THEN the system SHALL return an empty result page without querying the database.
+    confidence: medium
+    confidence_basis: One clear place in code.
+    risk_class: presentational
+    basis: Early return on empty keyword set.
+    plain_text: A blank search shows no results.
+    technical_note: searchItems returns Page.EMPTY_PAGE before opening a connection.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 350
+        line_end: 352
+        excerpt: |
+          if (keywordSet.isEmpty()) {
+            return Page.EMPTY_PAGE;
+          }
+  - record_key: CATB-REQ-0006
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL return an item with its product id, category, product name, description, image location, up to five attributes, list price and unit cost, and SHALL return no item when the id does not exist.
+    confidence: medium
+    confidence_basis: Item mapping in one place (DAO) plus the model; the guide mentions two prices.
+    risk_class: financial
+    basis: GET_ITEM reads listprice and unitcost; getCategory/getProduct/getItem return null when no row.
+    plain_text: An item page shows the item's details and two prices, the list price and the member price; an unknown item shows nothing.
+    technical_note: Item.getListCost returns listPrice, getUnitCost returns unitCost. The guide labels unit cost as Your Price for members; no member logic exists in this module.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 278
+        line_end: 294
+        excerpt: |
+          if (resultSet.first()) {
+            int i = 1;
+            return new Item(resultSet.getString(i++).trim(),
+          ...
+                            resultSet.getDouble(i++),
+                            resultSet.getDouble(i++));
+          }
+          return null;
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1 section 2.3 Item prices
+        excerpt: "List Price: the shelf price of the item. Your Price: the discounted price for members."
+  - record_key: CATB-REQ-0007
+    kind: requirement
+    capability_key: catalog-browsing
+    requirement: The system SHALL load its SQL statements for the configured database (cloudscape or oracle) from an XML file at start-up, and SHALL fail creation of the catalog service if the file cannot be loaded.
+    confidence: medium
+    confidence_basis: Seen in constructor and DAO XML; oracle variant not read in detail.
+    risk_class: operational
+    basis: Constructor wraps any exception in CatalogDAOSysException, which CatalogEJB.ejbCreate turns into EJBException.
+    plain_text: The catalog works against either supported database and will not start if its query definitions are unavailable.
+    technical_note: JNDI entries for the SQL file URL and database name; DAOStatements keyed by database.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 89
+        line_end: 106
+        excerpt: |
+          public GenericCatalogDAO() throws CatalogDAOSysException {
+            try {
+              InitialContext context = new InitialContext();
+              URL daoSQLURL = (URL) context.lookup(JNDINames.CATALOG_DAO_SQL_URL);
+    stack_metadata:
+      ejb.bean: CatalogEJB
+suspected_defects:
+  - capability_key: catalog-browsing
+    record_keys: [CATB-REQ-0004]
+    severity: low
+    category: contradicts-document
+    title: Search keywords are not lower-cased
+    description: >
+      Columns are compared with lower(...) but the keyword is only wrapped in %, so a query typed
+      with capitals (e.g. "Bulldog") may not match, while the guide says search is not case-sensitive.
+      Callers may lower-case the query before calling; that was not checked in this module.
+    traces:
+      - path: legacy-source/app/src/components/catalog/src/com/sun/j2ee/blueprints/catalog/dao/GenericCatalogDAO.java
+        line_start: 361
+        line_end: 365
+        excerpt: |
+          for (int i = 0; i < keywords.length; i++) {
+            parameterValues[(i * 3) + 1] = "%" + keywords[i] + "%";
+      - path: legacy-analysis/sources/pdf/petstore-user-guide/extracted.md
+        anchor: p1 section 2.2 Browsing and searching
+        excerpt: Search is not case-sensitive.
+findings: []
