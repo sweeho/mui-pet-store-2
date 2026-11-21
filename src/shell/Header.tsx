@@ -11,14 +11,20 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import { IconMenu } from "@tabler/icons-react";
+import Link from "next/link";
+
+import { APP_NAME } from "@/constants/app";
+
+import { BrandLogo } from "./BrandLogo";
 
 const AppBarStyled = styled(AppBar)(({ theme }) => ({
   boxShadow: "none",
+  borderBottom: `1px solid ${theme.palette.divider}`,
   background: theme.palette.background.paper,
   justifyContent: "center",
   backdropFilter: "blur(4px)",
   [theme.breakpoints.up("lg")]: {
-    minHeight: "70px",
+    minHeight: "64px",
   },
 }));
 
@@ -36,10 +42,36 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
           color="inherit"
           aria-label="Open the menu"
           onClick={toggleMobileSidebar}
-          sx={{ display: { lg: "none", xs: "inline" } }}
+          sx={{
+            display: { lg: "none", xs: "inline-flex" },
+            width: { xs: 44, lg: 36 },
+            height: { xs: 44, lg: 36 },
+            fontSize: "0.875rem",
+            fontFamily: "inherit",
+            color: "text.primary",
+            border: 1,
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
         >
           <IconMenu width="20" height="20" />
         </IconButton>
+        <Box
+          component={Link}
+          href="/"
+          sx={{
+            display: { xs: "flex", lg: "none" },
+            alignItems: "center",
+            gap: 1,
+            ml: 1,
+            fontWeight: 700,
+            fontSize: "0.9375rem",
+            color: "text.primary",
+          }}
+        >
+          <BrandLogo />
+          {APP_NAME}
+        </Box>
         <Box flexGrow={1} />
       </ToolbarStyled>
     </AppBarStyled>

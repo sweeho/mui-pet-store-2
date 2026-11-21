@@ -3,20 +3,43 @@ import { expect, test } from "@playwright/test";
 /**
  * UI / E2E TEST
  *
- * Drives the real app in a real browser. Use it for what only a browser can show: the shell's
- * layout, the sidebar on a small screen, the page and its data together.
+ * The landing page and the rail in a real browser: layout, the links, the menu button on a small
+ * screen.
  */
-test.describe("Home page", () => {
-  test("greets the world inside the shell, with a row from the database", async ({ page }) => {
+test.describe("Landing page and navigation", () => {
+  test("[SWHM3-C-0163] the landing page links to every primary area", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Hello, world");
-    // One row through the database (the definition of done).
-    await expect(page.getByTestId("first-user")).toContainText("First user: John Doe");
-    await expect(page.getByRole("link", { name: "Home" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const main = page.getByRole("main");
+    await expect(main.getByRole("link", { name: /Localization/ })).toHaveAttribute(
+      "href",
+      /\/localization$/,
+    );
+    await expect(main.getByRole("link", { name: /Order administration/ })).toHaveAttribute(
+      "href",
+      /\/admin\/orders$/,
+    );
   });
 
-  test("opens the sidebar from the menu button on a small screen", async ({ page }) => {
+  test("[SWHM3-C-0164] the rail links home from another page", async ({ page }) => {
+    await page.goto("/localization");
+
+    await page.getByRole("navigation").getByRole("link", { name: "Home" }).click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  });
+
+  test("[SWHM3-C-0165] a missing page renders inside the shell", async ({ page }) => {
+    await page.goto("/no-such-page");
+
+    await expect(page.getByRole("banner")).toBeVisible();
+    await expect(page.getByRole("navigation")).toBeVisible();
+    await expect(page.getByRole("contentinfo")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Page not found");
+  });
+
+  test("opens the rail from the menu button on a small screen", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 

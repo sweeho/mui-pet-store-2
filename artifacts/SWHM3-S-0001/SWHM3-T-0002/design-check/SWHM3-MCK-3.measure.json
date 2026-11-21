@@ -1,0 +1,143 @@
+{
+  "key": "SWHM3-MCK-3",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-site-shell.html",
+  "url": "http://localhost:3000/localization",
+  "width": 1440,
+  "at": "2026-11-21T15:07:33.247Z",
+  "pixelDifference": 0.0618,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Shop",
+      "mockup": "div at 12,64"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "div at 12,253"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 12,367"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin",
+      "mockup": "div at 12,405"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Area",
+      "mockup": "div at 272,88"
+    },
+    {
+      "kind": "missing",
+      "text": "Page title",
+      "mockup": "h1 at 272,113"
+    },
+    {
+      "kind": "missing",
+      "text": "One line that says what this page is for.",
+      "mockup": "p at 272,149"
+    },
+    {
+      "kind": "missing",
+      "text": "Primary action",
+      "mockup": "button at 1282,113"
+    },
+    {
+      "kind": "missing",
+      "text": "Loading…",
+      "mockup": "div at 273,195"
+    },
+    {
+      "kind": "extra",
+      "text": "Areas",
+      "built": "li at 12,64"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "a at 12,139"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,177"
+    },
+    {
+      "kind": "extra",
+      "text": "The languages the store supports.",
+      "built": "p at 264,127"
+    }
+  ]
+}

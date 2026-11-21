@@ -1,0 +1,175 @@
+{
+  "key": "SWHM3-MCK-7",
+  "mockup": "artifacts/SWHM3-S-0001/design/mockup-error-state.html",
+  "url": "http://localhost:3000/localization",
+  "width": 1440,
+  "at": "2026-11-21T15:07:36.601Z",
+  "pixelDifference": 0.034,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Shop",
+      "mockup": "div at 12,64"
+    },
+    {
+      "kind": "missing",
+      "text": "Catalog",
+      "mockup": "a at 12,139"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "a at 12,177"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "missing",
+      "text": "Account",
+      "mockup": "div at 12,253"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "missing",
+      "text": "Profile",
+      "mockup": "a at 12,329"
+    },
+    {
+      "kind": "missing",
+      "text": "Language",
+      "mockup": "a at 12,367"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin",
+      "mockup": "div at 12,405"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "missing",
+      "text": "Search the catalog",
+      "mockup": "input at 303,21"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "button at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Home / Catalog",
+      "mockup": "div at 272,88"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse pets by category.",
+      "mockup": "p at 272,149"
+    },
+    {
+      "kind": "missing",
+      "text": "Couldn’t load",
+      "mockup": "span at 789,331"
+    },
+    {
+      "kind": "missing",
+      "text": "We couldn’t load the catalog",
+      "mockup": "h2 at 717,361"
+    },
+    {
+      "kind": "style",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "prop": "position",
+      "mockup": "648,391",
+      "built": "648,316"
+    },
+    {
+      "kind": "style",
+      "text": "Try again",
+      "prop": "position",
+      "mockup": "726,431",
+      "built": "726,356"
+    },
+    {
+      "kind": "style",
+      "text": "Go to home",
+      "prop": "position",
+      "mockup": "850,431",
+      "built": "848,356"
+    },
+    {
+      "kind": "missing",
+      "text": "Reference req_7f3a9c21",
+      "mockup": "p at 767,487"
+    },
+    {
+      "kind": "missing",
+      "text": "req_7f3a9c21",
+      "mockup": "span at 829,488"
+    },
+    {
+      "kind": "extra",
+      "text": "Areas",
+      "built": "li at 12,64"
+    },
+    {
+      "kind": "extra",
+      "text": "Localization",
+      "built": "a at 12,139"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,177"
+    },
+    {
+      "kind": "extra",
+      "text": "The languages the store supports.",
+      "built": "p at 264,127"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load the languages",
+      "built": "h2 at 703,289"
+    }
+  ]
+}
