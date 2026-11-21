@@ -1,0 +1,11 @@
+capability_key,name,summary
+catalog-browsing,Catalog browsing and search,Categories products and items display with paging and keyword search per locale
+shopping-cart,Shopping cart,Adding removing and updating cart items and quantities and empty-cart rules
+customer-accounts,Customer accounts and sign-on,Account creation duplicate detection sign-on/off session timeout and profile editing
+checkout-order-placement,Checkout and order placement,Order entry validation of address and card data and purchase order creation
+order-approval,Order approval,Automatic approval limits by locale and manual approve/deny and order state machine
+supplier-fulfillment,Supplier fulfillment and inventory,Supplier purchase orders stock handling shipment and invoicing back to OPC
+customer-notifications,Customer notifications,Confirmation approval and completed-order e-mails per locale
+order-administration,Order administration,Admin client for viewing approving orders and sales charts
+localization,Localization,Locale selection and en/ja/zh content and formats
+batch-operations,Batch operations and reporting,Nightly backup order extract aging inventory catalog check purge and schedule
