@@ -39,5 +39,3 @@ export type ProfileForm = {
 
 /** Everything the domain functions need: the database and a clock (milliseconds). */
 export type Deps = { db: AppDb; now: () => number };
-
-export const STUB = "VortexNotImplemented";

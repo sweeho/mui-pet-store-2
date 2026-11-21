@@ -1,37 +1,30 @@
-import { STUB, type Profile } from "./types";
+import type { Profile } from "./types";
 
-export * from "./types";
-
-export function newProfile(_init?: Partial<Profile>): Profile {
-  void _init;
-  throw new Error(STUB);
+/* eslint-disable @typescript-eslint/no-unused-vars */
+export function newProfile(init?: Partial<Profile>): Profile {
+  throw new Error("VortexNotImplemented");
 }
 
-export function validateProfileForm(_form: unknown): { ok: boolean; missing: string[] } {
-  void _form;
-  throw new Error(STUB);
+export function validateProfileForm(form: unknown): { ok: boolean; missing: string[] } {
+  throw new Error("VortexNotImplemented");
 }
 
 export function rememberCookie(
-  _userName: string,
-  _remember: boolean,
+  userName: string,
+  remember: boolean,
 ): { name: string; value: string; maxAge: number } {
-  void _userName;
-  void _remember;
-  throw new Error(STUB);
+  throw new Error("VortexNotImplemented");
 }
 
-export function decideAccess(_req: {
+export function decideAccess(req: {
   pathname: string;
   method: string;
   signedOn: boolean;
 }): "allow" | "sign-in-required" {
-  void _req;
-  throw new Error(STUB);
+  throw new Error("VortexNotImplemented");
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- stub, replaced by the runtime type
-export async function createAccountsRuntime(_opts?: unknown): Promise<any> {
-  void _opts;
-  throw new Error(STUB);
+export async function createAccountsRuntime(opts?: unknown): Promise<any> {
+  throw new Error("VortexNotImplemented");
 }
