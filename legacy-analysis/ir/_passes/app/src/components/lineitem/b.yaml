@@ -1,0 +1,167 @@
+records:
+  - record_key: SUPPLIER-ENTITY-0001
+    kind: entity
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL persist each order line item with category id, product id, item id, line number, quantity, unit price and quantity shipped.
+    confidence: high
+    confidence_basis: >
+      Fields declared in the entity bean accessors and again as container-managed fields in the deployment descriptor, plus the data class.
+    risk_class: financial
+    basis: Seven persistent fields on the line item entity; the data class carries six of them (no quantity shipped).
+    plain_text: >
+      Each line of an order records which item was bought, its line number, how many were ordered, the price per unit, and how many have been shipped.
+    technical_note: >
+      CMP 2.x entity LineItemEJB (abstract schema LineItem); no primary key class beyond Object, ejbCreate returns null.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/ejb-jar.xml
+        line_start: 46
+        line_end: 78
+        excerpt: |
+          <entity>
+            <description>LineItem CMP EJB</description>
+            <ejb-name>LineItemEJB</ejb-name>
+            <persistence-type>Container</persistence-type>
+            <abstract-schema-name>LineItem</abstract-schema-name>
+            <cmp-field><field-name>quantityShipped</field-name></cmp-field>
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItemEJB.java
+        line_start: 130
+        line_end: 136
+        excerpt: |
+          public abstract int getQuantityShipped();
+          public abstract void setQuantityShipped(int qty);
+    stack_metadata:
+      framework: EJB 2.0 CMP
+      ejb.bean: LineItemEJB
+      db.object: LineItem
+  - record_key: SUPPLIER-REQ-0002
+    kind: requirement
+    capability_key: supplier-fulfillment
+    requirement: >
+      GIVEN a line item is created from an existing line item and a shipped quantity, the system SHALL copy category, product, item, line number, quantity and unit price from the source and set quantity shipped to the supplied value.
+    confidence: medium
+    confidence_basis: One creation method; callers are outside this module and not examined.
+    risk_class: operational
+    basis: Second create method copies ordered fields and takes shipped quantity separately.
+    plain_text: >
+      When a supplier shipment record is made from an order line, it keeps the ordered details and records how many units were shipped.
+    technical_note: LineItemEJB.ejbCreate(LineItem, int). No validation of quantity shipped against quantity.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItemEJB.java
+        line_start: 158
+        line_end: 167
+        excerpt: |
+          public Object ejbCreate(LineItem lineItem, int qty) throws CreateException {
+            ...
+            setQuantity(lineItem.getQuantity());
+            setUnitPrice(lineItem.getUnitPrice());
+            setQuantityShipped(qty);
+    stack_metadata:
+      ejb.bean: LineItemEJB
+  - record_key: SUPPLIER-BR-0003
+    kind: business-rule
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL accept any quantity, unit price and quantity shipped on a line item without range or consistency checks (for example, shipped may exceed ordered).
+    confidence: low
+    confidence_basis: Inferred from the absence of checks in this module; validation may exist in callers.
+    risk_class: financial
+    basis: ejbCreate methods only assign values; no validation or exception other than the declared CreateException.
+    plain_text: >
+      This component does not itself stop a line from having a negative quantity, a negative price or more shipped than ordered.
+    technical_note: Checks, if any, must be in the calling beans; not visible here.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItemEJB.java
+        line_start: 141
+        line_end: 152
+        excerpt: |
+          public Object ejbCreate(String catId, String prodId, String itemId,
+                                  String lineNo, int qty, float price, int qtyShipped)
+            throws CreateException {
+              setCategoryId(catId);
+              ...
+              return null;
+    stack_metadata:
+      ejb.bean: LineItemEJB
+  - record_key: CHECKOUT-REQ-0004
+    kind: requirement
+    capability_key: checkout-order-placement
+    requirement: >
+      The system SHALL exchange a line item inside order documents as an XML element LineItem with, in order, CategoryId, ProductId, ItemId, LineNum, Quantity and UnitPrice.
+    confidence: high
+    confidence_basis: DTD, writer and reader code all state the same field set and order.
+    risk_class: operational
+    basis: toDOM writes the six elements; fromDOM reads them in fixed sibling order; DTD fixes the sequence.
+    plain_text: >
+      Order lines are sent to and read from other systems in an agreed layout of six fields; the ordered quantity and price travel, but the shipped quantity does not.
+    technical_note: >
+      LineItem.toDOM/fromDOM with DTD 1.1 public id. fromDOM requires element order exactly as DTD; a missing child fails via the XML utility (required=false flag passed, behaviour depends on that utility, not seen). Wrong root element throws XMLDocumentException.
+    interface: true
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/rsrc/schemas/LineItem.dtd
+        line_start: 38
+        line_end: 50
+        excerpt: |
+          <!ELEMENT LineItem (CategoryId, ProductId, ItemId, LineNum, Quantity, UnitPrice)>
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItem.java
+        line_start: 137
+        line_end: 162
+        excerpt: |
+          public Node toDOM(Document document) {
+            Element root = document.createElement(XML_LINEITEM);
+          ...
+          throw new XMLDocumentException(XML_LINEITEM + " element expected.");
+    stack_metadata:
+      framework: XML DOM/DTD
+  - record_key: SUPPLIER-BR-0005
+    kind: business-rule
+    capability_key: supplier-fulfillment
+    requirement: >
+      The system SHALL permit any caller to use the line item operations without a role check, and SHALL run each accessor within a transaction.
+    confidence: medium
+    confidence_basis: One descriptor declares both; read once in this module.
+    risk_class: operational
+    basis: Method permission unchecked for all methods; container transaction Required on local accessors.
+    plain_text: >
+      Line items carry no access restriction of their own; access is controlled by the components that use them.
+    technical_note: ejb-jar.xml method-permission unchecked for *, trans-attribute Required, caller identity used.
+    interface: false
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/ejb-jar.xml
+        line_start: 85
+        line_end: 101
+        excerpt: |
+          <method-permission>
+            <unchecked />
+            <method><ejb-name>LineItemEJB</ejb-name><method-name>*</method-name></method>
+          </method-permission>
+          <container-transaction> ... <trans-attribute>Required</trans-attribute>
+    stack_metadata:
+      ejb.transaction: Required
+findings: []
+suspected_defects:
+  - capability_key: supplier-fulfillment
+    record_keys: [SUPPLIER-ENTITY-0001, CHECKOUT-REQ-0004]
+    severity: medium
+    category: data-corruption
+    title: Quantity shipped is lost when a line item is converted to its data object
+    description: >
+      getData copies six fields but not quantity shipped, and the XML form has no shipped quantity, so any consumer using the data object or XML loses shipped state.
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItemEJB.java
+        line_start: 171
+        line_end: 180
+  - capability_key: supplier-fulfillment
+    record_keys: [SUPPLIER-ENTITY-0001]
+    severity: medium
+    category: inconsistent-rounding
+    title: Unit price held as binary float
+    description: >
+      Money is stored and serialised as a 32-bit float, which cannot represent most decimal prices exactly.
+    traces:
+      - path: legacy-source/app/src/components/lineitem/src/com/sun/j2ee/blueprints/lineitem/ejb/LineItem.java
+        line_start: 68
+        line_end: 68
