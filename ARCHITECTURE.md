@@ -37,7 +37,7 @@ preview's path prefix (`NEXT_BASE_PATH`). A page that loads data from the browse
 loading, error and empty states through the shared state frames.
 
 `getDb()` (`src/db/client.ts`) connects once per process, applies the migrations in `drizzle/` and
-seeds two demo users when the table is empty.
+seeds two demo users and the sample catalog (en_US, ja_JP, zh_CN) when their tables are empty.
 
 `src/proxy.ts` runs before every request. It issues the session cookie on a first visit, refuses a
 data-changing request whose `Origin` is foreign, and holds the `PUBLIC_PATHS` list of entry points
@@ -56,7 +56,8 @@ Entity level. Columns and constraints are in `src/db/schema.ts`, and behaviour i
   process memory.
 - **Category → Product → Item**: the catalog keys. Each has a **details** entity with one row per
   (entity, locale) for its name, image and description. An item's details also carry the list
-  price and unit cost for that locale, so prices are per locale, not converted.
+  price and unit cost for that locale, so prices are per locale, not converted. An item has no
+  name of its own: it shows its product's name. Catalog reads go through `src/lib/catalog-browsing.ts`.
 - **Audit record**: who, what and when for every data-changing action.
 - **User**: the template's demo table, to be replaced by customer accounts.
 
@@ -97,3 +98,9 @@ builds or runs the image: CI's `docker-build` job does.
 - **D9. Client-supplied state is data, never code.** State carried in a link or form is decoded as
   JSON and validated. Objects are never deserialised from client input.
   (change swhm3-i-0002-localization, design P9)
+- **D10. One catalog module; legacy mechanisms are not the request path.** Every read of categories,
+  products and items, and every catalog search, goes through `src/lib/catalog-browsing.ts`, which
+  returns pages of `{ items, hasNext, hasPrevious }` and `null` for an unknown id. Its front
+  controller, screen resolver and fragment cache exist only to meet the legacy-derived acceptance
+  contract; pages and later capabilities use App Router routing and never route through them.
+  (change swhm3-i-0003-catalog-browsing-and-search, design P1, P10)

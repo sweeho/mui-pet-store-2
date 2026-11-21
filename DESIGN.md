@@ -40,8 +40,9 @@ value, never a component.
 - the rail's entries sit in **labelled groups** (Shop, Account, Admin), each with a small muted
   subheader. A capability adds its entry to the group it belongs to;
 - a **header** (the `banner` landmark) and a **footer** (the `contentinfo` landmark) on every page.
-  The header's right side carries the **language control**: the current language's name, which
-  opens the language page and remembers the page it came from;
+  The header carries the **search box** ("Search the catalog"), which opens the catalog's search
+  results from any page, and on its right side the **language control**: the current language's
+  name, which opens the language page and remembers the page it came from;
 - the page's content in the one `main` landmark between them.
 
 Every page lives under `src/app/(DashboardLayout)/` and so renders inside the shell, including the
@@ -62,6 +63,17 @@ The interface follows the shopper's language (ARCHITECTURE.md §Data flow):
 - A choose-one setting is a radio list with the current value marked **Current**, and one primary
   button below it. A confirmation screen leads with what changed and offers one primary way back to
   where the user was.
+
+## Lists and wayfinding
+
+- **Breadcrumbs.** A page below an area's top level shows breadcrumbs that start at the area
+  (Catalog › Fish › Angelfish), as a `nav` labelled "Breadcrumb" placed after the rail, so the rail
+  stays the first navigation landmark. The last crumb is the current page and is not a link.
+- **Paged lists.** A list shows its range ("Categories 1–2") and a pager with **Previous** only after
+  the first page and **Next** only while more entries remain. Paging is in the address (`?start=`),
+  so a page can be linked and the browser's back button works.
+- **Nothing found is not an error.** An unknown entry, an empty search or a page past the end shows
+  the empty frame with a way back to the list, never the error frame.
 
 ## State frames
 
