@@ -26,10 +26,15 @@ test.describe("order-administration", () => {
       await expect(page.getByRole("row").filter({ hasText: status }).first()).toBeVisible();
     }
     const row = page.getByRole("row").filter({ hasText: "PENDING" }).first();
+    await expect(row.getByRole("cell").nth(4)).toBeVisible(); // id, user id, date, value, status
     await expect(row).toContainText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/);
+    await expect(row).toContainText(/\d+(\.\d+)?/);
     await expect(row.getByRole("button", { name: /approve/i })).toBeVisible();
-    const done = page.getByRole("row").filter({ hasText: "COMPLETED" }).first();
-    await expect(done.getByRole("button", { name: /approve/i })).toHaveCount(0);
+    for (const status of ["APPROVED", "DENIED", "COMPLETED"]) {
+      const ro = page.getByRole("row").filter({ hasText: status }).first();
+      await expect(ro).toContainText(/\b\d{1,2}\/\d{1,2}\/\d{4}\b/);
+      await expect(ro.getByRole("button", { name: /approve|deny/i })).toHaveCount(0);
+    }
   });
 
   // case: SWHM3-C-0098@v1
@@ -44,8 +49,10 @@ test.describe("order-administration", () => {
   // case: SWHM3-C-0102@v1
   test("SWHM3-C-0102 manage orders returns launch descriptor", async ({ page }) => {
     await asAdmin(page);
-    const resp = page.waitForResponse((r) => /admin/.test(r.url()) && r.request().method() !== "GET" || /jnlp/i.test(r.headers()["content-type"] ?? ""));
-    await page.getByRole("button", { name: /manage orders/i }).or(page.getByRole("link", { name: /manage orders/i })).click();
+    const resp = page.waitForResponse(
+      (r) => (/admin/.test(r.url()) && r.request().method() !== "GET") || /jnlp/i.test(r.headers()["content-type"] ?? ""),
+    );
+    await page.getByRole("button", { name: /manage orders/i }).or(page.getByRole("link", { name: /manage orders/i })).first().click();
     const body = await (await resp).text();
     expect(body).toMatch(/jnlp/i);
     expect(body).toMatch(/server|host|codebase/i);
@@ -56,7 +63,7 @@ test.describe("order-administration", () => {
   // case: SWHM3-C-0103@v1
   test("SWHM3-C-0103 log out ends session and shows logout page", async ({ page }) => {
     await asAdmin(page);
-    await page.getByRole("button", { name: /log ?out/i }).or(page.getByRole("link", { name: /log ?out/i })).click();
+    await page.getByRole("button", { name: /log ?out/i }).or(page.getByRole("link", { name: /log ?out/i })).first().click();
     await expect(page.getByText(/logged out|logout|signed out/i).first()).toBeVisible();
     await page.goto("/admin");
     await expect(page.getByLabel(/^username$/i)).toBeVisible();
@@ -74,7 +81,7 @@ test.describe("order-administration", () => {
   // case: SWHM3-C-0107@v1
   test("SWHM3-C-0107 administrator signs in and sees admin home", async ({ page }) => {
     await asAdmin(page);
-    await expect(page.getByRole("button", { name: /manage orders/i }).or(page.getByRole("link", { name: /manage orders/i }))).toBeVisible();
+    await expect(page.getByRole("button", { name: /manage orders/i }).or(page.getByRole("link", { name: /manage orders/i })).first()).toBeVisible();
     await expect(page.getByLabel(/^password$/i)).toHaveCount(0);
   });
 });
