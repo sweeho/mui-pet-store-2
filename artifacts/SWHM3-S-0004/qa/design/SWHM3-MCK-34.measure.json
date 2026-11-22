@@ -1,0 +1,156 @@
+{
+  "key": "SWHM3-MCK-34",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-duplicate-account-mobile.html",
+  "url": "http://localhost:3200/user-creation-error?reason=duplicate",
+  "width": 390,
+  "at": "2026-11-22T01:52:20.076Z",
+  "pixelDifference": 0.1264,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "44x44",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "334,6",
+      "built": "206,44"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "size",
+      "mockup": "20px",
+      "built": "24px"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "box",
+      "mockup": "316x29",
+      "built": "308x60"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "position",
+      "mockup": "37,173",
+      "built": "41,243"
+    },
+    {
+      "kind": "missing",
+      "text": "Someone already has an account called “j2ee”. Pick a different user name, or sign in if it’s yours.",
+      "mockup": "p at 37,210"
+    },
+    {
+      "kind": "missing",
+      "text": "User name",
+      "mockup": "div at 50,284"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "div at 50,301"
+    },
+    {
+      "kind": "missing",
+      "text": "Already taken",
+      "mockup": "span at 230,291"
+    },
+    {
+      "kind": "style",
+      "text": "Choose another user name",
+      "prop": "box",
+      "mockup": "316x44",
+      "built": "209x37"
+    },
+    {
+      "kind": "style",
+      "text": "Choose another user name",
+      "prop": "position",
+      "mockup": "37,358",
+      "built": "46,395"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in as j2ee",
+      "mockup": "a at 37,410"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "Someone already has an account with that user name. Pick a different user name, or sign in if it’s yours.",
+      "built": "p at 41,315"
+    }
+  ]
+}

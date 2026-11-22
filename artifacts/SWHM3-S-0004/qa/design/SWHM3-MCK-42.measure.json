@@ -1,0 +1,166 @@
+{
+  "key": "SWHM3-MCK-42",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-signed-off-mobile.html",
+  "url": "http://localhost:3200/signed-off",
+  "width": 390,
+  "at": "2026-11-22T01:52:36.694Z",
+  "pixelDifference": 0.1159,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "44x44",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "334,6",
+      "built": "206,44"
+    },
+    {
+      "kind": "missing",
+      "text": "You’ve signed off",
+      "mockup": "h1 at 37,173"
+    },
+    {
+      "kind": "style",
+      "text": "Thanks for shopping. Your session has ended on this device.",
+      "prop": "position",
+      "mockup": "37,210",
+      "built": "41,285"
+    },
+    {
+      "kind": "style",
+      "text": "Your cart was emptied",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Your cart was emptied",
+      "prop": "position",
+      "mockup": "37,271",
+      "built": "41,337"
+    },
+    {
+      "kind": "missing",
+      "text": "We kept your language: English (US)",
+      "mockup": "li at 37,297"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in again",
+      "prop": "box",
+      "mockup": "316x44",
+      "built": "119x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in again",
+      "prop": "position",
+      "mockup": "37,340",
+      "built": "69,418"
+    },
+    {
+      "kind": "style",
+      "text": "Back to home",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "style",
+      "text": "Back to home",
+      "prop": "box",
+      "mockup": "316x44",
+      "built": "122x37"
+    },
+    {
+      "kind": "style",
+      "text": "Back to home",
+      "prop": "position",
+      "mockup": "37,392",
+      "built": "200,418"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,867"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "You have signed off",
+      "built": "h1 at 82,243"
+    },
+    {
+      "kind": "extra",
+      "text": "We kept your language: English (United States)",
+      "built": "li at 41,357"
+    }
+  ]
+}
