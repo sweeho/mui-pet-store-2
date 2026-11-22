@@ -40,8 +40,10 @@ loading, error and empty states through the shared state frames.
 seeds two demo users and the sample catalog (en_US, ja_JP, zh_CN) when their tables are empty.
 
 `src/proxy.ts` runs before every request. It issues the shopper session cookie on a first visit,
-refuses a data-changing request whose `Origin` is foreign, and is the one sign-in gate: an entry point
-not on its `PUBLIC_PATHS` list needs a signed-on customer. A signed-out page request gets the sign-in
+refuses a data-changing request whose `Origin` is foreign, and is the one sign-in gate
+(`src/lib/customer-accounts/access.ts`): every `/api/**` endpoint not on `PUBLIC_PREFIXES` needs a
+signed-on customer, and so does every page under `PROTECTED_PAGE_PREFIXES` (`/customer`, `/account`,
+`/orders`, `/checkout`, `/admin`); other pages are open. A signed-out page request gets the sign-in
 screen and returns to the page after sign-on; an API request gets 401. Sign-on is Auth.js with a user
 name and password; its session is an encrypted token cookie checked on the server on every request
 (15 min idle, 8 h maximum, and a session version on the sign-on record that sign-off and a change of
