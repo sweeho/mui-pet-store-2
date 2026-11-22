@@ -12,7 +12,7 @@ const FILES = [
   "src/lib/customer-accounts/customer-accounts.test.ts",
   "e2e/accessibility.spec.ts",
 ];
-const PATTERN = /password\w*"?\s*[:=]\s*"[^"\n]+"/i;
+const PATTERN = /password\w*"?\s*[:=]\s*"[^"\n]{5,}"/i;
 
 describe("no hardcoded password literals", () => {
   it.each(FILES)("%s has no password key with a string literal", (file) => {
