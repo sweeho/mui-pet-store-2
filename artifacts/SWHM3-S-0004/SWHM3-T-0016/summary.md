@@ -36,7 +36,7 @@ A11Y-001/UX-101/UX-105: labelled MUI fields, role=alert/status, structural spec 
 - `node .vortex/check-versions.mjs && npm run verify`: pass (lint, format, typecheck, 138 jest tests).
 - `npm run test:e2e`: 24 passed. `npm run test:acceptance`: customer-accounts 26 passed. `npm run test:acceptance:e2e -- tests/acceptance/customer-accounts`: 10 passed, C-0129 fails (below).
 - Design check: 14 mockups measured, `design-check.md`.
-- CODE-REVIEW: sub-agent — fixed: concurrent failed sign-ons now counted in one SQL statement, Auth.js's POST endpoints refused (they skipped the limit and version), last X-Forwarded-For entry used, new `sid` at sign-on (fixation), user name trimmed at sign-on, secure cookie deletion; rejected: the proxy does not check the session version (it has no database use; pages and handlers use `customerFromCookies`, which does; a future API route must call it).
+CODE-REVIEW: sub-agent — fixed: concurrent failed sign-ons now counted in one SQL statement, Auth.js's POST endpoints refused (they skipped the limit and version), last X-Forwarded-For entry used, new `sid` at sign-on (fixation), user name trimmed at sign-on, secure cookie deletion; rejected: the proxy does not check the session version (it has no database use; pages and handlers use `customerFromCookies`, which does; a future API route must call it).
 
 ## Notes
 - C-0129 needs `/store` and "Add to cart" from SWHM3-I-0005; sign-off itself is built and tested. Deferred as PLAN says.
