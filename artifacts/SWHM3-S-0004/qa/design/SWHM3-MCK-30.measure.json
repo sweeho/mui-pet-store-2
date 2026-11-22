@@ -1,0 +1,235 @@
+{
+  "key": "SWHM3-MCK-30",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-in-mobile.html",
+  "url": "http://localhost:3200/signin",
+  "width": 390,
+  "at": "2026-11-22T01:52:13.133Z",
+  "pixelDifference": 0.1279,
+  "pageHeights": {
+    "mockup": 1110,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "Arial": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "44x44",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "334,6",
+      "built": "206,44"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in to check out, or create an account.",
+      "mockup": "p at 16,108"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in to continue to Checkout. We’ll take you straight back there.",
+      "mockup": "span at 57,157"
+    },
+    {
+      "kind": "missing",
+      "text": "Checkout",
+      "mockup": "b at 193,158"
+    },
+    {
+      "kind": "style",
+      "text": "I have an account",
+      "prop": "position",
+      "mockup": "37,245",
+      "built": "41,273"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in with your user name and password.",
+      "prop": "position",
+      "mockup": "37,272",
+      "built": "41,296"
+    },
+    {
+      "kind": "style",
+      "text": "User name",
+      "prop": "position",
+      "mockup": "37,307",
+      "built": "41,330"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "input at 37,330"
+    },
+    {
+      "kind": "style",
+      "text": "Password",
+      "prop": "position",
+      "mockup": "37,388",
+      "built": "41,406"
+    },
+    {
+      "kind": "missing",
+      "text": "Remember my user name on this device",
+      "mockup": "label at 37,470"
+    },
+    {
+      "kind": "style",
+      "text": "on",
+      "prop": "box",
+      "mockup": "20x20",
+      "built": "42x42"
+    },
+    {
+      "kind": "missing",
+      "text": "Wrong details? You’ll see the sign-in error page.",
+      "mockup": "p at 37,584"
+    },
+    {
+      "kind": "missing",
+      "text": "sign-in error",
+      "mockup": "a at 201,585"
+    },
+    {
+      "kind": "style",
+      "text": "Create an account, then add your address, card and language on the next page.",
+      "prop": "position",
+      "mockup": "37,686",
+      "built": "41,674"
+    },
+    {
+      "kind": "missing",
+      "text": "Choose a user name",
+      "mockup": "label at 37,740"
+    },
+    {
+      "kind": "missing",
+      "text": "Up to 25 characters",
+      "mockup": "span at 37,813"
+    },
+    {
+      "kind": "missing",
+      "text": "0 / 25",
+      "mockup": "span at 321,813"
+    },
+    {
+      "kind": "missing",
+      "text": "Choose a password",
+      "mockup": "label at 37,845"
+    },
+    {
+      "kind": "missing",
+      "text": "Up to 50 characters",
+      "mockup": "span at 37,918"
+    },
+    {
+      "kind": "missing",
+      "text": "Create account",
+      "mockup": "button at 37,950"
+    },
+    {
+      "kind": "missing",
+      "text": "If the name is taken you’ll be asked to choose another.",
+      "mockup": "p at 37,1006"
+    },
+    {
+      "kind": "missing",
+      "text": "choose another",
+      "mockup": "a at 251,1007"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,1077",
+      "built": "16,867"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,1077"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign in to check out and manage your profile, or create an account.",
+      "built": "p at 16,184"
+    },
+    {
+      "kind": "extra",
+      "text": "Remember my user name",
+      "built": "span at 72,494"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign on",
+      "built": "button at 41,541"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign up",
+      "built": "a at 41,725"
+    }
+  ]
+}
