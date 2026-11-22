@@ -1,5 +1,6 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { sql } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 
 import { databaseUrl, prepareDatabase } from "./prepare";
@@ -32,7 +33,10 @@ async function open(): Promise<Db> {
     await prepareDatabase(url);
     process.env.APP_DATABASE_READY = "1";
   }
-  return connect(url);
+  const db = connect(url);
+  // Wait for a lock another writer holds instead of failing at once (under 10 s: AVL-002).
+  await db.run(sql`PRAGMA busy_timeout = 5000`);
+  return db;
 }
 
 /** The database, migrated and seeded on first use. */

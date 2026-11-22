@@ -7,13 +7,17 @@ import { changeLocale } from "@/lib/localization/change-locale";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import type { SessionStore } from "@/lib/localization/session-store";
 
-import { AccountError, type Domain } from "./domain";
+import type { Domain } from "./domain";
 import type { Deps, ProfileForm } from "./types";
 
 type Parts = Deps & { domain: Domain; store: SessionStore };
 
 export type SignOnResult =
-  | { ok: true; session: { userName: string; signedOn: true; locale: string }; cart: { locale: string } }
+  | {
+      ok: true;
+      session: { userName: string; signedOn: true; locale: string };
+      cart: { locale: string };
+    }
   | { ok: false };
 
 /**
@@ -29,6 +33,16 @@ export async function signOnToSession(
   if (!(await domain.auth.authenticate(credential.userName, credential.password))) {
     return { ok: false };
   }
+  return linkSignedOn({ domain, store }, sessionId, credential.userName);
+}
+
+/** The part of sign-on after the credentials were checked (Auth.js checks them in production). */
+export async function linkSignedOn(
+  { domain, store }: Pick<Parts, "domain" | "store">,
+  sessionId: string,
+  userName: string,
+): Promise<Extract<SignOnResult, { ok: true }>> {
+  const credential = { userName };
   const profile = await domain.profiles.get(credential.userName);
   const session = await store.ensure(sessionId);
   session.attributes.userName = credential.userName;
@@ -40,7 +54,11 @@ export async function signOnToSession(
   await store.save(session);
   await store.audit({ sessionId, action: "signon", detail: credential.userName });
   const locale = String(session.attributes.locale ?? DEFAULT_LOCALE);
-  return { ok: true, session: { userName: credential.userName, signedOn: true, locale }, cart: { locale } };
+  return {
+    ok: true,
+    session: { userName: credential.userName, signedOn: true, locale },
+    cart: { locale },
+  };
 }
 
 /**
@@ -66,17 +84,16 @@ export async function signOffSession(
   return id;
 }
 
-/** Save the signed-on customer's profile and set the session locale to the preferred language (R-0194). */
+/**
+ * Save the signed-on customer's profile and set the session locale to the preferred language
+ * (R-0194). The caller names the customer, from the checked token or the session.
+ */
 export async function saveProfileForSession(
   { domain, store }: Parts,
   sessionId: string,
+  userName: string,
   form: ProfileForm,
 ): Promise<void> {
-  const session = await store.load(sessionId);
-  const userName = session?.attributes.userName;
-  if (session?.attributes.signedOn !== true || typeof userName !== "string") {
-    throw new AccountError("invalid", "Sign on first");
-  }
   await domain.profiles.save(userName, form, sessionId);
   await changeLocale(store, sessionId, form.language);
 }

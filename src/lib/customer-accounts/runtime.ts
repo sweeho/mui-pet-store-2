@@ -15,6 +15,10 @@ import { createDomain } from "./domain";
 import { evaluateSession, MINUTE } from "./session-rules";
 import { saveProfileForSession, signOnToSession } from "./session";
 
+// The contract runtime is read by tests that assert on a record they have just stored.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Loose = (userName: string) => Promise<any>;
+
 /**
  * The contract runtime over a fresh temporary database with the real tables, and a clock the test
  * moves. Only here the raw password of a sign-on record is also kept in memory, because the legacy
@@ -40,7 +44,8 @@ export async function createAccountsRuntime() {
   const raw = new Map<string, string>();
   const remember = (input: unknown) => {
     const c = input as { userName?: unknown; password?: unknown };
-    if (typeof c?.userName === "string" && typeof c.password === "string") raw.set(c.userName, c.password);
+    if (typeof c?.userName === "string" && typeof c.password === "string")
+      raw.set(c.userName, c.password);
   };
   // What the token carries in production: when the user signed on and the last request.
   const tokens = new Map<string, { signedOn: boolean; signedAt?: number; lastActive: number }>();
@@ -67,16 +72,21 @@ export async function createAccountsRuntime() {
       },
     },
     contacts: domain.contacts,
-    accounts: domain.accounts,
+    accounts: { ...domain.accounts, get: domain.accounts.get as Loose },
     profiles: {
       store: domain.profiles.store,
-      get: domain.profiles.get,
-      async save(sessionId: string, form: Parameters<typeof saveProfileForSession>[2]) {
-        await saveProfileForSession(parts, sessionId, form);
+      get: domain.profiles.get as Loose,
+      async save(sessionId: string, form: Parameters<typeof saveProfileForSession>[3]) {
+        const attributes = (await store.load(sessionId))?.attributes;
+        if (attributes?.signedOn !== true || typeof attributes.userName !== "string") {
+          throw new Error("Sign on first");
+        }
+        await saveProfileForSession(parts, sessionId, attributes.userName, form);
       },
     },
     customers: {
       ...domain.customers,
+      get: domain.customers.get as Loose,
       async create(input: { userName: string; password: string; language?: string | null }) {
         await domain.customers.create(input);
         remember(input);
@@ -110,7 +120,12 @@ export async function createAccountsRuntime() {
       async request(sessionId: string): Promise<{ expired: boolean; signOnRequired: boolean }> {
         const token = tokens.get(sessionId) ?? { signedOn: false, lastActive: clock.now() };
         const verdict = evaluateSession({ ...token, now: clock.now() });
-        tokens.set(sessionId, verdict.expired ? { signedOn: false, lastActive: token.lastActive } : { ...token, lastActive: clock.now() });
+        tokens.set(
+          sessionId,
+          verdict.expired
+            ? { signedOn: false, lastActive: token.lastActive }
+            : { ...token, lastActive: clock.now() },
+        );
         return verdict;
       },
     },

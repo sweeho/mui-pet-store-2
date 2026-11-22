@@ -17,7 +17,8 @@ export type SessionClock = {
 
 /** What one request finds: whether the session ended, and whether the visitor must sign on again. */
 export function evaluateSession(s: SessionClock): { expired: boolean; signOnRequired: boolean } {
-  if (!s.signedOn) return { expired: s.now - s.lastActive >= ANONYMOUS_IDLE_MS, signOnRequired: false };
+  if (!s.signedOn)
+    return { expired: s.now - s.lastActive >= ANONYMOUS_IDLE_MS, signOnRequired: false };
   const expired =
     s.now - s.lastActive >= SIGNED_ON_IDLE_MS ||
     s.now - (s.signedAt ?? s.lastActive) >= SIGNED_ON_MAX_AGE_MS;

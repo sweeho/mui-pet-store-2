@@ -5,14 +5,7 @@ import * as s from "@/db/schema";
 import { DEFAULT_LOCALE, parseLocaleCode } from "@/lib/localization/locale";
 
 import { hashPassword, verifyPassword } from "./password";
-import type {
-  AccountStatus,
-  ContactInfo,
-  CreditCard,
-  Deps,
-  Profile,
-  ProfileForm,
-} from "./types";
+import type { AccountStatus, ContactInfo, CreditCard, Deps, Profile, ProfileForm } from "./types";
 
 /** A refused write: nothing was stored. `code` says why, for the page that explains it. */
 export class AccountError extends Error {
@@ -35,7 +28,10 @@ export const LOCK_MS = 15 * 60_000;
 export const PAGE_SIZE_MAX = 100;
 
 const text = (max: number) => z.string().trim().min(1).max(max);
-const credential = z.object({ userName: text(USER_NAME_MAX), password: z.string().min(1).max(PASSWORD_MAX) });
+const credential = z.object({
+  userName: text(USER_NAME_MAX),
+  password: z.string().min(1).max(PASSWORD_MAX),
+});
 
 const required = z.string().trim().min(1).max(80);
 const addressSchema = z.object({
@@ -95,7 +91,9 @@ export function validateProfileForm(form: unknown): { ok: boolean; missing: stri
   const result = z
     .object({ contact: contactSchema, card: cardSchema.optional(), language: languageSchema })
     .safeParse(form);
-  return result.success ? { ok: true, missing: [] } : { ok: false, missing: fieldsOf(result.error) };
+  return result.success
+    ? { ok: true, missing: [] }
+    : { ok: false, missing: fieldsOf(result.error) };
 }
 
 const isConstraint = (error: unknown): boolean =>
@@ -132,17 +130,13 @@ const contactValues = (c: ContactInfo) => ({
 });
 
 export function createDomain({ db, now }: Deps) {
-  type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
-
-  const insertSignon = async (tx: Tx | typeof db, c: z.infer<typeof credential>) => {
-    await tx
-      .insert(s.signon)
-      .values({
-        userName: c.userName,
-        passwordHash: await hashPassword(c.password),
-        createdAt: now(),
-      });
-  };
+  // Changes that belong together go through `db.batch`: one atomic call on the one connection.
+  // (A libsql transaction moves the client to a new connection, which loses the busy timeout.)
+  const signonRow = async (c: z.infer<typeof credential>) => ({
+    userName: c.userName,
+    passwordHash: await hashPassword(c.password),
+    createdAt: now(),
+  });
 
   /** Run a write; a duplicate key becomes an AccountError("duplicate"). Nothing is left half written. */
   async function write<T>(what: string, run: () => Promise<T>): Promise<T> {
@@ -158,14 +152,23 @@ export function createDomain({ db, now }: Deps) {
   const signons = {
     async create(input: unknown): Promise<void> {
       const c = parse(credential, input, "The sign-on credential");
-      await write("The user name", () => insertSignon(db, c));
+      const row = await signonRow(c);
+      await write("The user name", () => db.insert(s.signon).values(row));
     },
     async exists(userName: string): Promise<boolean> {
-      const [row] = await db.select().from(s.signon).where(eq(s.signon.userName, userName)).limit(1);
+      const [row] = await db
+        .select()
+        .from(s.signon)
+        .where(eq(s.signon.userName, userName))
+        .limit(1);
       return Boolean(row);
     },
     async stored(userName: string) {
-      const [row] = await db.select().from(s.signon).where(eq(s.signon.userName, userName)).limit(1);
+      const [row] = await db
+        .select()
+        .from(s.signon)
+        .where(eq(s.signon.userName, userName))
+        .limit(1);
       return row;
     },
   };
@@ -187,60 +190,101 @@ export function createDomain({ db, now }: Deps) {
   const accounts = {
     async store(input: {
       userName: string;
-      status?: unknown;
-      contact?: unknown;
-      card?: unknown;
+      status: AccountStatus;
+      contact?: ContactInfo;
+      card?: CreditCard;
     }): Promise<void> {
       const userName = parse(text(USER_NAME_MAX), input.userName, "The user name");
       const status = parse(statusSchema, input.status, "The account status");
-      const contact = input.contact === undefined ? undefined : parse(contactSchema, input.contact, "The contact information");
-      const card = input.card === undefined ? undefined : parse(cardSchema, input.card, "The credit card");
+      const contact =
+        input.contact === undefined
+          ? undefined
+          : parse(contactSchema, input.contact, "The contact information");
+      const card =
+        input.card === undefined ? undefined : parse(cardSchema, input.card, "The credit card");
       await write("The account", () =>
-        db.transaction(async (tx) => {
-          await tx.insert(s.account).values({ userName, status });
-          await tx
+        db.batch([
+          db.insert(s.account).values({ userName, status }),
+          db
             .insert(s.contactInfo)
-            .values(contact ? { userName, ...contactValues(contact) } : emptyContact(userName));
-          await tx.insert(s.creditCard).values({ userName, ...(card ?? {}) });
-        }),
+            .values(contact ? { userName, ...contactValues(contact) } : emptyContact(userName)),
+          db.insert(s.creditCard).values({ userName, ...(card ?? {}) }),
+        ]),
       );
     },
     async create(input: { userName: string; status?: AccountStatus }): Promise<void> {
       await accounts.store({ ...input, status: input.status ?? "active" });
     },
     async get(userName: string) {
-      const [acct] = await db.select().from(s.account).where(eq(s.account.userName, userName)).limit(1);
+      const [acct] = await db
+        .select()
+        .from(s.account)
+        .where(eq(s.account.userName, userName))
+        .limit(1);
       if (!acct) return undefined;
-      const [contact] = await db.select().from(s.contactInfo).where(eq(s.contactInfo.userName, userName)).limit(1);
-      const [card] = await db.select().from(s.creditCard).where(eq(s.creditCard.userName, userName)).limit(1);
+      const [contact] = await db
+        .select()
+        .from(s.contactInfo)
+        .where(eq(s.contactInfo.userName, userName))
+        .limit(1);
+      const [card] = await db
+        .select()
+        .from(s.creditCard)
+        .where(eq(s.creditCard.userName, userName))
+        .limit(1);
       return {
         status: acct.status,
         contact: rowToContact(contact),
-        card: { number: card?.number ?? null, type: card?.type ?? null, expiry: card?.expiry ?? null },
+        card: {
+          number: card?.number ?? null,
+          type: card?.type ?? null,
+          expiry: card?.expiry ?? null,
+        },
       };
     },
     async counts(userName: string) {
-      const [c] = await db.select({ n: count() }).from(s.contactInfo).where(eq(s.contactInfo.userName, userName));
-      const [d] = await db.select({ n: count() }).from(s.creditCard).where(eq(s.creditCard.userName, userName));
+      const [c] = await db
+        .select({ n: count() })
+        .from(s.contactInfo)
+        .where(eq(s.contactInfo.userName, userName));
+      const [d] = await db
+        .select({ n: count() })
+        .from(s.creditCard)
+        .where(eq(s.creditCard.userName, userName));
       return { contacts: c.n, cards: d.n };
     },
   };
 
   const profiles = {
     async store(input: unknown): Promise<void> {
-      const p = parse(profileSchema.extend({ userName: text(USER_NAME_MAX) }), input, "The profile");
+      const p = parse(
+        profileSchema.extend({ userName: text(USER_NAME_MAX) }),
+        input,
+        "The profile",
+      );
       const profile = newProfile({
         language: p.language,
         favoriteCategory: p.favoriteCategory ?? null,
         myList: p.myList,
         banner: p.banner,
       });
-      await write("The profile", () => db.insert(s.profile).values({ userName: p.userName, ...profile }));
+      await write("The profile", () =>
+        db.insert(s.profile).values({ userName: p.userName, ...profile }),
+      );
     },
     async get(userName: string): Promise<Profile | undefined> {
-      const [row] = await db.select().from(s.profile).where(eq(s.profile.userName, userName)).limit(1);
+      const [row] = await db
+        .select()
+        .from(s.profile)
+        .where(eq(s.profile.userName, userName))
+        .limit(1);
       return row
-        ? { language: row.language, favoriteCategory: row.favoriteCategory, myList: row.myList, banner: row.banner }
+        ? {
+            language: row.language,
+            favoriteCategory: row.favoriteCategory,
+            myList: row.myList,
+            banner: row.banner,
+          }
         : undefined;
     },
     /** Validate then store contact, card and preferences in one transaction. */
@@ -257,47 +301,75 @@ export function createDomain({ db, now }: Deps) {
         form,
         "The profile",
       );
-      const card = { number: parsed.card.number ?? null, type: parsed.card.type ?? null, expiry: parsed.card.expiry ?? null };
-      await db.transaction(async (tx) => {
-        await tx
+      const card = {
+        number: parsed.card.number ?? null,
+        type: parsed.card.type ?? null,
+        expiry: parsed.card.expiry ?? null,
+      };
+      const prefs = {
+        language: parsed.language,
+        favoriteCategory: parsed.favoriteCategory ?? null,
+        myList: parsed.myList,
+        banner: parsed.banner,
+      };
+      const contact = contactValues(parsed.contact);
+      await db.batch([
+        db
           .insert(s.contactInfo)
-          .values({ userName, ...contactValues(parsed.contact) })
-          .onConflictDoUpdate({ target: s.contactInfo.userName, set: contactValues(parsed.contact) });
-        await tx.insert(s.creditCard).values({ userName, ...card }).onConflictDoUpdate({ target: s.creditCard.userName, set: card });
-        const prefs = {
-          language: parsed.language,
-          favoriteCategory: parsed.favoriteCategory ?? null,
-          myList: parsed.myList,
-          banner: parsed.banner,
-        };
-        await tx.insert(s.profile).values({ userName, ...prefs }).onConflictDoUpdate({ target: s.profile.userName, set: prefs });
-        await tx.insert(s.auditLog).values({ sessionId: actor, action: "profile.save", detail: userName, createdAt: now() });
-      });
+          .values({ userName, ...contact })
+          .onConflictDoUpdate({ target: s.contactInfo.userName, set: contact }),
+        db
+          .insert(s.creditCard)
+          .values({ userName, ...card })
+          .onConflictDoUpdate({ target: s.creditCard.userName, set: card }),
+        db
+          .insert(s.profile)
+          .values({ userName, ...prefs })
+          .onConflictDoUpdate({ target: s.profile.userName, set: prefs }),
+        db
+          .insert(s.auditLog)
+          .values({ sessionId: actor, action: "profile.save", detail: userName, createdAt: now() }),
+      ]);
     },
   };
 
   const customers = {
     /** One transaction: sign-on, customer, active account, empty contact and card, default profile. */
-    async create(input: { userName: string; password: string; language?: string | null }, actor = "system"): Promise<void> {
+    async create(
+      input: { userName: string; password: string; language?: string | null },
+      actor = "system",
+    ): Promise<void> {
       const c = parse(credential, input, "The customer");
-      const language = input.language ? parse(languageSchema, input.language, "The language") : undefined;
+      const language = input.language
+        ? parse(languageSchema, input.language, "The language")
+        : undefined;
+      const row = await signonRow(c);
       await write("The user name", () =>
-        db.transaction(async (tx) => {
-          await insertSignon(tx, c);
-          await tx.insert(s.customer).values({ userName: c.userName });
-          await tx.insert(s.account).values({ userName: c.userName, status: "active" });
-          await tx.insert(s.contactInfo).values(emptyContact(c.userName));
-          await tx.insert(s.creditCard).values({ userName: c.userName });
-          await tx.insert(s.profile).values({ userName: c.userName, ...newProfile({ language }) });
-          await tx.insert(s.auditLog).values({ sessionId: actor, action: "customer.create", detail: c.userName, createdAt: now() });
-        }),
+        db.batch([
+          db.insert(s.signon).values(row),
+          db.insert(s.customer).values({ userName: c.userName }),
+          db.insert(s.account).values({ userName: c.userName, status: "active" }),
+          db.insert(s.contactInfo).values(emptyContact(c.userName)),
+          db.insert(s.creditCard).values({ userName: c.userName }),
+          db.insert(s.profile).values({ userName: c.userName, ...newProfile({ language }) }),
+          db.insert(s.auditLog).values({
+            sessionId: actor,
+            action: "customer.create",
+            detail: c.userName,
+            createdAt: now(),
+          }),
+        ]),
       );
     },
     async get(userName: string) {
       const signon = await signons.stored(userName);
       const account = await accounts.get(userName);
       if (!signon || !account) return undefined;
-      return { signon: { userName: signon.userName }, account, profile: await profiles.get(userName) };
+      return {
+        signon: { userName: signon.userName },
+        account,
+        profile: await profiles.get(userName),
+      };
     },
     /** One page, ordered by user name (R-0183). */
     async list(page = { page: 1, pageSize: PAGE_SIZE_MAX }): Promise<{ userName: string }[]> {
@@ -310,8 +382,15 @@ export function createDomain({ db, now }: Deps) {
         .offset((Math.max(1, page.page) - 1) * size);
     },
     async counts(userName: string) {
-      const n = async (table: typeof s.signon | typeof s.customer | typeof s.account | typeof s.profile | typeof s.contactInfo | typeof s.creditCard) =>
-        (await db.select({ n: count() }).from(table).where(eq(table.userName, userName)))[0].n;
+      const n = async (
+        table:
+          | typeof s.signon
+          | typeof s.customer
+          | typeof s.account
+          | typeof s.profile
+          | typeof s.contactInfo
+          | typeof s.creditCard,
+      ) => (await db.select({ n: count() }).from(table).where(eq(table.userName, userName)))[0].n;
       return {
         signons: await n(s.signon),
         accounts: await n(s.account),
@@ -324,8 +403,14 @@ export function createDomain({ db, now }: Deps) {
 
   const users = {
     /** Sign-up: the user name is at most 25 characters (R-0080). */
-    async create(input: { userName: string; password: string; language?: string | null }, actor?: string): Promise<void> {
-      if (typeof input.userName === "string" && input.userName.trim().length > SIGN_UP_USER_NAME_MAX) {
+    async create(
+      input: { userName: string; password: string; language?: string | null },
+      actor?: string,
+    ): Promise<void> {
+      if (
+        typeof input.userName === "string" &&
+        input.userName.trim().length > SIGN_UP_USER_NAME_MAX
+      ) {
         throw new AccountError("invalid", "The user name is too long", ["userName"]);
       }
       await customers.create(input, actor);
@@ -333,7 +418,10 @@ export function createDomain({ db, now }: Deps) {
   };
 
   /** Sign-up outcome: a refusal goes to the user creation error page (R-0081). */
-  async function signUp(input: { userName: string; password: string; language?: string | null }, actor?: string) {
+  async function signUp(
+    input: { userName: string; password: string; language?: string | null },
+    actor?: string,
+  ) {
     try {
       await users.create(input, actor);
       return { ok: true } as const;
@@ -341,7 +429,10 @@ export function createDomain({ db, now }: Deps) {
       if (!(error instanceof AccountError)) throw error;
       return {
         ok: false,
-        redirect: error.code === "duplicate" ? "/user-creation-error?reason=duplicate" : "/user-creation-error",
+        redirect:
+          error.code === "duplicate"
+            ? "/user-creation-error?reason=duplicate"
+            : "/user-creation-error",
       } as const;
     }
   }
@@ -353,7 +444,10 @@ export function createDomain({ db, now }: Deps) {
      */
     async authenticate(userName: string, password: string): Promise<boolean> {
       const record = typeof userName === "string" ? await signons.stored(userName) : undefined;
-      const ok = await verifyPassword(String(password), record?.passwordHash ?? "scrypt$16384$AAAA$AAAA");
+      const ok = await verifyPassword(
+        String(password),
+        record?.passwordHash ?? "scrypt$16384$AAAA$AAAA",
+      );
       if (!record) return false;
       const t = now();
       if (record.lockedUntil && record.lockedUntil > t) return false;
@@ -361,14 +455,25 @@ export function createDomain({ db, now }: Deps) {
         const failed = record.failedAttempts + 1;
         await db
           .update(s.signon)
-          .set(failed >= MAX_FAILED_ATTEMPTS ? { failedAttempts: 0, lockedUntil: t + LOCK_MS } : { failedAttempts: failed })
+          .set(
+            failed >= MAX_FAILED_ATTEMPTS
+              ? { failedAttempts: 0, lockedUntil: t + LOCK_MS }
+              : { failedAttempts: failed },
+          )
           .where(eq(s.signon.userName, userName));
         return false;
       }
-      const [acct] = await db.select().from(s.account).where(eq(s.account.userName, userName)).limit(1);
+      const [acct] = await db
+        .select()
+        .from(s.account)
+        .where(eq(s.account.userName, userName))
+        .limit(1);
       if (acct?.status === "disabled") return false;
       if (record.failedAttempts > 0 || record.lockedUntil) {
-        await db.update(s.signon).set({ failedAttempts: 0, lockedUntil: null }).where(eq(s.signon.userName, userName));
+        await db
+          .update(s.signon)
+          .set({ failedAttempts: 0, lockedUntil: null })
+          .where(eq(s.signon.userName, userName));
       }
       return true;
     },

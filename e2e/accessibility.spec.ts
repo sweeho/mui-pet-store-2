@@ -48,7 +48,40 @@ test.describe("accessibility", () => {
     }
   });
 
+  test("account pages", async ({ page }) => {
+    for (const path of [
+      "/signin",
+      "/signup",
+      "/signed-off",
+      "/user-creation-error",
+      "/user-creation-error?reason=duplicate&name=ann",
+      "/customer",
+    ]) {
+      await page.goto(path);
+      await expectAccessibleStructure(page);
+    }
+    const userName = `a${Date.now().toString(36)}`;
+    await page.request.post("/api/customers", { data: { userName, password: "pw-a11y" } });
+    await page.goto("/signin");
+    await page.getByLabel(/^user name$/i).fill(userName);
+    await page.getByLabel(/^password$/i).fill("pw-a11y");
+    await page.getByRole("main").getByRole("button", { name: "Sign on" }).click();
+    await expect(page).toHaveURL(/\/account\/welcome/);
+    for (const path of ["/account/welcome", "/account/profile", "/customer"]) {
+      await page.goto(path);
+      await expectAccessibleStructure(page);
+    }
+  });
+
   test("empty frame", async ({ page }) => {
+    // The order tool needs a signed-on customer until administrator roles arrive.
+    const userName = `o${Date.now().toString(36)}`;
+    await page.request.post("/api/customers", { data: { userName, password: "pw-a11y" } });
+    await page.goto("/signin");
+    await page.getByLabel(/^user name$/i).fill(userName);
+    await page.getByLabel(/^password$/i).fill("pw-a11y");
+    await page.getByRole("main").getByRole("button", { name: "Sign on" }).click();
+    await expect(page).toHaveURL(/\/account\/welcome/);
     await page.goto("/admin/orders");
     await expectAccessibleStructure(page);
     await expect(page.getByText("No orders yet")).toBeVisible();

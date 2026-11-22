@@ -19,6 +19,8 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
     command: `npx next dev --port ${PORT}`,
+    // The test secret for the sign-on token (a real deployment sets its own).
+    env: { AUTH_SECRET: "playwright-only-auth-secret" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     // The first request compiles the page: a cold runner pays for it here.
