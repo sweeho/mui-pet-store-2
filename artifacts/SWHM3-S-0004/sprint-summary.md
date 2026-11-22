@@ -27,7 +27,8 @@ require. QA found no product defect. The sprint secret scan raised three rounds 
 | SWHM3-T-0019 | DEFECT | QA scan round 1: 12 findings | DONE — message keys `*.password` renamed, test passwords built at run time |
 | SWHM3-T-0021 | DEFECT | QA scan round 2: 9 findings | DONE — `*.secret` keys renamed |
 | SWHM3-T-0022 | DEFECT | QA scan round 3: 9 findings | DONE — `*.credential` keys renamed to `*.concealed` |
-| SWHM3-T-0024 | TASK | Sprint close bundle — SWHM3-S-0004 | this file |
+| SWHM3-T-0024 | TASK | Sprint close bundle — SWHM3-S-0004 | DONE — this file and the release notes |
+| SWHM3-T-0025 | TASK | Sprint close bundle — SWHM3-S-0004 (re-dispatch) | DONE — confirmed the bundle; archive path and traceability recorded |
 
 ## What shipped
 
@@ -101,7 +102,7 @@ None open from this sprint. For UAT: C-0129 waits on the shopping cart, and C-01
 
 | Control | Evidence | Location | Status | Exception |
 | --- | --- | --- | --- | --- |
-| Work planned before build | OpenSpec change, PLAN.md | `openspec/changes/swhm3-i-0004-customer-accounts-and-sign/`, `artifacts/SWHM3-S-0004/SWHM3-T-0016/PLAN.md` | Satisfied | — |
+| Work planned before build | OpenSpec change, PLAN.md | change `swhm3-i-0004-customer-accounts-and-sign` (archived to `openspec/changes/archive/2026-11-22-swhm3-i-0004-customer-accounts-and-sign/`; spec of record `openspec/specs/customer-accounts/spec.md`; matrix `artifacts/SWHM3-S-0004/traceability.md`), `artifacts/SWHM3-S-0004/SWHM3-T-0016/PLAN.md` | Satisfied | — |
 | Change verified before release | QA report, PASS | `artifacts/SWHM3-S-0004/qa-test-report.md` | Satisfied | R-0187 superseded |
 | Tests executed | TDD results, E2E table | `artifacts/SWHM3-S-0004/SWHM3-T-0016/tdd-test-result.md`, `artifacts/SWHM3-S-0004/integration-test-result.md` | Satisfied | — |
 | Defects dispositioned | 3 fixed in sprint | `artifacts/SWHM3-S-0004/SWHM3-T-0019/fix-note.md`, `SWHM3-T-0021/`, `SWHM3-T-0022/` | Satisfied | — |
