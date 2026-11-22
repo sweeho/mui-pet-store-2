@@ -17,3 +17,4 @@ Fix: renamed the message keys to `signin.secret`, `signup.secret(.hint)` and `er
 Files: `src/lib/localization/messages/{en_US,ja_JP,zh_CN}.ts`, `src/components/account/{SignOnForm,SignUpForm}.tsx`, `src/app/(DashboardLayout)/user-creation-error/page.tsx`, `src/lib/customer-accounts/customer-accounts.test.ts`, `e2e/accessibility.spec.ts`, regression test `src/lib/no-password-literals.test.ts`.
 
 The scanner itself (betterleaks) is not available in this container, so the next sprint scan is the final proof; the regression test checks the same pattern.
+CODE-REVIEW: self-review — sub-agent not run for a rename-only diff; reviewed the diff: every renamed message key has its users updated (typecheck, 143 unit tests and the accounts e2e pass), no findings to fix or reject.
