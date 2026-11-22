@@ -116,7 +116,7 @@ export function SignOnScreen({
               id="signin-password"
               name="password"
               type="password"
-              label={t("signin.secret")}
+              label={t("signin.credential")}
               autoComplete="current-password"
               inputProps={{ maxLength: 50 }}
             />
