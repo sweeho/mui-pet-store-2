@@ -33,4 +33,29 @@ describe("Header", () => {
     expect(form).toHaveAttribute("action", "/catalog/search");
     expect(form).toHaveAttribute("method", "get");
   });
+
+  it("shows a Sign in link when signed off", () => {
+    render(
+      <LocaleProvider chosen="en_US" locale="en_US">
+        <Header toggleMobileSidebar={() => undefined} />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/signin");
+    expect(screen.queryByRole("button", { name: "Sign off" })).not.toBeInTheDocument();
+  });
+
+  it("shows the user name and a Sign off button when signed on", () => {
+    render(
+      <LocaleProvider chosen="en_US" locale="en_US">
+        <Header
+          toggleMobileSidebar={() => undefined}
+          userName="ann"
+          signOffAction={async () => undefined}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("button", { name: "Sign off" })).toBeInTheDocument();
+    expect(screen.getByText("ann")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Sign in" })).not.toBeInTheDocument();
+  });
 });

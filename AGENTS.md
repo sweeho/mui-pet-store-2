@@ -89,6 +89,15 @@ A spec you have not executed is not a test. Never commit a `*.spec.ts` you have 
   (the migrations) must be copied in the Dockerfile and listed in `outputFileTracingIncludes`.
 - The project's own versions are pinned exactly. Change one only through `stack.versions.yaml`
   and `check-versions`.
+- Sign-on (Auth.js, `src/auth.ts`) needs `AUTH_SECRET` in the environment. `.env.development` and
+  `.env.test` carry a development-only value; a deployment sets its own. A server component or
+  route handler reads the signed-on customer with `getSignedOnCustomer()`
+  (`@/lib/customer-accounts/current`) or `customerFromCookies()` (`.../server`), never the token. A
+  page behind sign-on adds its prefix to `PROTECTED_PAGE_PREFIXES` in `src/lib/customer-accounts/access.ts`.
+- Use `db.batch([...])` for writes that belong together, not `db.transaction`: libsql moves the
+  client to a new connection after a transaction, which loses the busy timeout.
+- Jest cannot load the ES modules in `next-auth`; a test that imports `src/proxy.ts` or
+  `src/lib/customer-accounts/token.ts` mocks `next-auth/jwt` (see `src/proxy.test.ts`).
 
 <!-- BEGIN:nextjs-agent-rules -->
 

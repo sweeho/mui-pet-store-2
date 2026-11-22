@@ -1,0 +1,271 @@
+{
+  "key": "SWHM3-MCK-39",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-on-welcome.html",
+  "url": "http://localhost:3200/account/welcome",
+  "width": 1440,
+  "at": "2026-11-22T01:52:30.854Z",
+  "pixelDifference": 0.0538,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "215x36",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "12,291",
+      "built": "1334,14"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,299"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,337"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "a at 1019,14"
+    },
+    {
+      "kind": "missing",
+      "text": "J",
+      "mockup": "span at 1220,18"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "span at 1256,22"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign off",
+      "mockup": "a at 1311,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Welcome, Jane",
+      "mockup": "h1 at 593,249"
+    },
+    {
+      "kind": "missing",
+      "text": "You’re signed in as j2ee. Your language is set from your profile. You’ll stay signed in until you sign off or are idle for 15 minutes.",
+      "mockup": "p at 593,292"
+    },
+    {
+      "kind": "missing",
+      "text": "Signed in",
+      "mockup": "span at 709,349"
+    },
+    {
+      "kind": "missing",
+      "text": "Shopping in English (US)",
+      "mockup": "span at 799,349"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 625,395"
+    },
+    {
+      "kind": "missing",
+      "text": "Open your cart",
+      "mockup": "a at 816,395"
+    },
+    {
+      "kind": "missing",
+      "text": "Edit profile",
+      "mockup": "a at 953,395"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,374"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1144,14"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign-in failed",
+      "built": "h1 at 765,254"
+    },
+    {
+      "kind": "extra",
+      "text": "The user name or password didn’t match an account, or sign-on is needed for this page. Nothing was changed.",
+      "built": "p at 561,296"
+    },
+    {
+      "kind": "extra",
+      "text": "User names and passwords are case-sensitive. Check Caps Lock, then try again.",
+      "built": "div at 627,355"
+    },
+    {
+      "kind": "extra",
+      "text": "I have an account",
+      "built": "h2 at 297,484"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign in with your user name and password.",
+      "built": "p at 297,507"
+    },
+    {
+      "kind": "extra",
+      "text": "User name",
+      "built": "label at 297,541"
+    },
+    {
+      "kind": "extra",
+      "text": "Password",
+      "built": "label at 297,617"
+    },
+    {
+      "kind": "extra",
+      "text": "on",
+      "built": "input at 286,694"
+    },
+    {
+      "kind": "extra",
+      "text": "Remember my user name",
+      "built": "span at 328,704"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign on",
+      "built": "button at 297,752"
+    },
+    {
+      "kind": "extra",
+      "text": "I’m new here",
+      "built": "h2 at 769,484"
+    },
+    {
+      "kind": "extra",
+      "text": "Create an account, then add your address, card and language on the next page.",
+      "built": "p at 769,507"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign up",
+      "built": "a at 769,558"
+    }
+  ]
+}

@@ -3,6 +3,9 @@
  */
 import { GET } from "./route";
 
+// next-auth/jwt is an ES module Jest does not load; no test here sends a token.
+jest.mock("next-auth/jwt", () => ({ encode: jest.fn(), decode: jest.fn() }));
+
 describe("GET /api/session", () => {
   it("creates the session on first use with locale en_US", async () => {
     const response = await GET(
@@ -10,7 +13,10 @@ describe("GET /api/session", () => {
     );
     expect(await response.json()).toEqual({
       id: "s-first",
+      signedOn: false,
+      userName: null,
       locale: "en_US",
+      cartCount: 0,
       attributes: ["locale"],
     });
   });

@@ -102,3 +102,56 @@ export const itemDetails = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.itemId, t.locale] })],
 );
+
+// Customer accounts (SWHM3-I-0004). The records are linked by user name. Mandatory-field rules
+// are enforced when a profile is saved (src/lib/customer-accounts), so an empty contact and card
+// can exist from sign-up on.
+
+/** A sign-on record: the user name (the key) and the scrypt hash of the password (never the password). */
+export const signon = sqliteTable("signon", {
+  userName: text("user_name").primaryKey(),
+  passwordHash: text("password_hash").notNull(),
+  /** Sign-off, a password change and disabling the account increment it; a token with another value is refused. */
+  sessionVersion: integer("session_version").notNull().default(0),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockedUntil: integer("locked_until"),
+  createdAt: integer("created_at").notNull(),
+});
+
+export const customer = sqliteTable("customer", {
+  userName: text("user_name").primaryKey(),
+});
+
+export const account = sqliteTable("account", {
+  userName: text("user_name").primaryKey(),
+  status: text("status", { enum: ["active", "disabled"] }).notNull(),
+});
+
+export const contactInfo = sqliteTable("contact_info", {
+  userName: text("user_name").primaryKey(),
+  familyName: text("family_name"),
+  givenName: text("given_name"),
+  email: text("email"),
+  telephone: text("telephone"),
+  street1: text("street1"),
+  street2: text("street2"),
+  city: text("city"),
+  state: text("state"),
+  zip: text("zip"),
+  country: text("country"),
+});
+
+export const creditCard = sqliteTable("credit_card", {
+  userName: text("user_name").primaryKey(),
+  number: text("number"),
+  type: text("type"),
+  expiry: text("expiry"),
+});
+
+export const profile = sqliteTable("profile", {
+  userName: text("user_name").primaryKey(),
+  language: text("language").notNull().default("en_US"),
+  favoriteCategory: text("favorite_category"),
+  myList: integer("my_list", { mode: "boolean" }).notNull().default(true),
+  banner: integer("banner", { mode: "boolean" }).notNull().default(true),
+});

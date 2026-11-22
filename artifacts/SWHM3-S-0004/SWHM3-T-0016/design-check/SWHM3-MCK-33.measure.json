@@ -1,0 +1,249 @@
+{
+  "key": "SWHM3-MCK-33",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-duplicate-account.html",
+  "url": "http://localhost:3300/user-creation-error?reason=duplicate&name=j2ee",
+  "width": 1440,
+  "at": "2026-11-22T00:13:47.883Z",
+  "pixelDifference": 0.0416,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded",
+      "JetBrains Mono Variable": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "color",
+      "mockup": "rgb(255, 255, 255)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "background",
+      "mockup": "rgb(79, 70, 229)",
+      "built": "rgb(255, 255, 255)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "215x36",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "12,291",
+      "built": "1334,14"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,299"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,337"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "a at 1120,14"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "box",
+      "mockup": "494x35",
+      "built": "362x30"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "position",
+      "mockup": "593,249",
+      "built": "659,254"
+    },
+    {
+      "kind": "missing",
+      "text": "Someone already has an account called “j2ee”. Pick a different user name, or sign in if it’s yours.",
+      "mockup": "p at 593,292"
+    },
+    {
+      "kind": "style",
+      "text": "User name",
+      "prop": "box",
+      "mockup": "290x17",
+      "built": "62x20"
+    },
+    {
+      "kind": "style",
+      "text": "User name",
+      "prop": "position",
+      "mockup": "658,369",
+      "built": "578,360"
+    },
+    {
+      "kind": "style",
+      "text": "j2ee",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "j2ee",
+      "prop": "box",
+      "mockup": "290x20",
+      "built": "62x20"
+    },
+    {
+      "kind": "style",
+      "text": "j2ee",
+      "prop": "position",
+      "mockup": "658,387",
+      "built": "578,380"
+    },
+    {
+      "kind": "style",
+      "text": "Already taken",
+      "prop": "box",
+      "mockup": "110x22",
+      "built": "80x20"
+    },
+    {
+      "kind": "style",
+      "text": "Already taken",
+      "prop": "position",
+      "mockup": "960,377",
+      "built": "1022,370"
+    },
+    {
+      "kind": "style",
+      "text": "Choose another user name",
+      "prop": "position",
+      "mockup": "668,448",
+      "built": "691,431"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in as j2ee",
+      "mockup": "a at 883,448"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,374"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1144,14"
+    },
+    {
+      "kind": "extra",
+      "text": "Someone already has an account with that user name. Pick a different user name, or sign in if it’s yours.",
+      "built": "p at 561,296"
+    }
+  ]
+}

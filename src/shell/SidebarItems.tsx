@@ -18,6 +18,7 @@ import {
   IconLanguage,
   IconLayoutDashboard,
   IconSearch,
+  IconUser,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -63,6 +64,14 @@ export const MENU_ITEMS = [
     icon: IconLanguage,
     titleKey: "menu.language",
     descriptionKey: "menu.language.description",
+  },
+  {
+    id: "profile",
+    group: "account",
+    href: "/account/profile",
+    icon: IconUser,
+    titleKey: "menu.profile",
+    descriptionKey: "menu.profile.description",
   },
   {
     id: "orders",

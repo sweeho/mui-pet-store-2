@@ -3,6 +3,10 @@ import { eq } from "drizzle-orm";
 import type { AppDb } from "@/db/client";
 import { auditLog, sessions } from "@/db/schema";
 
+/** The anonymous session ends after 30 idle minutes (ANONYMOUS_IDLE_MS in customer-accounts/session-rules). */
+const ANONYMOUS_IDLE_MS = 30 * 60_000;
+const TOUCH_AFTER_MS = 60_000;
+
 export type SessionData = {
   id: string;
   attributes: Record<string, unknown>;
@@ -49,6 +53,17 @@ export function createSessionStore(db: AppDb): SessionStore {
         .insert(sessions)
         .values({ id, createdAt: now, updatedAt: now })
         .onConflictDoNothing();
+      const [row] = await db.select().from(sessions).where(eq(sessions.id, id)).limit(1);
+      if (row && now - row.updatedAt >= ANONYMOUS_IDLE_MS) {
+        // Idle for 30 minutes: the session ended, so what it held (locale, cart) is gone (R-0202).
+        await db
+          .update(sessions)
+          .set({ attributes: "{}", controllerState: "{}", updatedAt: now })
+          .where(eq(sessions.id, id));
+      } else if (row && now - row.updatedAt >= TOUCH_AFTER_MS) {
+        // Each request moves the idle deadline, without a write on every one.
+        await db.update(sessions).set({ updatedAt: now }).where(eq(sessions.id, id));
+      }
       return (await load(id)) ?? { id, attributes: {}, controllerState: {} };
     },
     async save(session) {

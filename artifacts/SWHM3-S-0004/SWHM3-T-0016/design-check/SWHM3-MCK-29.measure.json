@@ -1,0 +1,304 @@
+{
+  "key": "SWHM3-MCK-29",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-in.html",
+  "url": "http://localhost:3300/signin",
+  "width": 1440,
+  "at": "2026-11-22T00:13:41.270Z",
+  "pixelDifference": 0.0688,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "Arial": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "color",
+      "mockup": "rgb(255, 255, 255)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "background",
+      "mockup": "rgb(79, 70, 229)",
+      "built": "rgb(255, 255, 255)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "215x36",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "12,291",
+      "built": "1334,14"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,299"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,337"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "a at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in to continue to Checkout. We’ll take you straight back there.",
+      "mockup": "span at 313,180"
+    },
+    {
+      "kind": "missing",
+      "text": "Checkout",
+      "mockup": "b at 449,181"
+    },
+    {
+      "kind": "style",
+      "text": "I have an account",
+      "prop": "position",
+      "mockup": "297,257",
+      "built": "297,192"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in with your user name and password.",
+      "prop": "position",
+      "mockup": "297,284",
+      "built": "297,215"
+    },
+    {
+      "kind": "style",
+      "text": "User name",
+      "prop": "position",
+      "mockup": "297,319",
+      "built": "297,249"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "input at 297,342"
+    },
+    {
+      "kind": "style",
+      "text": "Password",
+      "prop": "position",
+      "mockup": "297,392",
+      "built": "297,325"
+    },
+    {
+      "kind": "missing",
+      "text": "Remember my user name on this device",
+      "mockup": "label at 297,466"
+    },
+    {
+      "kind": "style",
+      "text": "on",
+      "prop": "box",
+      "mockup": "16x16",
+      "built": "42x42"
+    },
+    {
+      "kind": "style",
+      "text": "on",
+      "prop": "position",
+      "mockup": "297,468",
+      "built": "286,402"
+    },
+    {
+      "kind": "missing",
+      "text": "Wrong details? You’ll see the sign-in error page.",
+      "mockup": "p at 297,548"
+    },
+    {
+      "kind": "missing",
+      "text": "sign-in error",
+      "mockup": "a at 461,549"
+    },
+    {
+      "kind": "style",
+      "text": "I’m new here",
+      "prop": "position",
+      "mockup": "769,257",
+      "built": "769,192"
+    },
+    {
+      "kind": "style",
+      "text": "Create an account, then add your address, card and language on the next page.",
+      "prop": "position",
+      "mockup": "769,284",
+      "built": "769,215"
+    },
+    {
+      "kind": "missing",
+      "text": "Choose a user name",
+      "mockup": "label at 769,338"
+    },
+    {
+      "kind": "missing",
+      "text": "Up to 25 characters",
+      "mockup": "span at 769,403"
+    },
+    {
+      "kind": "missing",
+      "text": "0 / 25",
+      "mockup": "span at 1135,403"
+    },
+    {
+      "kind": "missing",
+      "text": "Choose a password",
+      "mockup": "label at 769,435"
+    },
+    {
+      "kind": "missing",
+      "text": "Up to 50 characters",
+      "mockup": "span at 769,500"
+    },
+    {
+      "kind": "missing",
+      "text": "Create account",
+      "mockup": "button at 769,531"
+    },
+    {
+      "kind": "missing",
+      "text": "If the name is taken you’ll be asked to choose another.",
+      "mockup": "p at 769,579"
+    },
+    {
+      "kind": "missing",
+      "text": "choose another",
+      "mockup": "a at 983,580"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,374"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1144,14"
+    },
+    {
+      "kind": "extra",
+      "text": "Remember my user name",
+      "built": "span at 328,413"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign on",
+      "built": "button at 297,460"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign up",
+      "built": "a at 769,266"
+    }
+  ]
+}

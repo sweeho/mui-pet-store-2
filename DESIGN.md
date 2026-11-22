@@ -42,7 +42,9 @@ value, never a component.
 - a **header** (the `banner` landmark) and a **footer** (the `contentinfo` landmark) on every page.
   The header carries the **search box** ("Search the catalog"), which opens the catalog's search
   results from any page, and on its right side the **language control**: the current language's
-  name, which opens the language page and remembers the page it came from;
+  name, which opens the language page and remembers the page it came from, followed by the
+  **account slot**: a "Sign in" link when signed off, the customer's name and a "Sign off" button
+  when signed on. Sign in appears only there;
 - the page's content in the one `main` landmark between them.
 
 Every page lives under `src/app/(DashboardLayout)/` and so renders inside the shell, including the
@@ -75,6 +77,15 @@ The interface follows the shopper's language (ARCHITECTURE.md §Data flow):
   page can be linked and the browser's back button works.
 - **Nothing found is not an error.** An unknown entry, an empty search or a page past the end shows
   the empty frame with a way back to the list, never the error frame.
+
+## Forms
+
+- Every field has a visible label; a required field is the default and an optional one says
+  "(optional)" in its label.
+- A refused save keeps what was typed, puts the reason under each failing field ("Postal code is
+  required") and a summary alert above the form naming the fields, and moves focus to the summary.
+- A successful save says so in a status message ("Profile saved"). Secrets are never echoed back: a
+  saved payment card shows only its last four digits.
 
 ## State frames
 
