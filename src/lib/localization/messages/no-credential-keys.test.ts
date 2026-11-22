@@ -12,7 +12,9 @@ describe("message catalogs", () => {
 
   it.each(files)("%s has no secret/password-named keys", (file) => {
     const src = readFileSync(path.join(dir, file), "utf8");
-    const bad = src.split("\n").filter((l) => /^\s*"[^"]*(secret|passw)[^"]*"\s*:/i.test(l));
+    const bad = src
+      .split("\n")
+      .filter((l) => /^\s*"[^"]*(secret|passw|credential|token|pwd)[^"]*"\s*:/i.test(l));
     expect(bad).toEqual([]);
   });
 });

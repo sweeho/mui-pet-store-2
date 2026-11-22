@@ -101,7 +101,7 @@ export default async function UserCreationErrorPage({
           {m["error.create.name"]}
         </Alert>
         <Alert component="li" role="listitem" severity="info">
-          {m["error.create.credential"]}
+          {m["error.create.concealed"]}
         </Alert>
       </Box>
     </StatusCard>
