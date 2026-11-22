@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import { IconLanguage, IconMenu, IconSearch } from "@tabler/icons-react";
+import { IconLanguage, IconLogin, IconLogout, IconMenu, IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
@@ -41,7 +41,16 @@ const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
 }));
 
 /** The top bar: the menu button on a small screen and the language control. */
-export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => void }) {
+export function Header({
+  toggleMobileSidebar,
+  userName,
+  signOffAction,
+}: {
+  toggleMobileSidebar: () => void;
+  /** The signed-on customer: shown with a "Sign off" button. Signed off, a "Sign in" link. */
+  userName?: string;
+  signOffAction?: () => Promise<void>;
+}) {
   const t = useT();
   const { chosen } = useLocaleContext();
   const pathname = usePathname();
@@ -149,6 +158,35 @@ export function Header({ toggleMobileSidebar }: { toggleMobileSidebar: () => voi
         >
           {name}
         </Button>
+        {userName && signOffAction ? (
+          <Box
+            component="form"
+            action={signOffAction}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            <Box component="span" sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
+              {userName}
+            </Box>
+            <Button
+              type="submit"
+              color="inherit"
+              startIcon={<IconLogout size={16} stroke={1.8} aria-hidden />}
+              sx={{ color: "text.primary", fontWeight: 500 }}
+            >
+              {t("header.signoff")}
+            </Button>
+          </Box>
+        ) : (
+          <Button
+            component={Link}
+            href="/signin"
+            color="inherit"
+            startIcon={<IconLogin size={16} stroke={1.8} aria-hidden />}
+            sx={{ color: "text.primary", fontWeight: 500 }}
+          >
+            {t("header.signin")}
+          </Button>
+        )}
       </ToolbarStyled>
     </AppBarStyled>
   );

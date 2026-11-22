@@ -20,3 +20,4 @@ api/openapi.yaml
 architecture/
 build/manifest.yaml
 legacy-analysis/
+src/lib/customer-accounts/customer-accounts.test.ts

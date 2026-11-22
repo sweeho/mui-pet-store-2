@@ -30,7 +30,16 @@ const PageWrapper = styled("div")(() => ({
 }));
 
 /** The sidebar, the header and the page between them. */
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  userName,
+  signOffAction,
+}: {
+  children: React.ReactNode;
+  /** The signed-on customer, if any; the header shows the account slot from it. */
+  userName?: string;
+  signOffAction?: () => Promise<void>;
+}) {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
     <MainWrapper>
@@ -39,7 +48,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         onSidebarClose={() => setMobileSidebarOpen(false)}
       />
       <PageWrapper>
-        <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
+        <Header
+          toggleMobileSidebar={() => setMobileSidebarOpen(true)}
+          userName={userName}
+          signOffAction={signOffAction}
+        />
         <Container
           sx={{
             paddingTop: "24px",
