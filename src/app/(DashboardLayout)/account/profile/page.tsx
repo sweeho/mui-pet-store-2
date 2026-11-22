@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { eq } from "drizzle-orm";
+import Link from "next/link";
 
 import { ProfileForm, type ProfileValues } from "@/components/account/ProfileForm";
 import { SignOnScreen } from "@/components/account/SignOnForm";
@@ -50,6 +51,17 @@ export default async function ProfilePage() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       <Box>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          component="nav"
+          aria-label="Breadcrumb"
+        >
+          <Link href="/" style={{ color: "inherit" }}>
+            {m["menu.home"]}
+          </Link>{" "}
+          / {m["menu.account"]} / {m["profile.title"]}
+        </Typography>
         <Typography variant="h1">{m["profile.title"]}</Typography>
         <Typography color="text.secondary" sx={{ mt: 0.5, maxWidth: 720 }}>
           {m["profile.intro"]}

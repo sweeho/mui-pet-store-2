@@ -1,0 +1,148 @@
+{
+  "key": "SWHM3-MCK-36",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-account-couldn-t-be-created-mobile.html",
+  "url": "http://localhost:3300/user-creation-error?name=aquarium-and-reptile-lover-1",
+  "width": 390,
+  "at": "2026-11-22T00:10:23.959Z",
+  "pixelDifference": 0.1534,
+  "pageHeights": {
+    "mockup": 844,
+    "built": 844
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "44x44",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "334,6",
+      "built": "206,44"
+    },
+    {
+      "kind": "missing",
+      "text": "We couldn’t create your account",
+      "mockup": "h1 at 37,173"
+    },
+    {
+      "kind": "missing",
+      "text": "Your account wasn’t created and nothing was saved. Fix the item below and try again.",
+      "mockup": "p at 37,210"
+    },
+    {
+      "kind": "missing",
+      "text": "User name is too long. “aquarium-and-reptile-lover-1” is 28 characters; the limit is 25.",
+      "mockup": "span at 78,284"
+    },
+    {
+      "kind": "missing",
+      "text": "User name is too long.",
+      "mockup": "b at 78,285"
+    },
+    {
+      "kind": "missing",
+      "text": "aquarium-and-reptile-lover-1",
+      "mockup": "span at 78,286"
+    },
+    {
+      "kind": "missing",
+      "text": "Passwords can be up to 50 characters.",
+      "mockup": "span at 78,375"
+    },
+    {
+      "kind": "style",
+      "text": "Try again",
+      "prop": "position",
+      "mockup": "37,431",
+      "built": "41,354"
+    },
+    {
+      "kind": "missing",
+      "text": "Back to home",
+      "mockup": "a at 37,483"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,811"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load this page",
+      "built": "h2 at 80,267"
+    },
+    {
+      "kind": "extra",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "built": "p at 41,294"
+    },
+    {
+      "kind": "extra",
+      "text": "Go to home",
+      "built": "a at 41,406"
+    }
+  ]
+}

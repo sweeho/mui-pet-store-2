@@ -1,8 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { alpha } from "@mui/material/styles";
 import type { ReactNode } from "react";
 
-type Tone = "error" | "success" | "info";
+type Tone = "error" | "warning" | "success" | "info";
 
 /** A centred status panel: an icon, one heading, text, optional detail and the next actions. */
 export function StatusCard({
@@ -21,7 +22,7 @@ export function StatusCard({
   children?: ReactNode;
   actions?: ReactNode;
 }) {
-  const color = tone === "error" ? "error" : tone === "success" ? "success" : "primary";
+  const color = tone === "info" ? "primary" : tone;
   return (
     <Box
       component="section"
@@ -34,6 +35,7 @@ export function StatusCard({
         p: { xs: 3, md: 5 },
         maxWidth: 640,
         mx: "auto",
+        mt: { xs: 0, md: 7 },
         textAlign: "center",
         display: "flex",
         flexDirection: "column",
@@ -49,7 +51,7 @@ export function StatusCard({
           borderRadius: "50%",
           display: "grid",
           placeItems: "center",
-          bgcolor: `${color}.light`,
+          bgcolor: (theme) => alpha(theme.palette[color].main, 0.12),
           color: `${color}.main`,
         }}
       >

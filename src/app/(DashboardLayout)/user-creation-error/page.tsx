@@ -1,3 +1,4 @@
+import { MONO } from "@/components/catalog/mono";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -23,7 +24,7 @@ export default async function UserCreationErrorPage({
   if (reason === "duplicate") {
     return (
       <StatusCard
-        tone="error"
+        tone="warning"
         alert
         icon={<IconUserOff size={28} />}
         title={m["error.dup.title"]}
@@ -44,16 +45,25 @@ export default async function UserCreationErrorPage({
             sx={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
               gap: 1.5,
+              width: "100%",
+              bgcolor: "background.default",
               border: 1,
               borderColor: "divider",
               borderRadius: 1,
               px: 2,
-              py: 1,
+              py: 1.25,
+              textAlign: "left",
             }}
           >
-            <Typography sx={{ fontFamily: "var(--font-mono, monospace)" }}>{name}</Typography>
-            <Typography variant="caption" color="error">
+            <Box>
+              <Typography variant="caption" color="text.secondary" component="div">
+                {m["signin.userName"]}
+              </Typography>
+              <Typography sx={{ fontFamily: MONO, fontWeight: 500 }}>{name}</Typography>
+            </Box>
+            <Typography variant="caption" color="warning.main" sx={{ fontWeight: 500 }}>
               {m["error.dup.badge"]}
             </Typography>
           </Box>

@@ -1,5 +1,6 @@
 "use client";
 
+import { MONO } from "@/components/catalog/mono";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -109,7 +110,7 @@ export function SignOnScreen({
               defaultValue={state.userName ?? rememberedName ?? ""}
               autoComplete="username"
               inputProps={{ maxLength: 50 }}
-              sx={{ fontFamily: "var(--font-mono, monospace)" }}
+              sx={{ fontFamily: MONO }}
             />
             <Field
               id="signin-password"

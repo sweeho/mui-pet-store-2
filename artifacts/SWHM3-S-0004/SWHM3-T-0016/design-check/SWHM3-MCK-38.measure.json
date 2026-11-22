@@ -1,0 +1,591 @@
+{
+  "key": "SWHM3-MCK-38",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-profile-form-mobile.html",
+  "url": "http://localhost:3300/account/profile",
+  "width": 390,
+  "at": "2026-11-22T00:10:28.165Z",
+  "pixelDifference": 0.1233,
+  "pageHeights": {
+    "mockup": 2324,
+    "built": 2177
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded",
+      "Arial": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign off j2ee",
+      "mockup": "a at 334,6"
+    },
+    {
+      "kind": "style",
+      "text": "Home / Account / Profile",
+      "prop": "position",
+      "mockup": "16,72",
+      "built": "16,186"
+    },
+    {
+      "kind": "style",
+      "text": "Home",
+      "prop": "position",
+      "mockup": "16,73",
+      "built": "16,188"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "size",
+      "mockup": "22px",
+      "built": "24px"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "16,95",
+      "built": "16,206"
+    },
+    {
+      "kind": "style",
+      "text": "Your contact details, address, card and shopping preferences. All fields are required unless marked optional.",
+      "prop": "position",
+      "mockup": "16,131",
+      "built": "16,240"
+    },
+    {
+      "kind": "missing",
+      "text": "Your profile wasn’t saved. One required field is empty: Postal code.",
+      "mockup": "span at 57,221"
+    },
+    {
+      "kind": "missing",
+      "text": "Your profile wasn’t saved.",
+      "mockup": "b at 57,222"
+    },
+    {
+      "kind": "style",
+      "text": "Postal code",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "600"
+    },
+    {
+      "kind": "style",
+      "text": "Postal code",
+      "prop": "box",
+      "mockup": "72x16",
+      "built": "308x17"
+    },
+    {
+      "kind": "style",
+      "text": "Postal code",
+      "prop": "position",
+      "mockup": "103,241",
+      "built": "41,1125"
+    },
+    {
+      "kind": "style",
+      "text": "Contact",
+      "prop": "position",
+      "mockup": "37,309",
+      "built": "41,350"
+    },
+    {
+      "kind": "style",
+      "text": "Used for your orders and order e-mails.",
+      "prop": "position",
+      "mockup": "37,334",
+      "built": "41,373"
+    },
+    {
+      "kind": "style",
+      "text": "First name",
+      "prop": "position",
+      "mockup": "37,369",
+      "built": "41,406"
+    },
+    {
+      "kind": "missing",
+      "text": "Jane",
+      "mockup": "input at 37,392"
+    },
+    {
+      "kind": "style",
+      "text": "Last name",
+      "prop": "position",
+      "mockup": "37,452",
+      "built": "41,483"
+    },
+    {
+      "kind": "missing",
+      "text": "Chen",
+      "mockup": "input at 37,476"
+    },
+    {
+      "kind": "style",
+      "text": "E-mail",
+      "prop": "position",
+      "mockup": "37,536",
+      "built": "41,559"
+    },
+    {
+      "kind": "missing",
+      "text": "jane.chen@example.com",
+      "mockup": "input at 37,559"
+    },
+    {
+      "kind": "style",
+      "text": "Telephone",
+      "prop": "position",
+      "mockup": "37,619",
+      "built": "41,636"
+    },
+    {
+      "kind": "missing",
+      "text": "+1 415 555 0142",
+      "mockup": "input at 37,642"
+    },
+    {
+      "kind": "style",
+      "text": "Address",
+      "prop": "position",
+      "mockup": "37,744",
+      "built": "41,762"
+    },
+    {
+      "kind": "style",
+      "text": "Where we ship your pets.",
+      "prop": "position",
+      "mockup": "37,770",
+      "built": "41,786"
+    },
+    {
+      "kind": "style",
+      "text": "Street",
+      "prop": "position",
+      "mockup": "37,804",
+      "built": "41,819"
+    },
+    {
+      "kind": "missing",
+      "text": "1200 Market Street",
+      "mockup": "input at 37,828"
+    },
+    {
+      "kind": "missing",
+      "text": "Street line 2 (optional)",
+      "mockup": "label at 37,888"
+    },
+    {
+      "kind": "missing",
+      "text": "Apt 4B",
+      "mockup": "input at 37,911"
+    },
+    {
+      "kind": "missing",
+      "text": "San Francisco",
+      "mockup": "input at 37,995"
+    },
+    {
+      "kind": "missing",
+      "text": "CA",
+      "mockup": "input at 37,1078"
+    },
+    {
+      "kind": "missing",
+      "text": "Enter your postal code.",
+      "mockup": "span at 37,1211"
+    },
+    {
+      "kind": "style",
+      "text": "Country",
+      "prop": "position",
+      "mockup": "37,1245",
+      "built": "41,1202"
+    },
+    {
+      "kind": "style",
+      "text": "United States Japan China Germany",
+      "prop": "size",
+      "mockup": "16px",
+      "built": "14px"
+    },
+    {
+      "kind": "style",
+      "text": "United States Japan China Germany",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "United States Japan China Germany",
+      "prop": "radius",
+      "mockup": "4px",
+      "built": "0px"
+    },
+    {
+      "kind": "style",
+      "text": "United States Japan China Germany",
+      "prop": "box",
+      "mockup": "316x44",
+      "built": "308x37"
+    },
+    {
+      "kind": "style",
+      "text": "United States Japan China Germany",
+      "prop": "position",
+      "mockup": "37,1268",
+      "built": "41,1225"
+    },
+    {
+      "kind": "style",
+      "text": "Payment card",
+      "prop": "position",
+      "mockup": "37,1370",
+      "built": "41,1328"
+    },
+    {
+      "kind": "style",
+      "text": "Charged when you place an order.",
+      "prop": "position",
+      "mockup": "37,1395",
+      "built": "41,1351"
+    },
+    {
+      "kind": "style",
+      "text": "Card type",
+      "prop": "position",
+      "mockup": "37,1430",
+      "built": "41,1385"
+    },
+    {
+      "kind": "style",
+      "text": "Visa MasterCard American Express",
+      "prop": "size",
+      "mockup": "16px",
+      "built": "14px"
+    },
+    {
+      "kind": "style",
+      "text": "Visa MasterCard American Express",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "Visa MasterCard American Express",
+      "prop": "radius",
+      "mockup": "4px",
+      "built": "0px"
+    },
+    {
+      "kind": "style",
+      "text": "Visa MasterCard American Express",
+      "prop": "box",
+      "mockup": "316x44",
+      "built": "308x37"
+    },
+    {
+      "kind": "style",
+      "text": "Visa MasterCard American Express",
+      "prop": "position",
+      "mockup": "37,1454",
+      "built": "41,1408"
+    },
+    {
+      "kind": "style",
+      "text": "Card number",
+      "prop": "position",
+      "mockup": "37,1514",
+      "built": "41,1461"
+    },
+    {
+      "kind": "missing",
+      "text": "Saved card ending 4242. Enter a new number only to replace it.",
+      "mockup": "span at 37,1587"
+    },
+    {
+      "kind": "missing",
+      "text": "4242",
+      "mockup": "span at 146,1588"
+    },
+    {
+      "kind": "missing",
+      "text": "Expiry",
+      "mockup": "label at 37,1639"
+    },
+    {
+      "kind": "style",
+      "text": "01 02 03 04 05 06 07 08 09 10 11 12",
+      "prop": "size",
+      "mockup": "16px",
+      "built": "14px"
+    },
+    {
+      "kind": "style",
+      "text": "01 02 03 04 05 06 07 08 09 10 11 12",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "01 02 03 04 05 06 07 08 09 10 11 12",
+      "prop": "radius",
+      "mockup": "4px",
+      "built": "0px"
+    },
+    {
+      "kind": "style",
+      "text": "01 02 03 04 05 06 07 08 09 10 11 12",
+      "prop": "box",
+      "mockup": "154x44",
+      "built": "150x37"
+    },
+    {
+      "kind": "style",
+      "text": "01 02 03 04 05 06 07 08 09 10 11 12",
+      "prop": "position",
+      "mockup": "37,1662",
+      "built": "41,1561"
+    },
+    {
+      "kind": "missing",
+      "text": "2026 2027 2028 2029 2030 2031",
+      "mockup": "select at 199,1662"
+    },
+    {
+      "kind": "style",
+      "text": "Preferences",
+      "prop": "position",
+      "mockup": "37,1764",
+      "built": "41,1664"
+    },
+    {
+      "kind": "style",
+      "text": "Your language is applied as soon as you save.",
+      "prop": "position",
+      "mockup": "37,1789",
+      "built": "41,1687"
+    },
+    {
+      "kind": "style",
+      "text": "Preferred language",
+      "prop": "position",
+      "mockup": "37,1824",
+      "built": "41,1721"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US) Deutsch 日本語 简体中文",
+      "mockup": "select at 37,1848"
+    },
+    {
+      "kind": "style",
+      "text": "Favorite category",
+      "prop": "position",
+      "mockup": "37,1908",
+      "built": "41,1797"
+    },
+    {
+      "kind": "missing",
+      "text": "No favorite Fish Dogs Reptiles Cats Birds",
+      "mockup": "select at 37,1931"
+    },
+    {
+      "kind": "style",
+      "text": "on",
+      "prop": "box",
+      "mockup": "40x24",
+      "built": "114x38"
+    },
+    {
+      "kind": "style",
+      "text": "on",
+      "prop": "position",
+      "mockup": "37,2009",
+      "built": "23,1874"
+    },
+    {
+      "kind": "style",
+      "text": "Show my list",
+      "prop": "position",
+      "mockup": "89,1991",
+      "built": "99,1874"
+    },
+    {
+      "kind": "style",
+      "text": "Show pets from your favorite category while you shop.",
+      "prop": "box",
+      "mockup": "252x35",
+      "built": "219x36"
+    },
+    {
+      "kind": "style",
+      "text": "Show pets from your favorite category while you shop.",
+      "prop": "position",
+      "mockup": "89,2014",
+      "built": "99,1897"
+    },
+    {
+      "kind": "style",
+      "text": "Show banners",
+      "prop": "position",
+      "mockup": "89,2070",
+      "built": "99,1952"
+    },
+    {
+      "kind": "style",
+      "text": "Show the category banner at the top of pages.",
+      "prop": "box",
+      "mockup": "260x15",
+      "built": "220x36"
+    },
+    {
+      "kind": "style",
+      "text": "Show the category banner at the top of pages.",
+      "prop": "position",
+      "mockup": "89,2093",
+      "built": "99,1975"
+    },
+    {
+      "kind": "style",
+      "text": "Save profile",
+      "prop": "box",
+      "mockup": "358x44",
+      "built": "140x37"
+    },
+    {
+      "kind": "style",
+      "text": "Save profile",
+      "prop": "position",
+      "mockup": "16,732",
+      "built": "234,2055"
+    },
+    {
+      "kind": "style",
+      "text": "Cancel",
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "style",
+      "text": "Cancel",
+      "prop": "box",
+      "mockup": "358x44",
+      "built": "64x37"
+    },
+    {
+      "kind": "style",
+      "text": "Cancel",
+      "prop": "position",
+      "mockup": "16,784",
+      "built": "158,2055"
+    },
+    {
+      "kind": "style",
+      "text": "© 2026 MUI Pet Store 2",
+      "prop": "position",
+      "mockup": "16,2291",
+      "built": "16,2144"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,2291"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,126"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "dmmwr2z2lg",
+      "built": "span at 16,89"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign off",
+      "built": "button at 111,81"
+    },
+    {
+      "kind": "extra",
+      "text": "Street line 2(optional)",
+      "built": "label at 41,896"
+    },
+    {
+      "kind": "extra",
+      "text": "Expiry month",
+      "built": "label at 41,1538"
+    },
+    {
+      "kind": "extra",
+      "text": "Expiry year",
+      "built": "label at 199,1538"
+    },
+    {
+      "kind": "extra",
+      "text": "2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037",
+      "built": "select at 199,1561"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States) Deutsch (Deutschland) 日本語 (日本) 简体中文 (中国)",
+      "built": "select at 41,1744"
+    },
+    {
+      "kind": "extra",
+      "text": "No favorite Birds Cats Dogs Fish Reptiles",
+      "built": "select at 41,1821"
+    }
+  ]
+}

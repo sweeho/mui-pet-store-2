@@ -1,0 +1,224 @@
+{
+  "key": "SWHM3-MCK-39",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-on-welcome.html",
+  "url": "http://localhost:3300/account/welcome",
+  "width": 1440,
+  "at": "2026-11-22T00:10:30.208Z",
+  "pixelDifference": 0.0361,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in",
+      "mockup": "a at 12,291"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,299"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,337"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "a at 1019,14"
+    },
+    {
+      "kind": "missing",
+      "text": "J",
+      "mockup": "span at 1220,18"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "span at 1256,22"
+    },
+    {
+      "kind": "style",
+      "text": "Sign off",
+      "prop": "box",
+      "mockup": "105x36",
+      "built": "87x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign off",
+      "prop": "position",
+      "mockup": "1311,14",
+      "built": "1329,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Welcome, Jane",
+      "mockup": "h1 at 593,249"
+    },
+    {
+      "kind": "missing",
+      "text": "You’re signed in as j2ee. Your language is set from your profile. You’ll stay signed in until you sign off or are idle for 15 minutes.",
+      "mockup": "p at 593,292"
+    },
+    {
+      "kind": "missing",
+      "text": "Signed in",
+      "mockup": "span at 709,349"
+    },
+    {
+      "kind": "missing",
+      "text": "Shopping in English (US)",
+      "mockup": "span at 799,349"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 625,395"
+    },
+    {
+      "kind": "missing",
+      "text": "Open your cart",
+      "mockup": "a at 816,395"
+    },
+    {
+      "kind": "missing",
+      "text": "Edit profile",
+      "mockup": "a at 953,395"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,374"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1036,14"
+    },
+    {
+      "kind": "extra",
+      "text": "dmmwr2z44w",
+      "built": "span at 1226,22"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load this page",
+      "built": "h2 at 725,206"
+    },
+    {
+      "kind": "extra",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "built": "p at 648,233"
+    },
+    {
+      "kind": "extra",
+      "text": "Try again",
+      "built": "button at 726,274"
+    },
+    {
+      "kind": "extra",
+      "text": "Go to home",
+      "built": "a at 848,274"
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "key": "SWHM3-MCK-41",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-signed-off.html",
+  "url": "http://localhost:3300/signed-off",
+  "width": 1440,
+  "at": "2026-11-22T00:10:34.064Z",
+  "pixelDifference": 0.0381,
+  "pageHeights": {
+    "mockup": 900,
+    "built": 900
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "a at 12,215"
+    },
+    {
+      "kind": "style",
+      "text": "Account",
+      "prop": "position",
+      "mockup": "12,253",
+      "built": "12,223"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "color",
+      "mockup": "rgb(255, 255, 255)",
+      "built": "rgb(15, 23, 42)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "background",
+      "mockup": "rgb(79, 70, 229)",
+      "built": "rgb(255, 255, 255)"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "215x36",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "12,291",
+      "built": "1334,14"
+    },
+    {
+      "kind": "style",
+      "text": "Profile",
+      "prop": "position",
+      "mockup": "12,329",
+      "built": "12,299"
+    },
+    {
+      "kind": "style",
+      "text": "Language",
+      "prop": "position",
+      "mockup": "12,367",
+      "built": "12,261"
+    },
+    {
+      "kind": "style",
+      "text": "Admin",
+      "prop": "position",
+      "mockup": "12,405",
+      "built": "12,337"
+    },
+    {
+      "kind": "missing",
+      "text": "Orders",
+      "mockup": "a at 12,442"
+    },
+    {
+      "kind": "missing",
+      "text": "Sales charts",
+      "mockup": "a at 12,480"
+    },
+    {
+      "kind": "missing",
+      "text": "Inventory",
+      "mockup": "a at 12,518"
+    },
+    {
+      "kind": "missing",
+      "text": "Admin entries need the administrator role.",
+      "mockup": "div at 12,836"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "font",
+      "mockup": "Inter",
+      "built": "Arial"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "size",
+      "mockup": "14px",
+      "built": "18px"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "color",
+      "mockup": "rgb(0, 0, 0)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "radius",
+      "mockup": "0px",
+      "built": "50%"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "box",
+      "mockup": "368x20",
+      "built": "18x18"
+    },
+    {
+      "kind": "style",
+      "text": "Search the catalog",
+      "prop": "position",
+      "mockup": "303,21",
+      "built": "285,23"
+    },
+    {
+      "kind": "missing",
+      "text": "English (US)",
+      "mockup": "a at 1120,14"
+    },
+    {
+      "kind": "missing",
+      "text": "You’ve signed off",
+      "mockup": "h1 at 593,249"
+    },
+    {
+      "kind": "missing",
+      "text": "Thanks for shopping. Your session has ended on this device.",
+      "mockup": "p at 593,292"
+    },
+    {
+      "kind": "missing",
+      "text": "Your cart was emptied",
+      "mockup": "li at 650,332"
+    },
+    {
+      "kind": "missing",
+      "text": "We kept your language: English (US)",
+      "mockup": "li at 650,359"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in again",
+      "mockup": "a at 706,402"
+    },
+    {
+      "kind": "missing",
+      "text": "Back to home",
+      "mockup": "a at 855,402"
+    },
+    {
+      "kind": "extra",
+      "text": "Order administration",
+      "built": "a at 12,374"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 1144,14"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load this page",
+      "built": "h2 at 725,206"
+    },
+    {
+      "kind": "extra",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "built": "p at 648,233"
+    },
+    {
+      "kind": "extra",
+      "text": "Try again",
+      "built": "button at 726,274"
+    },
+    {
+      "kind": "extra",
+      "text": "Go to home",
+      "built": "a at 848,274"
+    }
+  ]
+}

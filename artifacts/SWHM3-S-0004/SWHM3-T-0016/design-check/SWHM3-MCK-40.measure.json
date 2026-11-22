@@ -1,0 +1,145 @@
+{
+  "key": "SWHM3-MCK-40",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-on-welcome-mobile.html",
+  "url": "http://localhost:3300/account/welcome",
+  "width": 390,
+  "at": "2026-11-22T00:10:32.263Z",
+  "pixelDifference": 0.1477,
+  "pageHeights": {
+    "mockup": 844,
+    "built": 844
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded",
+      "JetBrains Mono": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign off j2ee",
+      "mockup": "a at 334,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Welcome, Jane",
+      "mockup": "h1 at 37,173"
+    },
+    {
+      "kind": "missing",
+      "text": "You’re signed in as j2ee. Your language is set from your profile. You’ll stay signed in until you sign off or are idle for 15 minutes.",
+      "mockup": "p at 37,210"
+    },
+    {
+      "kind": "missing",
+      "text": "j2ee",
+      "mockup": "span at 173,212"
+    },
+    {
+      "kind": "missing",
+      "text": "Signed in",
+      "mockup": "span at 64,287"
+    },
+    {
+      "kind": "missing",
+      "text": "Shopping in English (US)",
+      "mockup": "span at 154,287"
+    },
+    {
+      "kind": "missing",
+      "text": "Browse the catalog",
+      "mockup": "a at 37,335"
+    },
+    {
+      "kind": "missing",
+      "text": "Open your cart",
+      "mockup": "a at 37,387"
+    },
+    {
+      "kind": "missing",
+      "text": "Edit profile",
+      "mockup": "a at 37,439"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,811"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,126"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "dmmwr2z5sb",
+      "built": "span at 16,89"
+    },
+    {
+      "kind": "extra",
+      "text": "Sign off",
+      "built": "button at 114,81"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load this page",
+      "built": "h2 at 80,303"
+    },
+    {
+      "kind": "extra",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "built": "p at 41,330"
+    },
+    {
+      "kind": "extra",
+      "text": "Try again",
+      "built": "button at 41,391"
+    },
+    {
+      "kind": "extra",
+      "text": "Go to home",
+      "built": "a at 41,443"
+    }
+  ]
+}

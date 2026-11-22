@@ -1,0 +1,140 @@
+{
+  "key": "SWHM3-MCK-42",
+  "mockup": "artifacts/SWHM3-S-0004/design/mockup-signed-off-mobile.html",
+  "url": "http://localhost:3300/signed-off",
+  "width": 390,
+  "at": "2026-11-22T00:10:35.721Z",
+  "pixelDifference": 0.0924,
+  "pageHeights": {
+    "mockup": 844,
+    "built": 844
+  },
+  "fonts": {
+    "mockup": {
+      "Inter": "loaded"
+    },
+    "built": {
+      "Inter Variable": "loaded",
+      "Arial": "loaded"
+    },
+    "builtNotLoaded": []
+  },
+  "differences": [
+    {
+      "kind": "missing",
+      "text": "Open menu",
+      "mockup": "button at 12,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Pet Store",
+      "mockup": "a at 64,14"
+    },
+    {
+      "kind": "missing",
+      "text": "Search",
+      "mockup": "button at 230,6"
+    },
+    {
+      "kind": "missing",
+      "text": "Cart",
+      "mockup": "button at 282,6"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "box",
+      "mockup": "44x44",
+      "built": "82x37"
+    },
+    {
+      "kind": "style",
+      "text": "Sign in",
+      "prop": "position",
+      "mockup": "334,6",
+      "built": "206,44"
+    },
+    {
+      "kind": "missing",
+      "text": "You’ve signed off",
+      "mockup": "h1 at 37,173"
+    },
+    {
+      "kind": "missing",
+      "text": "Thanks for shopping. Your session has ended on this device.",
+      "mockup": "p at 37,210"
+    },
+    {
+      "kind": "missing",
+      "text": "Your cart was emptied",
+      "mockup": "li at 37,271"
+    },
+    {
+      "kind": "missing",
+      "text": "We kept your language: English (US)",
+      "mockup": "li at 37,297"
+    },
+    {
+      "kind": "missing",
+      "text": "Sign in again",
+      "mockup": "a at 37,340"
+    },
+    {
+      "kind": "missing",
+      "text": "Back to home",
+      "mockup": "a at 37,392"
+    },
+    {
+      "kind": "missing",
+      "text": "Language: English (US)",
+      "mockup": "a at 167,811"
+    },
+    {
+      "kind": "extra",
+      "text": "Open the menu",
+      "built": "button at 16,0"
+    },
+    {
+      "kind": "extra",
+      "text": "MUI Pet Store 2",
+      "built": "a at 68,8"
+    },
+    {
+      "kind": "extra",
+      "text": "Search the catalog",
+      "built": "button at 29,90"
+    },
+    {
+      "kind": "extra",
+      "text": "English (United States)",
+      "built": "a at 16,44"
+    },
+    {
+      "kind": "extra",
+      "text": "We couldn't load this page",
+      "built": "h2 at 80,267"
+    },
+    {
+      "kind": "extra",
+      "text": "Something went wrong on our side. Try again in a moment.",
+      "built": "p at 41,294"
+    },
+    {
+      "kind": "extra",
+      "text": "Try again",
+      "built": "button at 41,354"
+    },
+    {
+      "kind": "extra",
+      "text": "Go to home",
+      "built": "a at 41,406"
+    }
+  ]
+}
