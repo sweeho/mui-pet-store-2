@@ -3,8 +3,8 @@
   "mockup": "artifacts/SWHM3-S-0004/design/mockup-account-couldn-t-be-created.html",
   "url": "http://localhost:3300/user-creation-error?name=aquarium-and-reptile-lover-1",
   "width": 1440,
-  "at": "2026-11-22T00:10:22.214Z",
-  "pixelDifference": 0.0412,
+  "at": "2026-11-22T00:13:51.199Z",
+  "pixelDifference": 0.0401,
   "pageHeights": {
     "mockup": 900,
     "built": 900
@@ -150,9 +150,18 @@
       "mockup": "a at 1120,14"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "We couldn’t create your account",
-      "mockup": "h1 at 593,249"
+      "prop": "box",
+      "mockup": "494x35",
+      "built": "370x30"
+    },
+    {
+      "kind": "style",
+      "text": "We couldn’t create your account",
+      "prop": "position",
+      "mockup": "593,249",
+      "built": "655,254"
     },
     {
       "kind": "missing",
@@ -175,28 +184,46 @@
       "mockup": "span at 786,367"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "Passwords can be up to 50 characters.",
-      "mockup": "span at 634,438"
+      "prop": "color",
+      "mockup": "rgb(100, 116, 139)",
+      "built": "rgb(20, 62, 84)"
     },
     {
       "kind": "style",
-      "text": "Try again",
+      "text": "Passwords can be up to 50 characters.",
       "prop": "box",
-      "mockup": "92x36",
-      "built": "114x36"
+      "mockup": "243x19",
+      "built": "220x36"
+    },
+    {
+      "kind": "style",
+      "text": "Passwords can be up to 50 characters.",
+      "prop": "position",
+      "mockup": "634,438",
+      "built": "737,411"
     },
     {
       "kind": "style",
       "text": "Try again",
       "prop": "position",
       "mockup": "730,493",
-      "built": "726,274"
+      "built": "734,473"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "Back to home",
-      "mockup": "a at 830,493"
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "style",
+      "text": "Back to home",
+      "prop": "position",
+      "mockup": "830,493",
+      "built": "840,473"
     },
     {
       "kind": "extra",
@@ -210,18 +237,13 @@
     },
     {
       "kind": "extra",
-      "text": "We couldn't load this page",
-      "built": "h2 at 725,206"
+      "text": "Your account wasn’t created and nothing was saved. Check the items below and try again.",
+      "built": "p at 561,296"
     },
     {
       "kind": "extra",
-      "text": "Something went wrong on our side. Try again in a moment.",
-      "built": "p at 648,233"
-    },
-    {
-      "kind": "extra",
-      "text": "Go to home",
-      "built": "a at 848,274"
+      "text": "The user name must be 1 to 25 characters.",
+      "built": "div at 737,355"
     }
   ]
 }

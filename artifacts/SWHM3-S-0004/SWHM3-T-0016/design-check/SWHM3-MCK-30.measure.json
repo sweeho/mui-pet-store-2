@@ -3,8 +3,8 @@
   "mockup": "artifacts/SWHM3-S-0004/design/mockup-sign-in-mobile.html",
   "url": "http://localhost:3300/signin",
   "width": 390,
-  "at": "2026-11-22T00:10:13.355Z",
-  "pixelDifference": 0.1314,
+  "at": "2026-11-22T00:13:42.901Z",
+  "pixelDifference": 0.1315,
   "pageHeights": {
     "mockup": 1110,
     "built": 872

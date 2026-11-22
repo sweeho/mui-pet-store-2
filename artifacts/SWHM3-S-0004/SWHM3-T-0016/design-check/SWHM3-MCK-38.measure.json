@@ -3,7 +3,7 @@
   "mockup": "artifacts/SWHM3-S-0004/design/mockup-profile-form-mobile.html",
   "url": "http://localhost:3300/account/profile",
   "width": 390,
-  "at": "2026-11-22T00:10:28.165Z",
+  "at": "2026-11-22T00:13:56.695Z",
   "pixelDifference": 0.1233,
   "pageHeights": {
     "mockup": 2324,
@@ -549,13 +549,13 @@
     },
     {
       "kind": "extra",
-      "text": "dmmwr2z2lg",
+      "text": "dmmwr33jji",
       "built": "span at 16,89"
     },
     {
       "kind": "extra",
       "text": "Sign off",
-      "built": "button at 111,81"
+      "built": "button at 100,81"
     },
     {
       "kind": "extra",

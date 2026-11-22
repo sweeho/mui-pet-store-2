@@ -3,8 +3,8 @@
   "mockup": "artifacts/SWHM3-S-0004/design/mockup-duplicate-account.html",
   "url": "http://localhost:3300/user-creation-error?reason=duplicate&name=j2ee",
   "width": 1440,
-  "at": "2026-11-22T00:10:18.699Z",
-  "pixelDifference": 0.0421,
+  "at": "2026-11-22T00:13:47.883Z",
+  "pixelDifference": 0.0416,
   "pageHeights": {
     "mockup": 900,
     "built": 900
@@ -16,7 +16,8 @@
     },
     "built": {
       "Inter Variable": "loaded",
-      "Arial": "loaded"
+      "Arial": "loaded",
+      "JetBrains Mono Variable": "loaded"
     },
     "builtNotLoaded": []
   },
@@ -150,9 +151,18 @@
       "mockup": "a at 1120,14"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "That user name is already taken",
-      "mockup": "h1 at 593,249"
+      "prop": "box",
+      "mockup": "494x35",
+      "built": "362x30"
+    },
+    {
+      "kind": "style",
+      "text": "That user name is already taken",
+      "prop": "position",
+      "mockup": "593,249",
+      "built": "659,254"
     },
     {
       "kind": "missing",
@@ -160,24 +170,60 @@
       "mockup": "p at 593,292"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "User name",
-      "mockup": "div at 658,369"
+      "prop": "box",
+      "mockup": "290x17",
+      "built": "62x20"
     },
     {
-      "kind": "missing",
+      "kind": "style",
+      "text": "User name",
+      "prop": "position",
+      "mockup": "658,369",
+      "built": "578,360"
+    },
+    {
+      "kind": "style",
       "text": "j2ee",
-      "mockup": "div at 658,387"
+      "prop": "weight",
+      "mockup": "400",
+      "built": "500"
     },
     {
-      "kind": "missing",
+      "kind": "style",
+      "text": "j2ee",
+      "prop": "box",
+      "mockup": "290x20",
+      "built": "62x20"
+    },
+    {
+      "kind": "style",
+      "text": "j2ee",
+      "prop": "position",
+      "mockup": "658,387",
+      "built": "578,380"
+    },
+    {
+      "kind": "style",
       "text": "Already taken",
-      "mockup": "span at 960,377"
+      "prop": "box",
+      "mockup": "110x22",
+      "built": "80x20"
     },
     {
-      "kind": "missing",
+      "kind": "style",
+      "text": "Already taken",
+      "prop": "position",
+      "mockup": "960,377",
+      "built": "1022,370"
+    },
+    {
+      "kind": "style",
       "text": "Choose another user name",
-      "mockup": "a at 668,448"
+      "prop": "position",
+      "mockup": "668,448",
+      "built": "691,431"
     },
     {
       "kind": "missing",
@@ -196,23 +242,8 @@
     },
     {
       "kind": "extra",
-      "text": "We couldn't load this page",
-      "built": "h2 at 725,206"
-    },
-    {
-      "kind": "extra",
-      "text": "Something went wrong on our side. Try again in a moment.",
-      "built": "p at 648,233"
-    },
-    {
-      "kind": "extra",
-      "text": "Try again",
-      "built": "button at 726,274"
-    },
-    {
-      "kind": "extra",
-      "text": "Go to home",
-      "built": "a at 848,274"
+      "text": "Someone already has an account with that user name. Pick a different user name, or sign in if it’s yours.",
+      "built": "p at 561,296"
     }
   ]
 }

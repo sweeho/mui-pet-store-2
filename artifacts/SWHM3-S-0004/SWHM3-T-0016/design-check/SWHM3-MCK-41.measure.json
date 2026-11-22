@@ -3,8 +3,8 @@
   "mockup": "artifacts/SWHM3-S-0004/design/mockup-signed-off.html",
   "url": "http://localhost:3300/signed-off",
   "width": 1440,
-  "at": "2026-11-22T00:10:34.064Z",
-  "pixelDifference": 0.0381,
+  "at": "2026-11-22T00:14:02.087Z",
+  "pixelDifference": 0.0354,
   "pageHeights": {
     "mockup": 900,
     "built": 900
@@ -154,14 +154,39 @@
       "mockup": "h1 at 593,249"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "Thanks for shopping. Your session has ended on this device.",
-      "mockup": "p at 593,292"
+      "prop": "box",
+      "mockup": "494x20",
+      "built": "397x20"
     },
     {
-      "kind": "missing",
+      "kind": "style",
+      "text": "Thanks for shopping. Your session has ended on this device.",
+      "prop": "position",
+      "mockup": "593,292",
+      "built": "642,296"
+    },
+    {
+      "kind": "style",
       "text": "Your cart was emptied",
-      "mockup": "li at 650,332"
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(100, 116, 139)"
+    },
+    {
+      "kind": "style",
+      "text": "Your cart was emptied",
+      "prop": "box",
+      "mockup": "380x19",
+      "built": "310x20"
+    },
+    {
+      "kind": "style",
+      "text": "Your cart was emptied",
+      "prop": "position",
+      "mockup": "650,332",
+      "built": "685,328"
     },
     {
       "kind": "missing",
@@ -169,14 +194,32 @@
       "mockup": "li at 650,359"
     },
     {
-      "kind": "missing",
+      "kind": "style",
       "text": "Sign in again",
-      "mockup": "a at 706,402"
+      "prop": "box",
+      "mockup": "141x36",
+      "built": "119x37"
     },
     {
-      "kind": "missing",
+      "kind": "style",
+      "text": "Sign in again",
+      "prop": "position",
+      "mockup": "706,402",
+      "built": "714,389"
+    },
+    {
+      "kind": "style",
       "text": "Back to home",
-      "mockup": "a at 855,402"
+      "prop": "color",
+      "mockup": "rgb(15, 23, 42)",
+      "built": "rgb(79, 70, 229)"
+    },
+    {
+      "kind": "style",
+      "text": "Back to home",
+      "prop": "position",
+      "mockup": "855,402",
+      "built": "845,389"
     },
     {
       "kind": "extra",
@@ -190,23 +233,13 @@
     },
     {
       "kind": "extra",
-      "text": "We couldn't load this page",
-      "built": "h2 at 725,206"
+      "text": "You have signed off",
+      "built": "h1 at 727,254"
     },
     {
       "kind": "extra",
-      "text": "Something went wrong on our side. Try again in a moment.",
-      "built": "p at 648,233"
-    },
-    {
-      "kind": "extra",
-      "text": "Try again",
-      "built": "button at 726,274"
-    },
-    {
-      "kind": "extra",
-      "text": "Go to home",
-      "built": "a at 848,274"
+      "text": "We kept your language: English (United States)",
+      "built": "li at 685,349"
     }
   ]
 }

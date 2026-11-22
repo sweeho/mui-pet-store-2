@@ -53,7 +53,7 @@ Differences left:
 ## SWHM3-MCK-30 · Sign in · Mobile (/signin, signed off, 390)
 ![mockup](design-check/SWHM3-MCK-30-mockup.png) ![built](design-check/SWHM3-MCK-30-built.png) ![diff](design-check/SWHM3-MCK-30-diff.png)
 
-Measured: 13.1% of pixels differ, 38 differences.
+Measured: 13.2% of pixels differ, 38 differences.
 
 Differences left:
 
@@ -159,7 +159,7 @@ Differences left:
 ## SWHM3-MCK-33 · Duplicate account (/user-creation-error?reason=duplicate, 1440)
 ![mockup](design-check/SWHM3-MCK-33-mockup.png) ![built](design-check/SWHM3-MCK-33-built.png) ![diff](design-check/SWHM3-MCK-33-diff.png)
 
-Measured: 4.2% of pixels differ, 33 differences.
+Measured: 4.2% of pixels differ, 35 differences.
 
 Differences left:
 
@@ -169,25 +169,17 @@ Differences left:
 - missing in built: "Inventory" (C1 to C5)
 - missing in built: "Admin entries need the administrator role." (C1 to C5)
 - missing in built: "English (US)" (C1 to C5)
-- missing in built: "That user name is already taken" (C1 to C5)
 - missing in built: "Someone already has an account called “j2ee”. Pick a different user name, or sign in if it’s yours." (C1 to C5)
-- missing in built: "User name" (C1 to C5)
-- missing in built: "j2ee" (C1 to C5)
-- missing in built: "Already taken" (C1 to C5)
-- missing in built: "Choose another user name" (C1 to C5)
 - missing in built: "Sign in as j2ee" (C1 to C5)
 - only in built: "Order administration" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: background ×1, box ×2, color ×2, font ×1, position ×6, radius ×1, size ×1 (C1 to C6)
+- only in built: "Someone already has an account with that user name. Pick a different user name, or sign in if it’s yours." (C1 to C5)
+- style and layout lines: background ×1, box ×6, color ×2, font ×1, position ×11, radius ×1, size ×1, weight ×1 (C1 to C6)
 
 ## SWHM3-MCK-34 · Duplicate account · Mobile (same, 390)
 ![mockup](design-check/SWHM3-MCK-34-mockup.png) ![built](design-check/SWHM3-MCK-34-built.png) ![diff](design-check/SWHM3-MCK-34-diff.png)
 
-Measured: 8.0% of pixels differ, 23 differences.
+Measured: 14.8% of pixels differ, 27 differences.
 
 Differences left:
 
@@ -195,28 +187,20 @@ Differences left:
 - missing in built: "Pet Store" (C1 to C5)
 - missing in built: "Search" (C1 to C5)
 - missing in built: "Cart" (C1 to C5)
-- missing in built: "That user name is already taken" (C1 to C5)
 - missing in built: "Someone already has an account called “j2ee”. Pick a different user name, or sign in if it’s yours." (C1 to C5)
-- missing in built: "User name" (C1 to C5)
-- missing in built: "j2ee" (C1 to C5)
-- missing in built: "Already taken" (C1 to C5)
-- missing in built: "Choose another user name" (C1 to C5)
 - missing in built: "Sign in as j2ee" (C1 to C5)
 - missing in built: "Language: English (US)" (C1 to C5)
 - only in built: "Open the menu" (C1 to C5)
 - only in built: "MUI Pet Store 2" (C1 to C5)
 - only in built: "Search the catalog" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: box ×1, position ×1, weight ×1 (C1 to C6)
+- only in built: "Someone already has an account with that user name. Pick a different user name, or sign in if it’s yours." (C1 to C5)
+- style and layout lines: box ×6, position ×6, size ×1, weight ×1 (C1 to C6)
 
 ## SWHM3-MCK-35 · Account couldn’t be created (/user-creation-error, 1440)
 ![mockup](design-check/SWHM3-MCK-35-mockup.png) ![built](design-check/SWHM3-MCK-35-built.png) ![diff](design-check/SWHM3-MCK-35-diff.png)
 
-Measured: 4.1% of pixels differ, 34 differences.
+Measured: 4.0% of pixels differ, 36 differences.
 
 Differences left:
 
@@ -226,24 +210,20 @@ Differences left:
 - missing in built: "Inventory" (C1 to C5)
 - missing in built: "Admin entries need the administrator role." (C1 to C5)
 - missing in built: "English (US)" (C1 to C5)
-- missing in built: "We couldn’t create your account" (C1 to C5)
 - missing in built: "Your account wasn’t created and nothing was saved. Fix the item below and try again." (C1 to C5)
 - missing in built: "User name is too long. “aquarium-and-reptile-lover-1” is 28 characters; the limit is 25." (C1 to C5)
 - missing in built: "User name is too long." (C1 to C5)
 - missing in built: "aquarium-and-reptile-lover-1" (C1 to C5)
-- missing in built: "Passwords can be up to 50 characters." (C1 to C5)
-- missing in built: "Back to home" (C1 to C5)
 - only in built: "Order administration" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: background ×1, box ×3, color ×2, font ×1, position ×7, radius ×1, size ×1 (C1 to C6)
+- only in built: "Your account wasn’t created and nothing was saved. Check the items below and try again." (C1 to C5)
+- only in built: "The user name must be 1 to 25 characters." (C1 to C5)
+- style and layout lines: background ×1, box ×4, color ×4, font ×1, position ×10, radius ×1, size ×1 (C1 to C6)
 
 ## SWHM3-MCK-36 · Account couldn’t be created · Mobile (same, 390)
 ![mockup](design-check/SWHM3-MCK-36-mockup.png) ![built](design-check/SWHM3-MCK-36-built.png) ![diff](design-check/SWHM3-MCK-36-diff.png)
 
-Measured: 15.3% of pixels differ, 23 differences.
+Measured: 14.0% of pixels differ, 29 differences.
 
 Differences left:
 
@@ -251,22 +231,18 @@ Differences left:
 - missing in built: "Pet Store" (C1 to C5)
 - missing in built: "Search" (C1 to C5)
 - missing in built: "Cart" (C1 to C5)
-- missing in built: "We couldn’t create your account" (C1 to C5)
 - missing in built: "Your account wasn’t created and nothing was saved. Fix the item below and try again." (C1 to C5)
 - missing in built: "User name is too long. “aquarium-and-reptile-lover-1” is 28 characters; the limit is 25." (C1 to C5)
 - missing in built: "User name is too long." (C1 to C5)
 - missing in built: "aquarium-and-reptile-lover-1" (C1 to C5)
-- missing in built: "Passwords can be up to 50 characters." (C1 to C5)
-- missing in built: "Back to home" (C1 to C5)
 - missing in built: "Language: English (US)" (C1 to C5)
 - only in built: "Open the menu" (C1 to C5)
 - only in built: "MUI Pet Store 2" (C1 to C5)
 - only in built: "Search the catalog" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: box ×1, position ×2, weight ×1 (C1 to C6)
+- only in built: "Your account wasn’t created and nothing was saved. Check the items below and try again." (C1 to C5)
+- only in built: "The user name must be 1 to 25 characters." (C1 to C5)
+- style and layout lines: box ×5, color ×2, position ×5, size ×1, weight ×1 (C1 to C6)
 
 ## SWHM3-MCK-37 · Profile form (/account/profile, signed on, 1440)
 ![mockup](design-check/SWHM3-MCK-37-mockup.png) ![built](design-check/SWHM3-MCK-37-built.png) ![diff](design-check/SWHM3-MCK-37-diff.png)
@@ -304,7 +280,7 @@ Differences left:
 - missing in built: "No favorite Fish Dogs Reptiles Cats Birds" (C1 to C5)
 - only in built: "Order administration" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "dmmwr2z0x7" (C1 to C5)
+- only in built: "dmmwr33hze" (C1 to C5)
 - only in built: "Street line 2(optional)" (C1 to C5)
 - only in built: "Expiry month" (C1 to C5)
 - only in built: "Expiry year" (C1 to C5)
@@ -348,7 +324,7 @@ Differences left:
 - only in built: "MUI Pet Store 2" (C1 to C5)
 - only in built: "Search the catalog" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "dmmwr2z2lg" (C1 to C5)
+- only in built: "dmmwr33jji" (C1 to C5)
 - only in built: "Sign off" (C1 to C5)
 - only in built: "Street line 2(optional)" (C1 to C5)
 - only in built: "Expiry month" (C1 to C5)
@@ -361,7 +337,7 @@ Differences left:
 ## SWHM3-MCK-39 · Sign-on welcome (/account/welcome, signed on, 1440)
 ![mockup](design-check/SWHM3-MCK-39-mockup.png) ![built](design-check/SWHM3-MCK-39-built.png) ![diff](design-check/SWHM3-MCK-39-diff.png)
 
-Measured: 3.6% of pixels differ, 35 differences.
+Measured: 3.4% of pixels differ, 36 differences.
 
 Differences left:
 
@@ -378,22 +354,19 @@ Differences left:
 - missing in built: "You’re signed in as j2ee. Your language is set from your profile. You’ll stay signed in until you sign off or are idle for 15 minutes." (C1 to C5)
 - missing in built: "Signed in" (C1 to C5)
 - missing in built: "Shopping in English (US)" (C1 to C5)
-- missing in built: "Browse the catalog" (C1 to C5)
 - missing in built: "Open your cart" (C1 to C5)
-- missing in built: "Edit profile" (C1 to C5)
 - only in built: "Order administration" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "dmmwr2z44w" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: box ×2, color ×1, font ×1, position ×6, radius ×1, size ×1 (C1 to C6)
+- only in built: "dmmwr33l0o" (C1 to C5)
+- only in built: "Welcome, dmmwr33l0o" (C1 to C5)
+- only in built: "You’re signed on as dmmwr33l0o. Your language is set from your profile. You’ll stay signed on until you sign off or are idle for 15 minutes." (C1 to C5)
+- only in built: "Signed on" (C1 to C5)
+- style and layout lines: box ×3, color ×2, font ×1, position ×8, radius ×1, size ×1 (C1 to C6)
 
 ## SWHM3-MCK-40 · Sign-on welcome · Mobile (same, 390)
 ![mockup](design-check/SWHM3-MCK-40-mockup.png) ![built](design-check/SWHM3-MCK-40-built.png) ![diff](design-check/SWHM3-MCK-40-diff.png)
 
-Measured: 14.8% of pixels differ, 24 differences.
+Measured: 13.4% of pixels differ, 26 differences.
 
 Differences left:
 
@@ -407,25 +380,23 @@ Differences left:
 - missing in built: "j2ee" (C1 to C5)
 - missing in built: "Signed in" (C1 to C5)
 - missing in built: "Shopping in English (US)" (C1 to C5)
-- missing in built: "Browse the catalog" (C1 to C5)
 - missing in built: "Open your cart" (C1 to C5)
-- missing in built: "Edit profile" (C1 to C5)
 - missing in built: "Language: English (US)" (C1 to C5)
 - only in built: "Open the menu" (C1 to C5)
 - only in built: "MUI Pet Store 2" (C1 to C5)
 - only in built: "Search the catalog" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "dmmwr2z5sb" (C1 to C5)
+- only in built: "dmmwr33mgp" (C1 to C5)
 - only in built: "Sign off" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
+- only in built: "Welcome, dmmwr33mgp" (C1 to C5)
+- only in built: "You’re signed on as dmmwr33mgp. Your language is set from your profile. You’ll stay signed on until you sign off or are idle for 15 minutes." (C1 to C5)
+- only in built: "Signed on" (C1 to C5)
+- style and layout lines: box ×2, color ×1, position ×2 (C1 to C6)
 
 ## SWHM3-MCK-41 · Signed off (/signed-off, 1440)
 ![mockup](design-check/SWHM3-MCK-41-mockup.png) ![built](design-check/SWHM3-MCK-41-built.png) ![diff](design-check/SWHM3-MCK-41-diff.png)
 
-Measured: 3.8% of pixels differ, 32 differences.
+Measured: 3.5% of pixels differ, 35 differences.
 
 Differences left:
 
@@ -436,23 +407,17 @@ Differences left:
 - missing in built: "Admin entries need the administrator role." (C1 to C5)
 - missing in built: "English (US)" (C1 to C5)
 - missing in built: "You’ve signed off" (C1 to C5)
-- missing in built: "Thanks for shopping. Your session has ended on this device." (C1 to C5)
-- missing in built: "Your cart was emptied" (C1 to C5)
 - missing in built: "We kept your language: English (US)" (C1 to C5)
-- missing in built: "Sign in again" (C1 to C5)
-- missing in built: "Back to home" (C1 to C5)
 - only in built: "Order administration" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: background ×1, box ×2, color ×2, font ×1, position ×6, radius ×1, size ×1 (C1 to C6)
+- only in built: "You have signed off" (C1 to C5)
+- only in built: "We kept your language: English (United States)" (C1 to C5)
+- style and layout lines: background ×1, box ×5, color ×4, font ×1, position ×10, radius ×1, size ×1 (C1 to C6)
 
 ## SWHM3-MCK-42 · Signed off · Mobile (same, 390)
 ![mockup](design-check/SWHM3-MCK-42-mockup.png) ![built](design-check/SWHM3-MCK-42-built.png) ![diff](design-check/SWHM3-MCK-42-diff.png)
 
-Measured: 9.2% of pixels differ, 22 differences.
+Measured: 12.4% of pixels differ, 24 differences.
 
 Differences left:
 
@@ -461,18 +426,12 @@ Differences left:
 - missing in built: "Search" (C1 to C5)
 - missing in built: "Cart" (C1 to C5)
 - missing in built: "You’ve signed off" (C1 to C5)
-- missing in built: "Thanks for shopping. Your session has ended on this device." (C1 to C5)
-- missing in built: "Your cart was emptied" (C1 to C5)
 - missing in built: "We kept your language: English (US)" (C1 to C5)
-- missing in built: "Sign in again" (C1 to C5)
-- missing in built: "Back to home" (C1 to C5)
 - missing in built: "Language: English (US)" (C1 to C5)
 - only in built: "Open the menu" (C1 to C5)
 - only in built: "MUI Pet Store 2" (C1 to C5)
 - only in built: "Search the catalog" (C1 to C5)
 - only in built: "English (United States)" (C1 to C5)
-- only in built: "We couldn't load this page" (C1 to C5)
-- only in built: "Something went wrong on our side. Try again in a moment." (C1 to C5)
-- only in built: "Try again" (C1 to C5)
-- only in built: "Go to home" (C1 to C5)
-- style and layout lines: box ×1, position ×1, weight ×1 (C1 to C6)
+- only in built: "You have signed off" (C1 to C5)
+- only in built: "We kept your language: English (United States)" (C1 to C5)
+- style and layout lines: box ×3, color ×2, position ×5, weight ×1 (C1 to C6)
