@@ -18,5 +18,11 @@ export {
   SIGNED_ON_MAX_AGE_MS,
   ANONYMOUS_IDLE_MS,
 } from "./session-rules";
-export { linkSignedOn, saveProfileForSession, signOffSession, signOnToSession } from "./session";
+export {
+  linkSignedOn,
+  rotateSession,
+  saveProfileForSession,
+  signOffSession,
+  signOnToSession,
+} from "./session";
 export { createAccountsRuntime } from "./runtime";

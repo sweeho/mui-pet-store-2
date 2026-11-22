@@ -61,6 +61,21 @@ export async function linkSignedOn(
   };
 }
 
+/** Move a shopper session to a new id, keeping what it holds. Returns the new id. */
+export async function rotateSession(
+  { db, store }: Pick<Parts, "db" | "store">,
+  sessionId: string,
+): Promise<string> {
+  const old = await store.load(sessionId);
+  const id = randomUUID();
+  const fresh = await store.ensure(id);
+  fresh.attributes = { ...(old?.attributes ?? {}) };
+  fresh.controllerState = { ...(old?.controllerState ?? {}) };
+  await store.save(fresh);
+  await db.delete(sessions).where(eq(sessions.id, sessionId));
+  return id;
+}
+
 /**
  * Sign off: end every token of the user (session version), discard the old shopper session and
  * start a new one that keeps only the locale (R-0072). Returns the new session id.

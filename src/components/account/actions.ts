@@ -10,6 +10,7 @@ import { signIn, signOut } from "@/auth";
 import { getDb } from "@/db/client";
 import {
   linkSignedOn,
+  rotateSession,
   PASSWORD_MAX,
   rememberCookie,
   saveProfileForSession,
@@ -27,7 +28,7 @@ import { safeFrom } from "@/lib/problem";
 export type SignOnState = { error?: "invalid" | "locked"; userName?: string };
 
 const credential = z.object({
-  userName: z.string().min(1).max(50),
+  userName: z.string().trim().min(1).max(50),
   password: z.string().min(1).max(PASSWORD_MAX),
 });
 
@@ -59,7 +60,18 @@ async function signOn(userName: string, password: string): Promise<boolean> {
     throw error;
   }
   const sessionId = await getSessionId();
-  if (sessionId) await linkSignedOn(await parts(), sessionId, userName);
+  if (sessionId) {
+    const p = await parts();
+    // A new shopper session id at sign-on, so an id planted before it is not shared (session fixation).
+    const fresh = await rotateSession(p, sessionId);
+    await linkSignedOn(p, fresh, userName);
+    (await cookies()).set("sid", fresh, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: (await headers()).get("x-forwarded-proto") === "https",
+    });
+  }
   return true;
 }
 
@@ -86,7 +98,7 @@ export async function signOnAction(_previous: SignOnState, data: FormData): Prom
 
 /** Sign up: create the customer, sign on and ask for the profile; a refusal goes to the error page. */
 export async function signUpAction(_previous: SignOnState, data: FormData): Promise<SignOnState> {
-  const userName = text(data, "userName");
+  const userName = text(data, "userName").trim();
   const password = text(data, "password");
   const source = sourceOf(await headers());
   if (!signUps.allowed(source)) return { error: "locked", userName };

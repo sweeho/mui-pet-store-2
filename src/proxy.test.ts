@@ -115,4 +115,11 @@ describe("proxy", () => {
     );
     expect(res.headers.get("x-middleware-rewrite")).toContain("/signin");
   });
+
+  it("refuses Auth.js's own POST endpoints, which would skip the rate limit and the session version", async () => {
+    const res = await proxy(
+      new NextRequest("http://localhost/api/auth/callback/credentials", { method: "POST" }),
+    );
+    expect(res.status).toBe(405);
+  });
 });

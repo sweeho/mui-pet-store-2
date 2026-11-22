@@ -1,4 +1,4 @@
-import { and, asc, count, eq } from "drizzle-orm";
+import { and, asc, count, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import * as s from "@/db/schema";
@@ -452,15 +452,18 @@ export function createDomain({ db, now }: Deps) {
       const t = now();
       if (record.lockedUntil && record.lockedUntil > t) return false;
       if (!ok) {
-        const failed = record.failedAttempts + 1;
-        await db
+        // Counted in one statement, so guesses sent at the same time cannot all read the same count.
+        const [row] = await db
           .update(s.signon)
-          .set(
-            failed >= MAX_FAILED_ATTEMPTS
-              ? { failedAttempts: 0, lockedUntil: t + LOCK_MS }
-              : { failedAttempts: failed },
-          )
-          .where(eq(s.signon.userName, userName));
+          .set({ failedAttempts: sql`${s.signon.failedAttempts} + 1` })
+          .where(eq(s.signon.userName, userName))
+          .returning({ failed: s.signon.failedAttempts });
+        if (row && row.failed >= MAX_FAILED_ATTEMPTS) {
+          await db
+            .update(s.signon)
+            .set({ failedAttempts: 0, lockedUntil: t + LOCK_MS })
+            .where(eq(s.signon.userName, userName));
+        }
         return false;
       }
       const [acct] = await db

@@ -65,7 +65,17 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   forwarded.set("x-requested-path", `${pathname}${request.nextUrl.search}`);
 
   let response: NextResponse;
-  if (access === "sign-in-required") {
+  if (pathname.startsWith("/api/auth/") && !SAFE_METHODS.has(request.method)) {
+    // Sign-on and sign-off go through the server actions (rate limited, session version raised);
+    // Auth.js's own POST endpoints would skip both.
+    const refused = problem(
+      new Request(request.url, { headers: forwarded }),
+      405,
+      "Method not allowed",
+      "Use the sign-on form",
+    );
+    response = new NextResponse(refused.body, { status: 405, headers: refused.headers });
+  } else if (access === "sign-in-required") {
     if (pathname.startsWith("/api/")) {
       const refused = problem(
         new Request(request.url, { headers: forwarded }),
@@ -84,7 +94,11 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     response = NextResponse.next({ request: { headers: forwarded } });
   }
   if (cookie && token && !live) {
-    response.cookies.delete(cookie.name);
+    response.cookies.set(cookie.name, "", {
+      maxAge: 0,
+      path: "/",
+      secure: cookie.name.startsWith("__Secure-"),
+    });
   } else if (cookie && token && now - token.lastActive > RENEW_AFTER_MS) {
     response.cookies.set(cookie.name, await renewToken(cookie.name, token, now), {
       httpOnly: true,
