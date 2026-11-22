@@ -55,8 +55,8 @@ export function SignUpForm() {
           id="signup-password"
           name="password"
           type="password"
-          label={t("signup.password")}
-          hint={t("signup.password.hint")}
+          label={t("signup.secret")}
+          hint={t("signup.secret.hint")}
           autoComplete="new-password"
           inputProps={{ maxLength: 50 }}
         />

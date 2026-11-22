@@ -198,10 +198,11 @@ describe("customer accounts", () => {
 
   it("[SWHM3-C-0147] keeps the raw password only in the contract runtime and a hash in the database", async () => {
     const rt = await createAccountsRuntime();
-    await rt.signons.store({ userName: "plain", password: "s3cret" });
-    expect((await rt.signons.readRaw("plain")).password).toBe("s3cret");
+    const secret = `pw-${Date.now()}`;
+    await rt.signons.store({ userName: "plain", password: secret });
+    expect((await rt.signons.readRaw("plain")).password).toBe(secret);
     const stored = await rt.signons.readStored("plain");
-    expect(stored.passwordHash).not.toContain("s3cret");
+    expect(stored.passwordHash).not.toContain(secret);
     expect(stored.passwordHash.startsWith("scrypt$")).toBe(true);
   });
 
